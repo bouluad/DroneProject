@@ -15,15 +15,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 /**
+ * Created by bouluad on 21/03/17.
+ * <p/>
  * A login screen that offers login via login/password.
  */
 public class LoginActivity extends AppCompatActivity {
 
+    public static final String BASE_URL = "";
     /**
      * Id to identity READ_CONTACTS permission request.
      */
     private static final int REQUEST_READ_CONTACTS = 0;
-
+    private final String TAG = "LoginActivity";
     // UI references.
     private EditText mLoginView;
     private EditText mPasswordView;
