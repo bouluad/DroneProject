@@ -61,8 +61,39 @@
 
             </android.support.design.widget.TextInputLayout>
 
+
+
+            <RadioGroup
+                android:id="@+id/myRadioGroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/password"
+                android:checkedButton="@+id/roleUser"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:text="ROLE "
+                    android:id="@+id/textView" />
+
+                <RadioButton
+                    android:id="@+id/roleUser"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/role_user" />
+
+                <RadioButton
+                    android:id="@+id/roleCodis"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/role_codis" />
+
+            </RadioGroup>
+
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/login_sign_in_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
