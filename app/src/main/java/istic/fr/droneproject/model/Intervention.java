@@ -9,6 +9,7 @@ public class Intervention {
     public String id;
     public String libelle;
     public String adresse;
+    public Position position;
     public String date;
     public CodeSinistre code;
     public List<Vehicule> vehicules;
