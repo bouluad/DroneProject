@@ -1,5 +1,6 @@
 package istic.fr.droneproject;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -11,6 +12,8 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import istic.fr.droneproject.model.Intervention;
+
 /**
  * Created by salma on 21/03/17.
  */
@@ -19,6 +22,7 @@ public class InterventionsCodisActivity extends AppCompatActivity {
 
 
     private ListView mListView;
+
     private FloatingActionButton add;
 
     @Override
@@ -35,7 +39,6 @@ public class InterventionsCodisActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
         mListView = (ListView) findViewById(R.id.listInterventions);
 
         final ArrayList<String> interventionList = new ArrayList<>(Arrays.asList("intervention1", "intervention2"));
@@ -54,12 +57,16 @@ public class InterventionsCodisActivity extends AppCompatActivity {
 
 
 
+
        /*
 
-       super.onCreate(savedInstanceState);
-       setContentView(R.layout.activity_main);
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_interventions_codis);
 
-       final ArrayList<Intervention> interventionList =  *//*get interventions*//*;
+
+
+       /* final ArrayList<Intervention> interventionList =  *//*get interventions*//*;
+
 
         String[] listItems = new String[interventionList.size()];
 
@@ -70,7 +77,6 @@ public class InterventionsCodisActivity extends AppCompatActivity {
 
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, listItems);
         mListView.setAdapter(adapter);
-
 
         */
     }
