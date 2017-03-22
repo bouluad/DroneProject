@@ -5,7 +5,7 @@ package istic.fr.droneproject.model;
  * Le path représente le lien de téléchargement de l'image
  */
 public class Photo {
-    public String id;
+    public String _id;
     public String nom;
     public String path;
     public Position position;
