@@ -47,6 +47,12 @@ public class InterventionServiceImpl implements InterventionService {
         call.enqueue(callback);
     }
 
+    /**
+     * Implémentation du service
+     *
+     * @param intervention Nouvelle intervention
+     * @param callback     Callback pour récupérer la réponse
+     */
     @Override
     public void addNouvelleIntervention(Intervention intervention, Callback<Void> callback) {
         Gson gson = new GsonBuilder().setLenient().create();
