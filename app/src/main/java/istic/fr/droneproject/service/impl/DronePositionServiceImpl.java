@@ -19,7 +19,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DronePositionServiceImpl {
 
     //GET drone position
-    private void getDronePositionwithRetrofit()  {
+    public void getDronePositionwithRetrofit()  {
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
@@ -43,7 +43,7 @@ public class DronePositionServiceImpl {
 
     }
     //POST drone position
-    private void setDronePositionwithRetrofit(Position pos)  {
+    public void setDronePositionwithRetrofit(Position pos)  {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         //Create Service
