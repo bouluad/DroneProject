@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.Position;
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.retrofit.DroneRestAPI;
@@ -24,7 +25,7 @@ import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_UR
 public class DronePositionServiceImpl implements DroneService {
 
     //GET drone position
-    public void getPosition(Callback<Position> callback) {
+    public void getDrone(Callback<Drone> callback) {
 
         /*
         Création de l'objet Retrofit
@@ -37,7 +38,7 @@ public class DronePositionServiceImpl implements DroneService {
         /*
         Appel de la méthode pour l'API REST
          */
-        Call<Position> call = droneRestAPI.getPosition();
+        Call<Drone> call = droneRestAPI.getDrone();
 
         /*
         On lance l'appel et le callback recevra la réponse
@@ -46,12 +47,12 @@ public class DronePositionServiceImpl implements DroneService {
     }
 
     //POST drone position
-    public void setPosition(Position pos, Callback<Void> callback) {
+    public void setDrone(Drone drone, Callback<Void> callback) {
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
         final DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
 
-        Call<Void> call = droneRestAPI.setPosition(pos);
+        Call<Void> call = droneRestAPI.setDrone(drone);
         call.enqueue(callback);
     }
 }

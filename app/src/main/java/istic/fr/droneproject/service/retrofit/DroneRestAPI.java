@@ -1,4 +1,5 @@
 package istic.fr.droneproject.service.retrofit;
+import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.Position;
 import retrofit2.Call;
 import retrofit2.http.Body;
@@ -13,13 +14,13 @@ import retrofit2.http.POST;
 
 
 public interface DroneRestAPI {
-    public static final String ENDPOINT = "http://148.60.11.238:27018";
+    public static final String ENDPOINT = "http://148.60.11.238:4000";
 
     @Headers({ "Accept: application/json" })
     @GET("/position")
-    Call<Position> getPosition();
+    Call<Drone> getDrone();
 
     @POST("/position")
-    Call<Void> setPosition(@Body Position position);
+    Call<Void> setDrone(@Body Drone drone );
 
 }

@@ -1,5 +1,6 @@
 package istic.fr.droneproject.service;
 
+import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.Position;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -15,17 +16,17 @@ public interface DroneService {
 
 
     /**
-     * Récupérer la position du drone
+     * Récupérer le drone
      * @param callback Callback pour récupérer la réponse
      */
 
-    void getPosition(Callback<Position> callback);
+    void getDrone(Callback<Drone> callback);
 
 
     /**
      * Envoyer une position au drone
-     * @param Position Nouvelle position
+     * @param drone position
      * @param callback Callback pour récupérer la réponse
      */
-    void setPosition( Position pos,Callback<Void> callback);
+    void setDrone(Drone drone, Callback<Void> callback);
 }
