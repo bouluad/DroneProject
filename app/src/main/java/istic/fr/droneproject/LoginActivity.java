@@ -1,11 +1,13 @@
 package istic.fr.droneproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Toast;
 
 import istic.fr.droneproject.model.User;
@@ -44,9 +46,20 @@ public class LoginActivity extends AppCompatActivity {
                 service.login(user, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        //TODO Rediriger vers la bonne page en fonction du role
                         if(response.code() == 200){
                             Toast.makeText(getApplicationContext(), "Mot de passe correct", Toast.LENGTH_SHORT).show();
+
+                            RadioButton radioButtonCodis = (RadioButton) findViewById(R.id.login_radio_codis);
+                            boolean codis = radioButtonCodis.isChecked();
+
+                            if (codis) {
+                                //Ouvrir page Codis
+                                Intent intent = new Intent(getApplicationContext(), InterventionsCodisActivity.class);
+                                startActivity(intent);
+                            } else {
+                                //TODO Ouvrir page User
+                            }
+
                         }else{
                             Toast.makeText(getApplicationContext(), "Mot de passe incorrect", Toast.LENGTH_SHORT).show();
                         }
