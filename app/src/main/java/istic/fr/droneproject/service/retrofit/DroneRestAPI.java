@@ -20,6 +20,6 @@ public interface DroneRestAPI {
     Call<Position> getPosition();
 
     @POST("/position")
-    Call<Position> setPosition(@Body Position position);
+    Call<Void> setPosition(@Body Position position);
 
 }

@@ -2,14 +2,20 @@ package istic.fr.droneproject.service.impl;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import istic.fr.droneproject.model.Position;
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.retrofit.DroneRestAPI;
+import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_URL;
 
 /**
  * Created by yousra on 22/03/17.
@@ -18,49 +24,34 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DronePositionServiceImpl implements DroneService {
 
     //GET drone position
-    public void getPosition(Callback<Position> callback)  {
+    public void getPosition(Callback<Position> callback) {
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create()).build();
-        //Create Service
-        DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
-        Call<Position> position= droneRestAPI.getPosition();
-        position.enqueue(new Callback<Position>() {
-            @Override
-            public void onResponse(Call<Position> call, Response<Position> response) {
-                Position pos=response.body();
-              //  Log.e("getPosition======>",pos.latitude+""+pos.longitude);
+        /*
+        Création de l'objet Retrofit
+         */
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT).addConverterFactory(GsonConverterFactory.create(gson)).build();
 
-            }
+        final DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
 
-            @Override
-            public void onFailure(Call<Position> call, Throwable t) {
-                //Handle failure
-                Log.e("EROOOOOOOOOR======>","you can't retreive drone position");
-            }
-        });
+        /*
+        Appel de la méthode pour l'API REST
+         */
+        Call<Position> call = droneRestAPI.getPosition();
 
+        /*
+        On lance l'appel et le callback recevra la réponse
+         */
+        call.enqueue(callback);
     }
+
     //POST drone position
-    public void setPosition(Position pos,Callback<Void> callback)  {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create()).build();
-        //Create Service
-        DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
-        Call<Position> position= droneRestAPI.setPosition(pos);
-        position.enqueue(new Callback<Position>() {
-            @Override
-            public void onResponse(Call<Position> call, Response<Position> response) {
-                Position pos=response.body();
-                //  Log.e("setPosition======>",pos.latitude+""+pos.longitude);
-            }
+    public void setPosition(Position pos, Callback<Void> callback) {
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        final DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
 
-            @Override
-            public void onFailure(Call<Position> call, Throwable t) {
-                //Handle failure
-                Log.e("EROOOOOOOOOR======>","you can't set drone position");
-            }
-        });
-
+        Call<Void> call = droneRestAPI.setPosition(pos);
+        call.enqueue(callback);
     }
 }
