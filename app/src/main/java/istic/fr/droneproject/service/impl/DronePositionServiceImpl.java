@@ -18,12 +18,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DronePositionServiceImpl {
 
-    
+    //GET drone position
     private void getDronePositionwithRetrofit()  {
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
-
+        //Create Service
         DroneService droneService  = retrofit.create(DroneService.class);
         Call<Position> position= droneService.getPosition();
         position.enqueue(new Callback<Position>() {
@@ -42,18 +42,18 @@ public class DronePositionServiceImpl {
         });
 
     }
+    //POST drone position
     private void setDronePositionwithRetrofit(Position pos)  {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
-
+        //Create Service
         DroneService droneService  = retrofit.create(DroneService.class);
         Call<Position> position= droneService.setPosition(pos);
         position.enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {
                 Position pos=response.body();
-                //Log.e("getPosition======>",pos.getPosition().get(0)+""+pos.getPosition().get(1));
-
+                //  Log.e("setPosition======>",pos.latitude+""+pos.longitude);
             }
 
             @Override
