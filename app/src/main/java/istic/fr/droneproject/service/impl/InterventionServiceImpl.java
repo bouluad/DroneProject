@@ -6,14 +6,13 @@ import com.google.gson.GsonBuilder;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.retrofit.RestAPI;
+import istic.fr.droneproject.service.retrofit.InterventionService;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class InterventionServiceImpl implements InterventionService {
+public class InterventionServiceImpl implements istic.fr.droneproject.service.InterventionService {
 
     /*
      * Adresse du serveur NodeJS
@@ -34,7 +33,7 @@ public class InterventionServiceImpl implements InterventionService {
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
 
-        final RestAPI restAPI = retrofit.create(RestAPI.class);
+        final InterventionService restAPI = retrofit.create(InterventionService.class);
 
         /*
         Appel de la méthode pour l'API REST
@@ -51,7 +50,7 @@ public class InterventionServiceImpl implements InterventionService {
     public void addNouvelleIntervention(Intervention intervention, Callback<Void> callback) {
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        final RestAPI restAPI = retrofit.create(RestAPI.class);
+        final InterventionService restAPI = retrofit.create(InterventionService.class);
 
         Call<Void> call = restAPI.addNouvelleIntervention(intervention);
         call.enqueue(callback);
