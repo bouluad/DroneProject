@@ -6,6 +6,7 @@ package istic.fr.droneproject.model;
  */
 public class Vehicule {
     public String nom;
+    public TypeVehicule type;
     public EtatVehicule etat;
     public String heureDemande;
     public String heureEngagement;
