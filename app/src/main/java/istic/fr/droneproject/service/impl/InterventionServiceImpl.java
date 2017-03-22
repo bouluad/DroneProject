@@ -6,17 +6,15 @@ import com.google.gson.GsonBuilder;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-public class InterventionServiceImpl implements istic.fr.droneproject.service.InterventionService {
+import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_URL;
 
-    /*
-     * Adresse du serveur NodeJS
-     */
-    private static final String BASE_URL = "http://148.60.11.238:4000/";
+public class InterventionServiceImpl implements istic.fr.droneproject.service.InterventionService {
 
     /**
      * Implémentation du service
@@ -30,14 +28,14 @@ public class InterventionServiceImpl implements istic.fr.droneproject.service.In
         Création de l'objet Retrofit
          */
         Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
 
-        final InterventionService restAPI = retrofit.create(InterventionService.class);
+        final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
 
         /*
         Appel de la méthode pour l'API REST
          */
-        Call<List<Intervention>> call = restAPI.getListeInterventions();
+        Call<List<Intervention>> call = interventionRestAPI.getListeInterventions();
 
         /*
         On lance l'appel et le callback recevra la réponse
@@ -55,9 +53,9 @@ public class InterventionServiceImpl implements istic.fr.droneproject.service.In
     public void addNouvelleIntervention(Intervention intervention, Callback<Void> callback) {
         Gson gson = new GsonBuilder().setLenient().create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        final InterventionService restAPI = retrofit.create(InterventionService.class);
+        final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
 
-        Call<Void> call = restAPI.addNouvelleIntervention(intervention);
+        Call<Void> call = interventionRestAPI.addNouvelleIntervention(intervention);
         call.enqueue(callback);
     }
 }

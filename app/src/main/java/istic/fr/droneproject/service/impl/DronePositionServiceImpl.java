@@ -2,10 +2,8 @@ package istic.fr.droneproject.service.impl;
 
 import android.util.Log;
 
-import java.io.IOException;
-
 import istic.fr.droneproject.model.Position;
-import istic.fr.droneproject.service.retrofit.DroneService;
+import istic.fr.droneproject.service.retrofit.DroneRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,11 +19,11 @@ public class DronePositionServiceImpl {
     //GET drone position
     public void getDronePositionwithRetrofit()  {
 
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         //Create Service
-        DroneService droneService  = retrofit.create(DroneService.class);
-        Call<Position> position= droneService.getPosition();
+        DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
+        Call<Position> position= droneRestAPI.getPosition();
         position.enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {
@@ -44,11 +42,11 @@ public class DronePositionServiceImpl {
     }
     //POST drone position
     public void setDronePositionwithRetrofit(Position pos)  {
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneService.ENDPOINT)
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         //Create Service
-        DroneService droneService  = retrofit.create(DroneService.class);
-        Call<Position> position= droneService.setPosition(pos);
+        DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
+        Call<Position> position= droneRestAPI.setPosition(pos);
         position.enqueue(new Callback<Position>() {
             @Override
             public void onResponse(Call<Position> call, Response<Position> response) {

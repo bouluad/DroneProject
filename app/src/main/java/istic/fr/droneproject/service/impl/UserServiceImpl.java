@@ -5,18 +5,13 @@ import com.google.gson.GsonBuilder;
 
 import istic.fr.droneproject.model.User;
 import istic.fr.droneproject.service.UserService;
-import istic.fr.droneproject.service.retrofit.RestAPI;
+import istic.fr.droneproject.service.retrofit.UserRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class UserServiceImpl implements UserService {
-
-    /*
-     * Adresse du serveur NodeJS
-     */
-    private static final String BASE_URL = "http://148.60.11.238:4000/";
 
     /**
      * Implémentation du service
@@ -28,10 +23,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void login(User user, Callback<Void> callback) {
         Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        final RestAPI restAPI = retrofit.create(RestAPI.class);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(UserRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        final UserRestAPI userRestAPI = retrofit.create(UserRestAPI.class);
 
-        Call<Void> call = restAPI.login(user);
+        Call<Void> call = userRestAPI.login(user);
         call.enqueue(callback);
     }
 }

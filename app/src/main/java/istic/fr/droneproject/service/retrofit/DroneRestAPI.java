@@ -12,7 +12,7 @@ import retrofit2.http.POST;
  */
 
 
-public interface DroneService {
+public interface DroneRestAPI {
     public static final String ENDPOINT = "http://148.60.11.238:27018";
 
     @Headers({ "Accept: application/json" })
