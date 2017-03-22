@@ -7,4 +7,9 @@
     <string name="action_sign_in">Se connecter</string>
     <string name="role_user">USER</string>
     <string name="role_codis">CODIS</string>
+
+    <!-- Strings related to new intervention -->
+    <string name="libelle">Libellé</string>
+    <string name="adresse">Adresse</string>
+    <string name="code">Code</string>
 </resources>
