@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText android:id="@+id/libelle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/libelle" />
+
+    <EditText android:id="@+id/adresse"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/adresse" />
+
+    <EditText android:id="@+id/code"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:hint="@string/code" />
+
+    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/listMoyens"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/add"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|right"
+
+        android:layout_margin="16dp"
+        android:clickable="true"
+        android:src="@drawable/ic_plus" />
+
+    <Button
+        android:id="@+id/ButtonSendForm"
+        android:layout_height="wrap_content"
+        android:text="Valider"
+        android:onClick="validate"
+        android:gravity="center|bottom"
+        android:layout_width="match_parent"/>
+
+
+
+
+
+
+</LinearLayout>

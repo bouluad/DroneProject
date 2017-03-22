@@ -31,7 +31,7 @@ public class UserServiceImpl implements UserService {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
         final RestAPI restAPI = retrofit.create(RestAPI.class);
 
-        Call<Void> call = UserService.login(user);
+        Call<Void> call = restAPI.login(user);
         call.enqueue(callback);
     }
 }
