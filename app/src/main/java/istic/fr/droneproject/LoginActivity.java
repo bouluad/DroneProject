@@ -47,8 +47,6 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if(response.code() == 200){
-                            Toast.makeText(getApplicationContext(), "Mot de passe correct", Toast.LENGTH_SHORT).show();
-
                             RadioButton radioButtonCodis = (RadioButton) findViewById(R.id.login_radio_codis);
                             boolean codis = radioButtonCodis.isChecked();
 
@@ -57,7 +55,9 @@ public class LoginActivity extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), InterventionsCodisActivity.class);
                                 startActivity(intent);
                             } else {
-                                //TODO Ouvrir page User
+                                //Ouvrir page User
+                                Intent intent = new Intent(getApplicationContext(), UserInterventionsActivity.class);
+                                startActivity(intent);
                             }
 
                         }else{
