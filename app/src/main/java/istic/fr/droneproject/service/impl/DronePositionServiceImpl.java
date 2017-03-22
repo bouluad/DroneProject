@@ -3,6 +3,7 @@ package istic.fr.droneproject.service.impl;
 import android.util.Log;
 
 import istic.fr.droneproject.model.Position;
+import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.retrofit.DroneRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -14,10 +15,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
  * Created by yousra on 22/03/17.
  */
 
-public class DronePositionServiceImpl {
+public class DronePositionServiceImpl implements DroneService {
 
     //GET drone position
-    public void getDronePositionwithRetrofit()  {
+    public void getPosition(Callback<Position> callback)  {
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
@@ -41,7 +42,7 @@ public class DronePositionServiceImpl {
 
     }
     //POST drone position
-    public void setDronePositionwithRetrofit(Position pos)  {
+    public void setPosition(Position pos,Callback<Void> callback)  {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(DroneRestAPI.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create()).build();
         //Create Service

@@ -27,5 +27,5 @@ public interface DroneService {
      * @param Position Nouvelle position
      * @param callback Callback pour récupérer la réponse
      */
-    void setPosition( Position position,Callback<Void> callback);
+    void setPosition( Position pos,Callback<Void> callback);
 }
