@@ -9,7 +9,7 @@ public class Intervention {
     public String _id;
     public String libelle;
     public String adresse;
-    public Position position;
+    public Double[] position;
     public String date;
     public CodeSinistre code;
     public List<Vehicule> vehicules;

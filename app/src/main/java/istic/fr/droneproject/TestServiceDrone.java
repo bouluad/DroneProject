@@ -1,19 +1,15 @@
 package istic.fr.droneproject;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.Position;
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.impl.DronePositionServiceImpl;
-import istic.fr.droneproject.service.retrofit.DroneRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TestServiceDrone extends AppCompatActivity {
 

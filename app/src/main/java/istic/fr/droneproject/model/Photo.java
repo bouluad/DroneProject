@@ -8,6 +8,6 @@ public class Photo {
     public String _id;
     public String nom;
     public String path;
-    public Position position;
+    public Double[] position;
     public String date_heure;
 }

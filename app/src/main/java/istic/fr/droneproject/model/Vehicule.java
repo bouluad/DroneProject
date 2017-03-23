@@ -13,5 +13,5 @@ public class Vehicule {
     public String heureArrivee;
     public String heureLiberation;
     public Categorie categorie;
-    public Position position;
+    public Double[] position;
 }

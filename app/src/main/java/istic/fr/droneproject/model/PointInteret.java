@@ -6,5 +6,5 @@ package istic.fr.droneproject.model;
  */
 public class PointInteret {
     public String code_image;
-    public Position position;
+    public Double[] position;
 }

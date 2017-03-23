@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -77,6 +78,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Intervention>> call, Throwable t) {
                 //DO NOTHING
+                Log.e("UserInterventionsActivi", t.toString());
             }
         });
 

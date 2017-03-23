@@ -8,7 +8,7 @@ import java.util.List;
  * nom_drone correspond au nom du drone (véhicule) effectuant ou ayant effectué le trajet
  */
 public class ParcoursSegment {
-    public List<Position> points;
+    public List<Double[]> points;
     public Boolean tag_photo;
     public Boolean tag_loop;
     public EtatTrajetDrone etat;
