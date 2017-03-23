@@ -34,8 +34,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NewInterventionActivity" />
-        <activity android:name=".InterventionsCodisActivity"></activity>
+        <activity android:name=".CodisNewInterventionActivity" />
+        <activity android:name=".CodisInterventionsActivity"></activity>
         <activity android:name=".MapActivity"></activity>
         <activity android:name=".UserInterventionsActivity"></activity>
     </application>

@@ -7,12 +7,12 @@ import android.support.v7.app.AppCompatActivity;
  * Created by salma on 21/03/17.
  */
 
-public class NewInterventionActivity extends AppCompatActivity {
+public class CodisNewInterventionActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_new_intervention);
+        setContentView(R.layout.codis_new_intervention);
     }
 }

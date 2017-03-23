@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity {
 
                             if (codis) {
                                 //Ouvrir page Codis
-                                Intent intent = new Intent(getApplicationContext(), InterventionsCodisActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), CodisInterventionsActivity.class);
                                 startActivity(intent);
                             } else {
                                 //Ouvrir page User
