@@ -13,7 +13,7 @@ public interface InterventionRestAPI {
     /*
      * Adresse du serveur NodeJS
      */
-    String BASE_URL = "http://148.60.11.238:4000/";
+    String BASE_URL = "http://148.60.11.238:8080/";
 
 
     @GET("interventions/")
