@@ -17,4 +17,6 @@ public class Intervention {
     public List<ParcoursSegment> segments;
     public List<ParcoursZone> zones;
     public List<Photo> photos;
+
+
 }

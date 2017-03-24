@@ -44,24 +44,29 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
         Log.e("TMR","vehicule"+vehicule.heureEngagement);
         holder.heure1.setText(vehicule.heureDemande);
         if(vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()){
-            holder.heure1.setBackgroundColor(Color.BLACK);
+            holder.heure1.setBackgroundColor(Color.GRAY);
             holder.heure1.setText("----");
         }
         holder.heure2.setText(vehicule.heureEngagement);
         if(vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()){
-            holder.heure2.setBackgroundColor(Color.BLACK);
+            holder.heure2.setBackgroundColor(Color.GRAY);
             holder.heure2.setText("----");
         }
         holder.heure3.setText(vehicule.heureArrivee);
         if(vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()){
-            holder.heure3.setBackgroundColor(Color.BLACK);
+            holder.heure3.setBackgroundColor(Color.GRAY);
             holder.heure3.setText("----");
+        }else{
+            holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
         holder.heure4.setText(vehicule.heureLiberation);
         if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()){
-            holder.heure4.setBackgroundColor(Color.BLACK);
+            holder.heure4.setBackgroundColor(Color.GRAY);
             holder.heure4.setText("----");
+            holder.heure4.setVisibility(View.GONE);
+            holder.btnLiberer.setVisibility(View.VISIBLE);
         }
+
     }
 
     @Override
@@ -70,11 +75,13 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     }
 
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
+        boolean confirmationLiberer = false;
         TextView nom;
         TextView heure1;
         TextView heure2;
         TextView heure3;
         TextView heure4;
+        Button btnLiberer;
         Button btnConfirmer;
 
         public VehiculeViewHolder(final View itemView) {
@@ -85,10 +92,11 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             heure3 = (TextView) itemView.findViewById(R.id.utm_vi_heure3);
             heure4 = (TextView) itemView.findViewById(R.id.utm_vi_heure4);
             btnConfirmer = (Button) itemView.findViewById((R.id.utm_vi_btn_Confirmer));
+
             btnConfirmer.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.e("QSD","heure3: "+heure3.getText());
+                    Log.e("TMR","heure3: "+heure3.getText());
                     if(heure3.getText().toString().equals("----")){
                         heure3.setText(Calendar.getInstance().getTime().getHours()+":"+Calendar.getInstance().getTime().getMinutes());
                         heure3.setBackgroundColor(Color.WHITE);
@@ -97,6 +105,34 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                     Toast.makeText(itemView.getContext().getApplicationContext(), "click sur button"+itemView.getId()+"\n avec heure: "+heure1+"\n intervention: "+ intervention, Toast.LENGTH_SHORT).show();
                     if(intervention != null && intervention.libelle != null)
                         Toast.makeText(itemView.getContext().getApplicationContext(), "intervention libelle: "+ intervention.libelle, Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            btnLiberer = (Button) itemView.findViewById((R.id.utm_vi_btn_liberation));
+            btnLiberer.setVisibility(View.GONE);
+            btnLiberer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Log.e("TMR","click lberation");
+                    if(confirmationLiberer == false){
+                        confirmationLiberer = true;
+                        btnLiberer.setBackgroundColor(Color.RED);
+                        btnLiberer.setText("Confirmer Liberer !!!");
+                    }
+                    else{
+                        if(heure4.getText().toString().equals("----")){
+                            heure4.setText(Calendar.getInstance().getTime().getHours()+":"+Calendar.getInstance().getTime().getMinutes());
+                            heure4.setBackgroundColor(Color.WHITE);
+                            heure4.setVisibility(View.VISIBLE);
+                            btnLiberer.setVisibility(View.GONE);
+                            btnConfirmer.setVisibility(View.INVISIBLE);
+                        }
+                        //TODO:faire un appel a modification de liberation ( changer l'état du véhucile, changer l'heure3(heure de libération), modifier l'intervention et la re pusher)
+                        Toast.makeText(itemView.getContext().getApplicationContext(), "click sur button"+itemView.getId()+"\n avec heure: "+heure1+"\n intervention: "+ intervention, Toast.LENGTH_SHORT).show();
+                        if(intervention != null && intervention.libelle != null)
+                            Toast.makeText(itemView.getContext().getApplicationContext(), "intervention libelle: "+ intervention.libelle, Toast.LENGTH_SHORT).show();
+
+                    }
 
                 }
             });
