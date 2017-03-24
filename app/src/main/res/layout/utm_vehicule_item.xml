@@ -52,11 +52,18 @@
         android:textSize="24sp" />
 
     <Button
+        android:id="@+id/utm_vi_btn_liberation"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Liberation" />
+
+    <Button
         android:id="@+id/utm_vi_btn_Confirmer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
         android:contentDescription="Confirmer Position Vehicule"
-        android:text="Cofirmer"
+        android:text="Confirmer"
         android:textSize="24sp" />
 </LinearLayout>
