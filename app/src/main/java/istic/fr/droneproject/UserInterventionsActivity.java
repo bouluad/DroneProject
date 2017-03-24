@@ -54,14 +54,18 @@ public class UserInterventionsActivity extends AppCompatActivity {
                 layoutDetails.setVisibility(View.VISIBLE);
                 textLibelle.setText(intervention.libelle);
                 textAdresse.setText(intervention.adresse);
-                textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
-
+                if (intervention.position != null) {
+                    textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
+                }
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
                 try {
 
-                    Date date = formatter.parse(intervention.date.toString());
-                    textDate.setText(formatter.format(date));
+                    if (intervention.date != null) {
+
+                        Date date = formatter.parse(intervention.date.toString());
+                        textDate.setText(formatter.format(date));
+                    }
 
                 } catch (ParseException e) {
                     e.printStackTrace();
