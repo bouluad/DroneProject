@@ -27,7 +27,7 @@
             android:value="@integer/google_play_services_version" />
 
 
-        <activity android:name=".MapActivity">
+        <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -37,7 +37,7 @@
         <activity android:name=".CodisNewInterventionActivity" />
         <activity android:name=".CodisInterventionsActivity"></activity>
         <activity android:name=".UserTableauMoyenActivity"></activity>
-        <!--<activity android:name=".MapActivity"></activity>-->
+        <activity android:name=".MapActivity"></activity>
         <activity android:name=".UserInterventionsActivity"></activity>
         <activity android:name=".UserMainActivity"></activity>
         <activity android:name=".CodisValidationActivity"></activity>
