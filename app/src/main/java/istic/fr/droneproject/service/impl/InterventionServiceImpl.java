@@ -6,7 +6,6 @@ import com.google.gson.GsonBuilder;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
-
 import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
