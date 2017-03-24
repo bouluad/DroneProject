@@ -4,11 +4,11 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,6 +20,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
     SupportMapFragment map;
@@ -27,15 +28,33 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     Marker myMarker;
     Marker markerChanged;
     ViewGroup view;
+    Button boutonMenu;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+         Button points = (Button) findViewById(R.id.m_menu_choix_points);
+         Button vehicules=(Button)  findViewById(R.id.m_menu_choix_vehicules);
+        points.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.m_menu_points).setVisibility(View.VISIBLE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+        vehicules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
 
-        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
+
     }
 
     @Override
@@ -51,6 +70,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
                 .title("I'm here"));
+        mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+               // marker.showInfoWindow();
+               findViewById(R.id.m_menu_choix).setVisibility(View.VISIBLE);
+                return false;
+            }
+        });
 
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -75,15 +102,69 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mGoogleMap.moveCamera(center);
         mGoogleMap.animateCamera(zoom);
 
+        mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
-   /* @Override
-    public boolean onMarkerClick(Marker marker) {
-        if (marker.equals(myMarker)) {
-            Toast.makeText(this,"position changed",Toast.LENGTH_SHORT).show();
-            Intent i=new Intent(MapActivity.this,LoginActivity.class);
-            startActivity(i);
-        }
-        return true;
-    }*/
+            // Use default InfoWindow frame
+            @Override
+            public View getInfoWindow(Marker args) {
+                                              /* view=(ViewGroup) findViewById(R.id.activity_main);
+                                                ArrayList<View> items=new ArrayList<View>();
+                                                Button boutonPoint =new Button(getApplicationContext());
+                                                Button boutonVehicule =new Button(getApplicationContext());
+                                                boutonPoint.setText("Point");
+                                                //boutonPoint.setOnClickListener();
+                                                boutonVehicule.setText("Moyen");
+
+                                                items.add(boutonPoint);
+                                                items.add(boutonVehicule);
+                                                view.addView(boutonPoint);
+                                                view.addView(boutonVehicule);
+
+                                                return view;*/
+             //   boutonMenu = new Button(getApplicationContext());
+
+               // boutonMenu.setText("Menu");
+               /* boutonMenu.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                        System.out.println("okeeeeeeeey====++>");
+                        Log.d("bouton Menu cliqué", "");
+                        view = (ViewGroup) findViewById(R.id.activity_main);
+                        Button points = new Button(getApplicationContext());
+                        points.setText("Points");
+                        view.addView(points, 6);
+
+
+                    }
+                });*/
+
+                return boutonMenu;
+
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                return view;
+            }
+
+
+
+                                        }
+        );}
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+        case R.id.Points:
+            //add the function to perform here
+            return(true);
+        case R.id.Moyens:
+            //add the function to perform here
+            return(true);
+
     }
+        return(super.onOptionsItemSelected(item));
+    }
+
 }

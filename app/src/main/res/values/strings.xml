@@ -12,4 +12,6 @@
     <string name="libelle">Libellé</string>
     <string name="adresse">Adresse</string>
     <string name="code">Code</string>
+    <string name="Points">Points</string>
+    <string name="Moyens">Moyens</string>
 </resources>
