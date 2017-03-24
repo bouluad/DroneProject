@@ -1,5 +1,6 @@
 package istic.fr.droneproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -70,8 +71,8 @@ public class UserInterventionsActivity extends AppCompatActivity {
                 btnSelect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //  Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
-                        //  startActivity(intent);
+                        Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
+                        startActivity(intent);
                     }
                 });
                 VehiculeRecyclerAdapter vehiculeArrayAdapter = new VehiculeRecyclerAdapter(intervention.vehicules, R.layout.ui_vehicule_item);

@@ -40,4 +40,19 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         return 4;
     }
 
+    @Override
+    public CharSequence getPageTitle(int position) {
+        switch (position) {
+            case 0:
+                return "Carte";
+            case 1:
+                return "Album";
+            case 2:
+                return "Vidéos";
+            case 3:
+                return "Moyens";
+        }
+        return null;
+    }
+
 }
