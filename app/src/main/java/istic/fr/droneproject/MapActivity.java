@@ -8,6 +8,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -37,8 +38,31 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
-        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+         Button points = (Button) findViewById(R.id.m_menu_choix_points);
+         Button vehicules=(Button)  findViewById(R.id.m_menu_choix_vehicules);
+        points.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.m_menu_points).setVisibility(View.VISIBLE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+        points.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+        vehicules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+                findViewById(R.id.m_list_vehicules_add).setVisibility(View.VISIBLE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
     }
@@ -59,7 +83,9 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                marker.showInfoWindow();
+               // marker.showInfoWindow();
+               findViewById(R.id.m_menu_choix).setVisibility(View.VISIBLE);
+              //  findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
 
 
                 return false;
@@ -108,10 +134,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                                                 view.addView(boutonVehicule);
 
                                                 return view;*/
-                boutonMenu = new Button(getApplicationContext());
+             //   boutonMenu = new Button(getApplicationContext());
 
-                boutonMenu.setText("Menu");
-                boutonMenu.setOnClickListener(new View.OnClickListener() {
+               // boutonMenu.setText("Menu");
+               /* boutonMenu.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         System.out.println("okeeeeeeeey====++>");
                         Log.d("bouton Menu cliqué", "");
@@ -122,7 +148,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
 
                     }
-                });
+                });*/
 
                 return boutonMenu;
 
