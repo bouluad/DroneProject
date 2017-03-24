@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
 android:id="@+id/activity_main"
 android:layout_width="match_parent"
@@ -20,7 +20,69 @@ tools:context="istic.fr.droneproject.MapActivity">
     android:name="com.google.android.gms.maps.SupportMapFragment" />
 
 
+    <RadioGroup
+        android:id="@+id/radio_group_list_selector"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:orientation="horizontal"
+        android:background="#800000"
+        android:padding="4dp" >
+
+        <RadioButton
+            android:id="@+id/radioPopular"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="Carte"
+            android:gravity="center_horizontal|center_vertical"
+            android:layout_weight="1"
+
+            android:textColor="#0F0E0E" />
+        <View
+            android:id="@+id/VerticalLine"
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:background="#53494A" />
+
+        <RadioButton
+            android:id="@+id/radioAZ"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Album"
+            android:layout_weight="1"
+
+            android:textColor="#0F0E0E" />
+
+        <View
+            android:id="@+id/VerticalLine2"
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:background="#53494A" />
+
+        <RadioButton
+            android:id="@+id/radioCategory"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="Videos"
+            android:layout_weight="1"
+            android:textColor="#0F0E0E" />
+        <View
+            android:id="@+id/VerticalLine3"
+            android:layout_width="1dip"
+            android:layout_height="match_parent"
+            android:background="#53494A" />
+
+        <RadioButton
+            android:id="@+id/radioNearBy"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/Moyens"
+            android:layout_weight="1"
+            android:textColor="#0F0E0E" />
+    </RadioGroup>
 
 
 
-</LinearLayout>
+</FrameLayout>
