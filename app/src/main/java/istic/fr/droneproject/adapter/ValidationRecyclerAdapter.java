@@ -41,7 +41,7 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
         final Validation validation = validations.get(position);
 
         holder.nom.setText(validation.vehicule.nom);
-        holder.libelle.setText(validation.intervention.libelle);
+        holder.libelle.setText(validation.libelle);
         holder.heuredemande.setText(validation.vehicule.heureDemande);
         holder.validation.setOnClickListener(new View.OnClickListener() {
             @Override

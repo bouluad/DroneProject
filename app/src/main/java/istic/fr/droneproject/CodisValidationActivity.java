@@ -15,7 +15,7 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Validation;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,7 +81,7 @@ public class CodisValidationActivity extends AppCompatActivity{
          final ValidationRecyclerAdapter validationArrayAdapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
          validationsRecycler.setAdapter(validationArrayAdapter);
 
-         InterventionService service = new InterventionServiceImpl();
+         InterventionService service = InterventionServiceCentral.getInstance();
 
          service.getListeInterventions(new Callback<List<Intervention>>() {
              @Override
