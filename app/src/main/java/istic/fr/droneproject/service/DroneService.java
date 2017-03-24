@@ -1,10 +1,7 @@
 package istic.fr.droneproject.service;
 
 import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.Position;
-import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.http.Body;
 
 
 /**

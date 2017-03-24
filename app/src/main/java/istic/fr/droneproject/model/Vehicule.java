@@ -11,7 +11,7 @@ public class Vehicule {
     public String heureDemande;
     public String heureEngagement;
     public String heureArrivee;
-    public String heureAnnulation;
+    public String heureLiberation;
     public Categorie categorie;
-    public Position position;
+    public Double[] position;
 }

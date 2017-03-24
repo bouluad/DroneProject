@@ -47,17 +47,17 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         if(response.code() == 200){
-                            Toast.makeText(getApplicationContext(), "Mot de passe correct", Toast.LENGTH_SHORT).show();
-
                             RadioButton radioButtonCodis = (RadioButton) findViewById(R.id.login_radio_codis);
                             boolean codis = radioButtonCodis.isChecked();
 
                             if (codis) {
                                 //Ouvrir page Codis
-                                Intent intent = new Intent(getApplicationContext(), InterventionsCodisActivity.class);
+                                Intent intent = new Intent(getApplicationContext(), CodisInterventionsActivity.class);
                                 startActivity(intent);
                             } else {
-                                //TODO Ouvrir page User
+                                //Ouvrir page User
+                                Intent intent = new Intent(getApplicationContext(), UserInterventionsActivity.class);
+                                startActivity(intent);
                             }
 
                         }else{

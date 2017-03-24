@@ -1,6 +1,6 @@
 package istic.fr.droneproject.service.retrofit;
+
 import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.Position;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -14,7 +14,7 @@ import retrofit2.http.POST;
 
 
 public interface DroneRestAPI {
-    public static final String ENDPOINT = "http://148.60.11.238:4000";
+    public static final String ENDPOINT = "http://148.60.11.238:8080";
 
     @Headers({ "Accept: application/json" })
     @GET("/position")

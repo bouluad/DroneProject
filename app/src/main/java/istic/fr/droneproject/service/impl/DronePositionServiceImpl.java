@@ -1,18 +1,13 @@
 package istic.fr.droneproject.service.impl;
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.Position;
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.retrofit.DroneRestAPI;
-import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 

@@ -6,10 +6,10 @@ import java.util.List;
  * Modèle d'une intervention
  */
 public class Intervention {
-    public String id;
+    public String _id;
     public String libelle;
     public String adresse;
-    public Position position;
+    public Double[] position;
     public String date;
     public CodeSinistre code;
     public List<Vehicule> vehicules;
