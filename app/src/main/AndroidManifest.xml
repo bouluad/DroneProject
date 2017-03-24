@@ -36,6 +36,8 @@
         </activity>
         <activity android:name=".CodisNewInterventionActivity" />
         <activity android:name=".CodisInterventionsActivity"></activity>
+        <activity android:name=".UserTableauMoyenActivity">
+    </activity>
         <activity android:name=".MapActivity"></activity>
         <activity android:name=".UserInterventionsActivity"></activity>
     </application>
