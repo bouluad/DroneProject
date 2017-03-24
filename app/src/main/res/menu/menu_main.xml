@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+
+        <item
+            android:id="@+id/Points" android:icon="@android:drawable/ic_menu_add" app:showAsAction="always"   android:title="@string/Points"/>
+        <item
+            android:id="@+id/Moyens" android:icon="@android:drawable/ic_menu_revert" app:showAsAction="always|withText" android:title="@string/Moyens"/>
+
+
+
 
 </menu>
