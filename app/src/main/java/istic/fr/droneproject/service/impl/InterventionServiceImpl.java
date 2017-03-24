@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Position;
 import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -57,5 +58,15 @@ public class InterventionServiceImpl implements istic.fr.droneproject.service.In
 
         Call<Void> call = interventionRestAPI.addNouvelleIntervention(intervention);
         call.enqueue(callback);
+    }
+
+    @Override
+    public void getInterventionById(String id,Callback<Intervention> callback) {
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
+        Call<Intervention> call = interventionRestAPI.getInterventionById(id);
+        call.enqueue(callback);
+
     }
 }
