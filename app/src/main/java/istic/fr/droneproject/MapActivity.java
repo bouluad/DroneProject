@@ -4,14 +4,11 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
 import android.widget.Button;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -47,21 +44,14 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
-        points.setOnClickListener(new View.OnClickListener() {
+        vehicules.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
-        vehicules.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
-                findViewById(R.id.m_list_vehicules_add).setVisibility(View.VISIBLE);
-                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
-            }
-        });
+
         map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
@@ -85,9 +75,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             public boolean onMarkerClick(Marker marker) {
                // marker.showInfoWindow();
                findViewById(R.id.m_menu_choix).setVisibility(View.VISIBLE);
-              //  findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
-
-
                 return false;
             }
         });
@@ -164,19 +151,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                                         }
         );}
-
-
-   /* @Override
-    public boolean onMarkerClick(Marker marker) {
-        if (marker.equals(myMarker)) {
-            Toast.makeText(this,"position changed",Toast.LENGTH_SHORT).show();
-            Intent i=new Intent(MapActivity.this,LoginActivity.class);
-            startActivity(i);
-        }
-        return true;
-    }*/
-
-
 
 
     @Override
