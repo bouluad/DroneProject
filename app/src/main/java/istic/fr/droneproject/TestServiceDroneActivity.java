@@ -8,7 +8,7 @@ import java.util.List;
 
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Position;
+
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.impl.DronePositionServiceImpl;

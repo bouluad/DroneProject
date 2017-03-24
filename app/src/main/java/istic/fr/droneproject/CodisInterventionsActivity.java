@@ -59,7 +59,9 @@ public class CodisInterventionsActivity extends AppCompatActivity {
         final InterventionRecyclerAdapter interventionArrayAdapter = new InterventionRecyclerAdapter(interventions, R.layout.ui_intervention_item, interventionClickListener);
         interventionsRecycler.setAdapter(interventionArrayAdapter);
 
+
         InterventionService service = new InterventionServiceImpl();
+
         service.getListeInterventions(new Callback<List<Intervention>>() {
             @Override
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {

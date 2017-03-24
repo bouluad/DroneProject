@@ -3,7 +3,7 @@ package istic.fr.droneproject.service.retrofit;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Position;
+
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
