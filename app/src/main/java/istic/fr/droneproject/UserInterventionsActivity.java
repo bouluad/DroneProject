@@ -12,14 +12,14 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -81,10 +81,11 @@ public class UserInterventionsActivity extends AppCompatActivity {
         final InterventionRecyclerAdapter interventionArrayAdapter = new InterventionRecyclerAdapter(interventions, R.layout.ui_intervention_item, interventionClickListener);
         interventionsRecycler.setAdapter(interventionArrayAdapter);
 
-        InterventionService service = new InterventionServiceImpl();
-        service.getListeInterventions(new Callback<List<Intervention>>() {
+        InterventionServiceCentral.getInstance().getListeInterventions(new Callback<List<Intervention>>() {
             @Override
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
+                Collections.reverse(response.body());
+
                 interventions.clear();
                 interventions.addAll(response.body());
                 interventionArrayAdapter.notifyDataSetChanged();

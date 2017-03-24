@@ -11,12 +11,12 @@ import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,6 +27,8 @@ import retrofit2.Response;
 
 public class CodisInterventionsActivity extends AppCompatActivity {
     private FloatingActionButton add;
+    private List<Intervention> interventions;
+    private InterventionRecyclerAdapter interventionArrayAdapter;
 
 
     @Override
@@ -49,22 +51,33 @@ public class CodisInterventionsActivity extends AppCompatActivity {
         interventionsRecycler.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
 
-        final List<Intervention> interventions = new ArrayList<>();
+        interventions = new ArrayList<>();
         InterventionRecyclerAdapter.InterventionClickListener interventionClickListener = new InterventionRecyclerAdapter.InterventionClickListener() {
             @Override
             public void clickIntervention(Intervention intervention) {
 
             }
         };
-        final InterventionRecyclerAdapter interventionArrayAdapter = new InterventionRecyclerAdapter(interventions, R.layout.ui_intervention_item, interventionClickListener);
+        interventionArrayAdapter = new InterventionRecyclerAdapter(interventions, R.layout.ui_intervention_item, interventionClickListener);
         interventionsRecycler.setAdapter(interventionArrayAdapter);
 
+        recupererListeInterventions();
 
-        InterventionService service = new InterventionServiceImpl();
+    }
 
-        service.getListeInterventions(new Callback<List<Intervention>>() {
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        recupererListeInterventions();
+    }
+
+    private void recupererListeInterventions() {
+        InterventionServiceCentral.getInstance().getListeInterventions(new Callback<List<Intervention>>() {
             @Override
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
+                Collections.reverse(response.body());
+
                 interventions.clear();
                 interventions.addAll(response.body());
                 interventionArrayAdapter.notifyDataSetChanged();
@@ -76,8 +89,9 @@ public class CodisInterventionsActivity extends AppCompatActivity {
                 Log.e("UserInterventionsActivi", t.toString());
             }
         });
-
     }
+
+
 
 
 }

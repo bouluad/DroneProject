@@ -6,20 +6,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import istic.fr.droneproject.R;
-import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.TableauMoyenRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
-import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,8 +39,7 @@ public class UserTableauMoyenActivity extends AppCompatActivity {
         final TableauMoyenRecyclerAdapter vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item,currentIntervention);
         vehiculesRecycler.setAdapter(vehiculeArrayAdapter);
 
-        InterventionService service = new InterventionServiceImpl();
-        service.getListeInterventions(new Callback<List<Intervention>>() {
+        InterventionServiceCentral.getInstance().getListeInterventions(new Callback<List<Intervention>>() {
             @Override
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
                 Log.e("UTM","reloading vehicules");
