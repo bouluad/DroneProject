@@ -1,5 +1,7 @@
 package istic.fr.droneproject.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -42,16 +44,22 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         holder.type.setText(vehicule.type.toString());
        switch(vehicule.categorie){
            case COMMANDEMENT:
-              holder.image.setImageBitmap();
+               Bitmap bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
+              holder.image.setImageBitmap(bMap);
+
            case SAUVETAGE:
-
+                bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
+               holder.image.setImageBitmap(bMap);
            case INCENDIE:
-
+               bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_in));
+               holder.image.setImageBitmap(bMap);
            case RISQUE_PARTICULIER:
-
+               bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_rp));
+               holder.image.setImageBitmap(bMap);
 
            default:
-
+                bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_eau));
+               holder.image.setImageBitmap(bMap);
 
 
 
