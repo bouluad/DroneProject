@@ -9,8 +9,11 @@ import android.support.v4.app.FragmentPagerAdapter;
  */
 public class TabsPagerAdapter extends FragmentPagerAdapter {
 
-    public TabsPagerAdapter(FragmentManager fm) {
+    private String idIntervention;
+
+    public TabsPagerAdapter(FragmentManager fm, String idIntervention) {
         super(fm);
+        this.idIntervention = idIntervention;
     }
 
     @Override
@@ -22,7 +25,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return new CarteActivity();
             case 1:
                 // Album fragment activity
-                return new AlbumActivity();
+                return AlbumActivity.newInstance(idIntervention);
             case 2:
                 // Videos fragment activity
                 return new VideosActivity();

@@ -50,7 +50,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
         final List<Intervention> interventions = new ArrayList<>();
         InterventionRecyclerAdapter.InterventionClickListener interventionClickListener = new InterventionRecyclerAdapter.InterventionClickListener() {
             @Override
-            public void clickIntervention(Intervention intervention) {
+            public void clickIntervention(final Intervention intervention) {
                 layoutDetails.setVisibility(View.VISIBLE);
                 textLibelle.setText(intervention.libelle);
                 textAdresse.setText(intervention.adresse);
@@ -76,6 +76,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
+                        intent.putExtra("idIntervention", intervention._id);
                         startActivity(intent);
                     }
                 });
