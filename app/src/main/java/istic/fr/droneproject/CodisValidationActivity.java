@@ -45,8 +45,9 @@ public class CodisValidationActivity extends AppCompatActivity{
                      validation.vehicule.etat = EtatVehicule.ENGAGE;
                  }
                  validations.remove(validation);
-
-
+                 InterventionService service = InterventionServiceCentral.getInstance();
+                 //TODO modification dans la liste
+                 //service.modifyIntervention(validation.intervention)
                  int count = 0;
                  for (Intervention i:interventions){
                      for (Vehicule v:i.vehicules){
@@ -64,7 +65,9 @@ public class CodisValidationActivity extends AppCompatActivity{
              public void clickRefus(Validation validation) {
                  validation.vehicule.etat = EtatVehicule.ANNULE;
                  validations.remove(validation);
-
+                 InterventionService service = InterventionServiceCentral.getInstance();
+                 //TODO modification dans la liste
+                 //service.modifyIntervention(validation.intervention)
                  int count = 0;
                  for (Intervention i:interventions){
                      for (Vehicule v:i.vehicules){
@@ -96,11 +99,12 @@ public class CodisValidationActivity extends AppCompatActivity{
                      for (Vehicule v:i.vehicules){
                          if (v.etat == EtatVehicule.DEMANDE){
                              countV += 1;
-                             validations.add(new Validation(v,i.libelle));
+                             validations.add(new Validation(v,i));
                          }
                      }
                  }
                  Log.e("CodisValidationActivi","Nombre de véhicules à valider : "+validations.size());
+                 validationArrayAdapter.notifyDataSetChanged();
              }
 
              @Override
