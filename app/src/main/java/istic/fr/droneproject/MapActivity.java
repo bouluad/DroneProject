@@ -4,13 +4,12 @@ import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -32,13 +31,41 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     ViewGroup view;
     Button boutonMenu;
 
+    View m_menu_vehicules;
+    View m_menu_points;
+    View m_menu_choix;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        m_menu_choix = (LinearLayout) findViewById(R.id.m_menu_choix);
+        m_menu_points = (LinearLayout) findViewById(R.id.m_menu_points);
+        m_menu_vehicules = (LinearLayout) findViewById(R.id.m_menu_vehicules);
 
-        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+         Button points = (Button) findViewById(R.id.m_menu_choix_points);
+         Button vehicules=(Button)  findViewById(R.id.m_menu_choix_vehicules);
+        //listener pour le menu points
+        points.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                m_menu_points.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+        //Listener pour le menu vehicules
+        vehicules.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
+                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
+            }
+        });
+
+        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
     }
@@ -59,9 +86,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                marker.showInfoWindow();
-
-
+               // marker.showInfoWindow();
+               m_menu_choix.setVisibility(View.VISIBLE);
                 return false;
             }
         });
@@ -78,8 +104,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                         .position(point)
                         .title("I'm here now"));
 
-                Log.e("Position Marker", point.toString());
 
+                Log.e("Position Marker", point.toString());
+                m_menu_choix.setVisibility(View.VISIBLE);
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
             }
         });
         CameraUpdate center =
@@ -108,10 +137,10 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                                                 view.addView(boutonVehicule);
 
                                                 return view;*/
-                boutonMenu = new Button(getApplicationContext());
+             //   boutonMenu = new Button(getApplicationContext());
 
-                boutonMenu.setText("Menu");
-                boutonMenu.setOnClickListener(new View.OnClickListener() {
+               // boutonMenu.setText("Menu");
+               /* boutonMenu.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         System.out.println("okeeeeeeeey====++>");
                         Log.d("bouton Menu cliqué", "");
@@ -122,7 +151,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
 
                     }
-                });
+                });*/
 
                 return boutonMenu;
 
@@ -133,24 +162,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                 return view;
             }
-
-
-
-                                        }
-        );}
-
-
-   /* @Override
-    public boolean onMarkerClick(Marker marker) {
-        if (marker.equals(myMarker)) {
-            Toast.makeText(this,"position changed",Toast.LENGTH_SHORT).show();
-            Intent i=new Intent(MapActivity.this,LoginActivity.class);
-            startActivity(i);
         }
-        return true;
-    }*/
-
-
+        );}
 
 
     @Override

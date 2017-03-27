@@ -50,18 +50,22 @@ public class UserInterventionsActivity extends AppCompatActivity {
         final List<Intervention> interventions = new ArrayList<>();
         InterventionRecyclerAdapter.InterventionClickListener interventionClickListener = new InterventionRecyclerAdapter.InterventionClickListener() {
             @Override
-            public void clickIntervention(Intervention intervention) {
+            public void clickIntervention(final Intervention intervention) {
                 layoutDetails.setVisibility(View.VISIBLE);
                 textLibelle.setText(intervention.libelle);
                 textAdresse.setText(intervention.adresse);
-                textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
-
+                if (intervention.position != null) {
+                    textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
+                }
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
                 try {
 
-                    Date date = formatter.parse(intervention.date.toString());
-                    textDate.setText(formatter.format(date));
+                    if (intervention.date != null) {
+
+                        Date date = formatter.parse(intervention.date.toString());
+                        textDate.setText(formatter.format(date));
+                    }
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -72,6 +76,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
+                        intent.putExtra("idIntervention", intervention._id);
                         startActivity(intent);
                     }
                 });

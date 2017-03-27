@@ -16,6 +16,7 @@ import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
+import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -108,6 +109,20 @@ public class InterventionServiceCentral implements InterventionService {
         final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
 
         Call<Intervention> call = interventionRestAPI.getInterventionById(id);
+        call.enqueue(callback);
+    }
+
+
+    public void updateIntervention(Intervention intervention, Callback<Void> callback){
+        this.interventionId = intervention._id;
+        this.callback = callback;
+
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+
+        InterventionRestAPI apiService = retrofit.create(InterventionRestAPI.class);
+
+        Call<Void> call =  apiService.updateIntervention(intervention);
         call.enqueue(callback);
     }
 }
