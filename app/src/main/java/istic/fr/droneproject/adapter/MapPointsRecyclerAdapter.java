@@ -1,7 +1,10 @@
 package istic.fr.droneproject.adapter;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -53,8 +56,9 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
     @Override
     public void onBindViewHolder(VehiculeViewHolder holder, int position) {
         String imageCourante = listeImages.get(position);
-
-       holder.image.set imageCourante
+        byte[] encodeByte = Base64.decode(imageCourante, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+        holder.image.setImageBitmap(bitmap);
 
     }
 
