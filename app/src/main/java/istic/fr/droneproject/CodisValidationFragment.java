@@ -10,7 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.ValidationRecyclerAdapter;
@@ -30,6 +32,8 @@ import retrofit2.Response;
 
 public class CodisValidationFragment extends Fragment {
 
+    List<Validation> validations;
+    ValidationRecyclerAdapter adapter;
     public CodisValidationFragment(){
 
     }
@@ -46,8 +50,7 @@ public class CodisValidationFragment extends Fragment {
         final RecyclerView validationsRecycler = (RecyclerView) validationView.findViewById(R.id.codis_list_validation);
         validationsRecycler.setLayoutManager(new LinearLayoutManager(validationView.getContext()));
 
-        final List<Intervention> interventions = new ArrayList<>();
-        final List<Validation> validations = new ArrayList<>();
+        validations = new ArrayList<>();
         ValidationRecyclerAdapter.ValidClickListener validListener = new ValidationRecyclerAdapter.ValidClickListener() {
             @Override
             public void clickValidation(Validation validation) {
@@ -56,11 +59,15 @@ public class CodisValidationFragment extends Fragment {
                 }else{
                     validation.vehicule.etat = EtatVehicule.ENGAGE;
                 }
-                validations.remove(validation);
+
+                SimpleDateFormat formatter = new SimpleDateFormat("HH/mm");
+                validation.vehicule.heureEngagement = formatter.format(new Date());
+
                 InterventionService service = InterventionServiceCentral.getInstance();
                 service.updateIntervention(validation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
+                        //chargerValidations();
                         Log.e("TestCodisValidationActi","modification OK");
                     }
 
@@ -69,28 +76,17 @@ public class CodisValidationFragment extends Fragment {
                         Log.e("TestCodisValidationActi","modification KO");
                     }
                 });
-
-                /*int count = 0;
-                for (Intervention i:interventions){
-                    for (Vehicule v:i.vehicules){
-                        if (v.etat == EtatVehicule.DEMANDE){
-                            count += 1;
-                        }
-                    }
-                }
-                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);*/
-
             }
         };
         ValidationRecyclerAdapter.RefusClickListener refusListener = new ValidationRecyclerAdapter.RefusClickListener() {
             @Override
             public void clickRefus(Validation validation) {
                 validation.vehicule.etat = EtatVehicule.ANNULE;
-                validations.remove(validation);
                 InterventionService service = InterventionServiceCentral.getInstance();
                 service.updateIntervention(validation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
+                        //chargerValidations();
                         Log.e("TestCodisValidationActi","modification OK");
                     }
 
@@ -99,24 +95,20 @@ public class CodisValidationFragment extends Fragment {
                         Log.e("TestCodisValidationActi","modification KO");
                     }
                 });
-                //TODO modification dans la liste
-                //service.modifyIntervention(validation.intervention)
-                /*int count = 0;
-                for (Intervention i:interventions){
-                    for (Vehicule v:i.vehicules){
-                        if (v.etat == EtatVehicule.DEMANDE){
-                            count += 1;
-                        }
-                    }
-                }
-                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);*/
-
             }
         };
 
-        final ValidationRecyclerAdapter validationArrayAdapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
-        validationsRecycler.setAdapter(validationArrayAdapter);
+        //final ValidationRecyclerAdapter adapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
+        adapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
+        validationsRecycler.setAdapter(adapter);
 
+        chargerValidations();
+        //adapter.notifyDataSetChanged();
+        return validationView;
+    }
+
+    public void chargerValidations(){
+        final List<Intervention> interventions = new ArrayList<>();
         InterventionService service = InterventionServiceCentral.getInstance();
         service.getListeInterventions(new Callback<List<Intervention>>() {
             @Override
@@ -124,17 +116,26 @@ public class CodisValidationFragment extends Fragment {
                 interventions.clear();
                 interventions.addAll(response.body());
                 validations.clear();
+
+                //Integer count = 0;
+
                 for (Intervention i:interventions){
                     if (i.vehicules!= null) {
                         for (Vehicule v : i.vehicules) {
                             if (v.etat == EtatVehicule.DEMANDE) {
+                                /*count+=1;
+                                Log.e("Check objet",count.toString());
+                                Log.e("Check objet",v.etat.toString());
+                                Log.e("Check objet",v.heureDemande);
+                                Log.e("Check objet",v.nom);
+                                Log.e("Check objet",i.libelle);*/
                                 validations.add(new Validation(v, i));
                             }
                         }
                     }
                 }
                 Log.e("CodisValidationActivi","Nombre de véhicules à valider : "+validations.size());
-                validationArrayAdapter.notifyDataSetChanged();
+                //adapter.notifyDataSetChanged();
             }
 
             @Override
@@ -143,7 +144,5 @@ public class CodisValidationFragment extends Fragment {
                 Log.e("CodisValidationActivi", t.toString());
             }
         });
-
-        return validationView;
     }
 }

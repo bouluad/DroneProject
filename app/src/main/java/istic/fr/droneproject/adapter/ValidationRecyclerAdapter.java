@@ -29,39 +29,12 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
     private RefusClickListener refusListener;
     private ValidClickListener validListener;
 
+    //public ValidationRecyclerAdapter(List<Validation> validations, int layout){
     public ValidationRecyclerAdapter(List<Validation> validations, int layout, RefusClickListener refusListener, ValidClickListener validListener){
         this.validations = validations;
         this.layout = layout;
         this.refusListener = refusListener;
         this.validListener = validListener;
-    }
-
-    public ValidationRecyclerAdapter(List<Validation> validations, int layout){
-        this.validations = validations;
-        this.layout = layout;
-        this.refusListener = new RefusClickListener() {
-            @Override
-            public void clickRefus(Validation validation) {
-                if (validation.vehicule.position == null){
-                    validation.vehicule.etat = EtatVehicule.PARKING;
-                }else{
-                    validation.vehicule.etat = EtatVehicule.ENGAGE;
-                }
-                //validations.remove(validation);
-                //InterventionService service = InterventionServiceCentral.getInstance();
-                //TODO modification dans la liste
-                //service.modifyIntervention(validation.intervention)
-
-            }
-        };
-        this.validListener = new ValidClickListener() {
-            @Override
-            public void clickValidation(Validation validation) {
-                validation.vehicule.etat = EtatVehicule.ANNULE;
-                //validations.remove(validation);
-                //InterventionService service = InterventionServiceCentral.getInstance();
-            }
-        };
     }
 
     @Override
@@ -77,6 +50,7 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
         holder.nom.setText(validation.vehicule.nom);
         holder.libelle.setText(validation.intervention.libelle);
         holder.heuredemande.setText(validation.vehicule.heureDemande);
+        holder.type.setText(validation.vehicule.type.toString());
         holder.validation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v){
@@ -100,6 +74,7 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
         TextView nom;
         TextView heuredemande;
         TextView libelle;
+        TextView type;
         Button validation;
         Button refus;
 
@@ -110,6 +85,7 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
             libelle = (TextView) itemView.findViewById(R.id.ui_validation_item_libelle);
             validation = (Button) itemView.findViewById(R.id.ui_validation_item_validation);
             refus = (Button) itemView.findViewById(R.id.ui_validation_item_refus);
+            type = (TextView) itemView.findViewById(R.id.ui_validation_item_type);
         }
     }
 
