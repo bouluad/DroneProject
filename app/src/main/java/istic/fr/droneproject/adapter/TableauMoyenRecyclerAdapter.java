@@ -23,11 +23,12 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     private final List<Vehicule> vehicules;
     private final int layout;
     private final Intervention intervention;
-
-    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention) {
+    EventsVehiculeClickListener eventsVehiculeClickListener;
+    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention,EventsVehiculeClickListener listener) {
         this.vehicules = vehicules;
         this.layout = layout;
         this.intervention = intervention;
+        this.eventsVehiculeClickListener = listener;
     }
 
     @Override
@@ -37,7 +38,7 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     }
 
     @Override
-    public void onBindViewHolder(VehiculeViewHolder holder, int position) {
+    public void onBindViewHolder(VehiculeViewHolder holder, final int position) {
         Vehicule vehicule = vehicules.get(position);
 
         holder.nom.setText(vehicule.nom);
@@ -56,17 +57,31 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
         if(vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()){
             holder.heure3.setBackgroundColor(Color.GRAY);
             holder.heure3.setText("----");
+            holder.btnConfirmer.setVisibility(View.VISIBLE);
+            holder.btnConfirmer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    eventsVehiculeClickListener.clickConfirmer(vehicules.get(position));
+                }
+            });
+
         }else{
             holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
         holder.heure4.setText(vehicule.heureLiberation);
-        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()){
+        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()) {
             holder.heure4.setBackgroundColor(Color.GRAY);
             holder.heure4.setText("----");
-            holder.heure4.setVisibility(View.GONE);
             holder.btnLiberer.setVisibility(View.VISIBLE);
+            holder.btnLiberer.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    eventsVehiculeClickListener.clickLiberer(vehicules.get(position));
+                }
+            });
+        }else {
+            holder.btnLiberer.setVisibility(View.INVISIBLE);
         }
-
     }
 
     @Override
@@ -75,7 +90,6 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     }
 
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
-        boolean confirmationLiberer = false;
         TextView nom;
         TextView heure1;
         TextView heure2;
@@ -92,50 +106,27 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             heure3 = (TextView) itemView.findViewById(R.id.utm_vi_heure3);
             heure4 = (TextView) itemView.findViewById(R.id.utm_vi_heure4);
             btnConfirmer = (Button) itemView.findViewById((R.id.utm_vi_btn_Confirmer));
-
-            btnConfirmer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("TMR","heure3: "+heure3.getText());
-                    if(heure3.getText().toString().equals("----")){
-                        heure3.setText(Calendar.getInstance().getTime().getHours()+":"+Calendar.getInstance().getTime().getMinutes());
-                        heure3.setBackgroundColor(Color.WHITE);
-                    }
-                    //TODO:faire un appel a modification de confirmation ( changer l'état du véhucile, changer l'heure3(heure d'arrivée), modifier l'intervention et la re pusher)
-                    Toast.makeText(itemView.getContext().getApplicationContext(), "click sur button"+itemView.getId()+"\n avec heure: "+heure1+"\n intervention: "+ intervention, Toast.LENGTH_SHORT).show();
-                    if(intervention != null && intervention.libelle != null)
-                        Toast.makeText(itemView.getContext().getApplicationContext(), "intervention libelle: "+ intervention.libelle, Toast.LENGTH_SHORT).show();
-
-                }
-            });
             btnLiberer = (Button) itemView.findViewById((R.id.utm_vi_btn_liberation));
-            btnLiberer.setVisibility(View.GONE);
-            btnLiberer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    Log.e("TMR","click lberation");
-                    if(confirmationLiberer == false){
-                        confirmationLiberer = true;
-                        btnLiberer.setBackgroundColor(Color.RED);
-                        btnLiberer.setText("Confirmer Liberer !!!");
-                    }
-                    else{
-                        if(heure4.getText().toString().equals("----")){
-                            heure4.setText(Calendar.getInstance().getTime().getHours()+":"+Calendar.getInstance().getTime().getMinutes());
-                            heure4.setBackgroundColor(Color.WHITE);
-                            heure4.setVisibility(View.VISIBLE);
-                            btnLiberer.setVisibility(View.GONE);
-                            btnConfirmer.setVisibility(View.INVISIBLE);
-                        }
-                        //TODO:faire un appel a modification de liberation ( changer l'état du véhucile, changer l'heure3(heure de libération), modifier l'intervention et la re pusher)
-                        Toast.makeText(itemView.getContext().getApplicationContext(), "click sur button"+itemView.getId()+"\n avec heure: "+heure1+"\n intervention: "+ intervention, Toast.LENGTH_SHORT).show();
-                        if(intervention != null && intervention.libelle != null)
-                            Toast.makeText(itemView.getContext().getApplicationContext(), "intervention libelle: "+ intervention.libelle, Toast.LENGTH_SHORT).show();
-
-                    }
-
-                }
-            });
         }
+    }
+
+    /**
+       * interface pour les evenement du tableau des moyens
+     */
+    public interface EventsVehiculeClickListener {
+        /**
+         * Action à effectuer quand le button confirmer-
+         * est appuyé dans la liste des moyens
+         * @param vehicule Le vehicule à confirmer
+         * c
+         */
+        void clickConfirmer(Vehicule vehicule);
+        /**
+         * Action à effectuer quand le button Liberer-
+         * est appuyé dans la liste des moyens
+         * @param vehicule Le vehicule à liberer
+         * c
+         */
+        void clickLiberer(Vehicule vehicule);
     }
 }
