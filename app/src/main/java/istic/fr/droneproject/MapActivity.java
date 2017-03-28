@@ -2,6 +2,10 @@ package istic.fr.droneproject;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -21,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -33,6 +38,8 @@ import java.util.List;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Photo;
+import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -199,6 +206,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                // marker.showInfoWindow();
                m_menu_choix.setVisibility(View.VISIBLE);
+
+                Vehicule vTest = new Vehicule();
+                vTest.nom = "Batcopter";
+                ajoutImageFromVehicule(vTest);
                 return false;
             }
         });
@@ -283,6 +294,54 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         return fragment;
     }
 
+    /**
+     *
+     * Methode pour ajouter sur la map un vehicule
+     *
+     */
+    private void ajoutImageFromVehicule(Vehicule vehicule) {
+
+        //TODO afficher un marker custom
+        LatLng SYDNEY = markerChanged.getPosition();
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(40);
+        color.setColor(Color.BLACK);
+
+// modify canvas
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, 200, 200), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(vehicule.nom, 10, 150, color);
+
+// add marker to Map
+        mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                // Specifies the anchor to be at a particular point in the marker image.
+                .anchor(0.5f, 1));
 
 
+    }
+
+    /**
+     *
+     * Methode pour ajouter sur la map un point
+     *
+     */
+    private void ajoutImageFromPoint(PointInteret point){
+
+    }
+
+    /**
+     *
+     * Methode qui converti un nom d'image en image
+     */
+    private Bitmap convertionDrawableToImageString(String drawableName){
+        //TODO faire une vrai convertion
+        return BitmapFactory.decodeResource(getResources(),
+                R.drawable.ve_hu);
+    }
 }
