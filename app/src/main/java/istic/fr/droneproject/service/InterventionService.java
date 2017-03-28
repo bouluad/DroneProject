@@ -35,10 +35,5 @@ public interface InterventionService {
      * @param callback
      */
     void updateIntervention(Intervention intervention, Callback<Void> callback);
-    /**
-     * Récupérer la liste des vehicules d'une intervention by id
-     * @param callback Callback pour récupérer la réponse
-     */
-    void getListeVehicules( String id ,Callback<List<Vehicule>> callback);
 
 }
