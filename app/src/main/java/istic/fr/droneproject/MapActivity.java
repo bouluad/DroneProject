@@ -62,11 +62,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById("",new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById("58d2a565509b272a2895c0a8",new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
                 Collections.reverse(response.body().vehicules);
-
                 vehicules.clear();
                 vehicules.addAll(response.body().vehicules);
                 vehiculesAdapter.notifyDataSetChanged();

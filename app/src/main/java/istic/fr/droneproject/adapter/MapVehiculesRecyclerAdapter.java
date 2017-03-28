@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +18,11 @@ import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
+
+import static istic.fr.droneproject.model.Categorie.COMMANDEMENT;
+import static istic.fr.droneproject.model.Categorie.INCENDIE;
+import static istic.fr.droneproject.model.Categorie.RISQUE_PARTICULIER;
+import static istic.fr.droneproject.model.Categorie.SAUVETAGE;
 
 public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehiculesRecyclerAdapter.VehiculeViewHolder> {
 
@@ -44,24 +50,32 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         Vehicule vehicule = vehicules.get(position);
         holder.nom.setText(vehicule.nom);
         holder.type.setText(vehicule.type.toString());
+        Log.e("==========>",vehicule.categorie.toString());
        switch(vehicule.categorie){
            case COMMANDEMENT:
-               Bitmap bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
-              holder.image.setImageBitmap(bMap);
+               byte [] encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
+               Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+              // Bitmap bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
+              holder.image.setImageBitmap(bitmap);
 
            case SAUVETAGE:
-                bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
-               holder.image.setImageBitmap(bMap);
+               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
+               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+               holder.image.setImageBitmap(bitmap);
            case INCENDIE:
-               bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_in));
-               holder.image.setImageBitmap(bMap);
+               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
+                bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+               holder.image.setImageBitmap(bitmap);
+
            case RISQUE_PARTICULIER:
-               bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_rp));
-               holder.image.setImageBitmap(bMap);
+               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
+               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+               holder.image.setImageBitmap(bitmap);
 
            default:
-                bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_eau));
-               holder.image.setImageBitmap(bMap);
+               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
+               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+               holder.image.setImageBitmap(bitmap);
 
 
 
