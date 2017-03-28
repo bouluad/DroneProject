@@ -505,6 +505,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         color.setColor(Color.BLACK);
 
 // modify canvas
+        //TODO utiliser le service de yousra pour charger la bonne image
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
@@ -513,8 +514,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
-
-
 
     }
 
@@ -534,4 +533,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 R.drawable.ve_hu);
     }
 
+    /**
+     *
+     * Méthode qui synchronise l'intervention et appel le rechargement des vehicules et points si l'utilisateur n'effectue pas d'intéraction.
+     */
+    private void SynchroniserIntervention(){
+        //TODO avec idIntervention
+
+    }
+
+    /**
+     * Méthode qui parcourt la liste d'intervention et recupère la liste des véhicules et la liste des points, et la liste des points SP,
+     * puis ajoute tout les points sur la map.
+     */
+    private void reloadVehiculesPoints(){
+
+    }
+
+    /**
+     *
+     *
+     */
 }
