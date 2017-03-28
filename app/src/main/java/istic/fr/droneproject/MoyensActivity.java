@@ -79,22 +79,52 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         vehiculesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
 
         vehicules = new ArrayList<>();
+        //Un listener sur les evenement dans le tableau des moyens
+        //Est appeler à chaque click sur confirmer ou liberer
+        TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
+            @Override
+            public void clickConfirmer(Vehicule vehicule) {
+                vehicule.etat=EtatVehicule.ARRIVE;
+                vehicule.heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("MoyensActivity","UPDATE INTERVENTION");
+                        chargerIntervention();
+                    }
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                    }
+                });
+            }
+            @Override
+            public void clickLiberer(Vehicule vehicule) {
+                vehicule.etat = EtatVehicule.LIBERE;
+                vehicule.heureLiberation = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
 
-        vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, currentIntervention);
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("MoyensActivity", "UPDATE INTERVENTION");
+                        chargerIntervention();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                    }
+                });
+            }
+        };
+        vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, currentIntervention,eventsVehiculeClickListener);
         vehiculesRecycler.setAdapter(vehiculeArrayAdapter);
-
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 showSimplePopUp(savedInstanceState);
             }
         });
-
         chargerIntervention();
-
     }
-
-
     private void chargerIntervention(){
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
@@ -124,46 +154,35 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getContext());
         helpBuilder.setTitle("Demander un véhicule");
-
         LayoutInflater inflater = getLayoutInflater(savedInstanceState);
         final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
-
         final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
         final Spinner categorieSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
         Categorie[] categories = Categorie.values();
         ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorieSpinner.setAdapter(adapter);
-
         final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
-
         helpBuilder.setView(popupLayout);
-
         helpBuilder.setPositiveButton("Ajouter",
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
 
                         Vehicule vehicule = new Vehicule();
-
                         vehicule.nom = nom_vehicule.getText().toString();
                         int selectedId = radiogroup.getCheckedRadioButtonId();
-
                         switch (selectedId) {
                             case R.id.type_radio_fpt:
-
                                 vehicule.type = TypeVehicule.FPT;
                                 break;
                             case R.id.type_radio_vlcg:
-
                                 vehicule.type = TypeVehicule.VLCG;
                                 break;
                             case R.id.type_radio_vsav:
-
                                 vehicule.type = TypeVehicule.VSAV;
                                 break;
                         }
-
                         vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
 
                         vehicule.etat = EtatVehicule.DEMANDE;
@@ -178,12 +197,12 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
 
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
-
                             }
                         });
                     }
                 });
-
         helpBuilder.create().show();
     }
+
+
 }
