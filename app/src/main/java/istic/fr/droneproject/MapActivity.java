@@ -152,7 +152,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 intervention=response.body();
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
-                vehicules.addAll(response.body().vehicules);
+                int test = response.body().vehicules.size();
+                for(int i=0;i<response.body().vehicules.size();i++){
+
+                    if(response.body().vehicules.get(i).etat== EtatVehicule.PARKING || response.body().vehicules.get(i).position.length == 0 ){
+                       vehicules.add(response.body().vehicules.get(i));
+                    }
+                }
+                /*vehicules.clear();
+                vehicules.addAll(response.body().vehicules);*/
                 vehiculesAdapter.notifyDataSetChanged();
             }
 
