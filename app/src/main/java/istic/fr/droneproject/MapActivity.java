@@ -59,12 +59,6 @@ public class MapActivity extends android.support.v4.app.Fragment implements OnMa
     Button points;
     Button vehicules;
 
-    private FragmentActivity myContext;//pour le fragment manager
-
-    public void onAttach(Activity activity) {
-        myContext=(FragmentActivity) activity;
-        super.onAttach(activity);
-    }
     private Marker markerTest;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -257,9 +251,11 @@ public class MapActivity extends android.support.v4.app.Fragment implements OnMa
             }
         });
 
-        FragmentManager fragManager = myContext.getSupportFragmentManager(); //If using fragments from support v4
-//        map = (SupportMapFragment) getFragmentManager().findFragmentById(R.id.m_map);
-        map = (SupportMapFragment) fragManager.findFragmentById(R.id.m_map);
+
+//        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
+        SupportMapFragment map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
+
+        Log.e("MAPACTIVITY","SupportMapFragment map:"+map);
         map.getMapAsync(this);
 
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
