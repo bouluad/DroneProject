@@ -12,4 +12,28 @@
     <string name="libelle">Libellé</string>
     <string name="adresse">Adresse</string>
     <string name="code">Code</string>
+    <string name="code_sap">SAP</string>
+    <string name="code_inc">INC</string>
+
+    <!-- Strings related to moyens in popup -->
+
+    <string name="type_fpt">FPT</string>
+    <string name="type_vsav">VSAV</string>
+    <string name="type_vlcg">VLCG</string>
+
+    <!-- Strings related to spinner categorie moyens in popup -->
+    <string-array name="categories_array">
+        <item>SAUVETAGE</item>
+        <item>INCENDIE</item>
+        <item>RISQUE_PARTICULIER</item>
+        <item>EAU</item>
+        <item>COMMANDEMENT</item>
+
+    </string-array>
+
+
+
+
+
+
 </resources>
