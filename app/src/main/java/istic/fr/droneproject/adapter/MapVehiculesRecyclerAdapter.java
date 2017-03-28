@@ -2,7 +2,6 @@ package istic.fr.droneproject.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
@@ -11,14 +10,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import java.util.List;
-
 import istic.fr.droneproject.R;
-import istic.fr.droneproject.model.Categorie;
-import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
-
 import static istic.fr.droneproject.model.Categorie.COMMANDEMENT;
 import static istic.fr.droneproject.model.Categorie.INCENDIE;
 import static istic.fr.droneproject.model.Categorie.RISQUE_PARTICULIER;
