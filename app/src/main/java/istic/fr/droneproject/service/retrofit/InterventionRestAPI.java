@@ -5,6 +5,7 @@ import java.util.List;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
@@ -25,6 +26,9 @@ public interface InterventionRestAPI {
 
     @GET("interventions/{id}")
     Call<Intervention> getInterventionById(@Path("id") String id );
+
+    @GET("updateIntervention/{id}")
+    Call<Void> updateIntervention(Intervention intervention);
 
     @GET("interventions/{id}/vehicules")
     Call<List<Vehicule>> getListeVehicules(@Path("id") String id );

@@ -8,7 +8,8 @@ import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-
+import android.widget.LinearLayout;
+import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,11 +40,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
 
+    View m_menu_vehicules;
+    View m_menu_points;
+    View m_menu_choix;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        m_menu_choix = (LinearLayout) findViewById(R.id.m_menu_choix);
+        m_menu_points = (LinearLayout) findViewById(R.id.m_menu_points);
+        m_menu_vehicules = (LinearLayout) findViewById(R.id.m_menu_vehicules);
+
          Button points = (Button) findViewById(R.id.m_menu_choix_points);
          Button vehicule=(Button)  findViewById(R.id.m_menu_choix_vehicules);
         final List<Vehicule> vehicules = new ArrayList<>();
@@ -73,14 +82,16 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         points.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findViewById(R.id.m_menu_points).setVisibility(View.VISIBLE);
+                m_menu_points.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
         vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                findViewById(R.id.m_menu_vehicules).setVisibility(View.VISIBLE);
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
@@ -107,7 +118,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             @Override
             public boolean onMarkerClick(Marker marker) {
                // marker.showInfoWindow();
-               findViewById(R.id.m_menu_choix).setVisibility(View.VISIBLE);
+               m_menu_choix.setVisibility(View.VISIBLE);
                 return false;
             }
         });
@@ -124,8 +135,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                         .position(point)
                         .title("I'm here now"));
 
-                Log.e("Position Marker", point.toString());
 
+                Log.e("Position Marker", point.toString());
+                m_menu_choix.setVisibility(View.VISIBLE);
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
             }
         });
         CameraUpdate center =
@@ -179,10 +193,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                 return view;
             }
-
-
-
-                                        }
+        }
         );}
 
 
