@@ -24,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
+import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -60,18 +61,19 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
-      InterventionServiceCentral.getInstance().getListeVehicules("",new Callback<List<Vehicule>>() {
-            @Override
-            public void onResponse(Call<List<Vehicule>> call, Response<List<Vehicule>> response) {
-                Collections.reverse(response.body());
 
-               vehicules.clear();
-               vehicules.addAll(response.body());
+        InterventionServiceCentral.getInstance().getInterventionById("",new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                Collections.reverse(response.body().vehicules);
+
+                vehicules.clear();
+                vehicules.addAll(response.body().vehicules);
                 vehiculesAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onFailure(Call<List<Vehicule>> call, Throwable t) {
+            public void onFailure(Call<Intervention> call, Throwable t) {
                 //DO NOTHING
                 Log.e("MapActivity", t.toString());
             }
