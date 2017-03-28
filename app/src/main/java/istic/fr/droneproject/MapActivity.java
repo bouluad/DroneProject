@@ -1,10 +1,10 @@
 package istic.fr.droneproject;
 
-import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -15,13 +15,21 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+
+import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
+import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
     SupportMapFragment map;
@@ -30,6 +38,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     Marker markerChanged;
     ViewGroup view;
     Button boutonMenu;
+    RecyclerView recyclerViewVehicules;
+    MapVehiculesRecyclerAdapter vehiculesAdapter;
 
     View m_menu_vehicules;
     View m_menu_points;
@@ -45,8 +55,32 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         m_menu_vehicules = (LinearLayout) findViewById(R.id.m_menu_vehicules);
 
          Button points = (Button) findViewById(R.id.m_menu_choix_points);
-         Button vehicules=(Button)  findViewById(R.id.m_menu_choix_vehicules);
-        //listener pour le menu points
+         Button vehicule=(Button)  findViewById(R.id.m_menu_choix_vehicules);
+        final List<Vehicule> vehicules = new ArrayList<>();
+        recyclerViewVehicules= (RecyclerView) findViewById(R.id.m_list_vehicules);
+        recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
+        recyclerViewVehicules.setAdapter(vehiculesAdapter);
+
+        InterventionServiceCentral.getInstance().getInterventionById("",new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                Collections.reverse(response.body().vehicules);
+
+                vehicules.clear();
+                vehicules.addAll(response.body().vehicules);
+                vehiculesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Intervention> call, Throwable t) {
+                //DO NOTHING
+                Log.e("MapActivity", t.toString());
+            }
+        });
+
+
+
         points.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -55,8 +89,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
-        //Listener pour le menu vehicules
-        vehicules.setOnClickListener(new View.OnClickListener() {
+        vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 m_menu_vehicules.setVisibility(View.VISIBLE);
@@ -166,18 +199,5 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
         );}
 
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-        case R.id.Points:
-            //add the function to perform here
-            return(true);
-        case R.id.Moyens:
-            //add the function to perform here
-            return(true);
-
-    }
-        return(super.onOptionsItemSelected(item));
-    }
 
 }
