@@ -1,6 +1,8 @@
 package istic.fr.droneproject;
 
+
 import android.content.DialogInterface;
+
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -26,9 +28,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
+
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +44,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+
+import java.text.SimpleDateFormat;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -52,9 +60,14 @@ import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Photo;
+
+import istic.fr.droneproject.model.TypeVehicule;
+
 import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -71,27 +84,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
+
     Vehicule vehicule;
     List<Vehicule> vehicules;
+
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
+
+
     View m_menu_vehicules;
     View m_menu_points;
     View m_menu_choix;
+    private static final String ARG_ID = "idIntervention";
+    private String idIntervention;
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     private String idIntervention;
 
-    public static MapActivity newInstance(String idIntervention) {
-        MapActivity fragment = new MapActivity();
-        Bundle args = new Bundle();
-        args.putString(ARG_ID, idIntervention);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
@@ -136,7 +149,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
+                intervention=response.body();
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 vehicules.addAll(response.body().vehicules);
@@ -204,6 +217,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         pointsAdapter.notifyDataSetChanged();
 
 
+
         points.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -227,16 +241,22 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 });
 
 
+
+
+
+
+
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
+
+
 
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
 
     }
-
     private void showSimplePopUp() {
 
 
@@ -259,7 +279,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         helpBuilder.setView(popupLayout);
+
 
 
         helpBuilder.setPositiveButton("Ajouter",
@@ -358,6 +391,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         });*/
 
 
+
+
+
+
+
+
+
                         // Set the ArrayAdapter as the ListView's adapter.
 
 
@@ -373,6 +413,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     }
+
+
+
+
+
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -445,9 +492,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                                 view.addView(boutonVehicule);
 
                                                 return view;*/
-                                                //   boutonMenu = new Button(getApplicationContext());
+             //   boutonMenu = new Button(getApplicationContext());
 
-                                                // boutonMenu.setText("Menu");
+               // boutonMenu.setText("Menu");
                /* boutonMenu.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         System.out.println("okeeeeeeeey====++>");
@@ -475,7 +522,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     }
 
     /**
+     *
      * Methode pour ajouter sur la map un vehicule
+     *
      */
     private void ajoutImageFromVehicule(Vehicule vehicule) {
 
@@ -502,16 +551,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 .anchor(0.5f, 1));
 
 
+
     }
 
     /**
+     *
      * Methode pour ajouter sur la map un point
+     *
      */
     private void ajoutImageFromPoint(PointInteret point) {
 
     }
 
     /**
+     *
      * Methode qui converti un nom d'image en image
      */
     private Bitmap convertionDrawableToImageString(String drawableName) {
@@ -519,4 +572,5 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         return BitmapFactory.decodeResource(getResources(),
                 R.drawable.ve_hu);
     }
+
 }
