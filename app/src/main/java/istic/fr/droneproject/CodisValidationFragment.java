@@ -67,7 +67,7 @@ public class CodisValidationFragment extends Fragment {
                 service.updateIntervention(validation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        //chargerValidations();
+                        chargerValidations();
                         Log.e("TestCodisValidationActi","modification OK");
                     }
 
@@ -86,7 +86,7 @@ public class CodisValidationFragment extends Fragment {
                 service.updateIntervention(validation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        //chargerValidations();
+                        chargerValidations();
                         Log.e("TestCodisValidationActi","modification OK");
                     }
 
@@ -135,7 +135,7 @@ public class CodisValidationFragment extends Fragment {
                     }
                 }
                 Log.e("CodisValidationActivi","Nombre de véhicules à valider : "+validations.size());
-                //adapter.notifyDataSetChanged();
+                adapter.notifyDataSetChanged();
             }
 
             @Override
