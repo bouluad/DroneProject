@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
@@ -17,9 +18,7 @@
                 <TableRow
                     android:id="@+id/tableRowheader"
                     android:layout_height="wrap_content"
-                    android:layout_margin="0dp"
-                    android:background="#000000"
-                    android:scrollbarSize="12dp">
+                    android:background="#000000">
 
                 <!-- Header Nom Validation -->
                 <TextView
@@ -29,6 +28,14 @@
                     android:textColor="#FFFFFF"
                     android:text="Nom"/>
 
+
+                    <!-- Header Type Demande -->
+                    <TextView
+                        android:layout_height="wrap_content"
+                        android:layout_width="0dip"
+                        android:layout_weight="1"
+                        android:textColor="#FFFFFF"
+                        android:text="Type"/>
                     <!-- Header Heure Demande -->
                 <TextView
                     android:layout_height="wrap_content"
@@ -57,14 +64,13 @@
     </LinearLayout>
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="horizontal">
 
         <android.support.v7.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/codis_list_validation"
             android:layout_weight="1"></android.support.v7.widget.RecyclerView>
     </LinearLayout>
-
 </LinearLayout>

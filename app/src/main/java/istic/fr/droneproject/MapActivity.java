@@ -1,15 +1,21 @@
 package istic.fr.droneproject;
 
+
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.util.Pair;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -17,8 +23,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.Spinner;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -31,15 +42,19 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
+import istic.fr.droneproject.model.Categorie;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Photo;
 import istic.fr.droneproject.model.PointInteret;
+import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -47,6 +62,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapActivity extends Fragment implements OnMapReadyCallback {
+    private static final String ARG_ID = "idIntervention";
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     Marker myMarker;
@@ -55,23 +71,48 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Button boutonMenu;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
+    Intervention intervention;
+    Vehicule vehicule;
+    List<Vehicule> vehicules;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
-
     View m_menu_vehicules;
     View m_menu_points;
     View m_menu_choix;
-    private static final String ARG_ID = "idIntervention";
+    String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     private String idIntervention;
 
-
+    //taille des icones sur la carte en X et en Y
+    private static final int iconSizeX = 200;
+    private static final int iconSizeY = 117;
     @Override
-   public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.activity_map, container, false);
+    }
+
+    @Override
+    public void onPause() {
+        Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.m_map));
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.remove(fragment);
+        ft.commit();
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        final FragmentManager fragManager = this.getFragmentManager();
+        final Fragment fragment = fragManager.findFragmentById(R.id.m_map);
+        if (fragment != null) {
+            fragManager.beginTransaction().remove(fragment).commit();
+        }
     }
 
     @Override
@@ -82,20 +123,28 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
-        Button vehicule=(Button)  view.findViewById(R.id.m_menu_choix_vehicules);
+        Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
         final List<Vehicule> vehicules = new ArrayList<>();
-        recyclerViewVehicules= (RecyclerView) view.findViewById(R.id.m_list_vehicules);
+        recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext());
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
+                intervention = response.body();
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
-                vehicules.addAll(response.body().vehicules);
+                int test = response.body().vehicules.size();
+                for (int i = 0; i < response.body().vehicules.size(); i++) {
+
+                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position.length == 0) {
+                        vehicules.add(response.body().vehicules.get(i));
+                    }
+                }
+                /*vehicules.clear();
+                vehicules.addAll(response.body().vehicules);*/
                 vehiculesAdapter.notifyDataSetChanged();
             }
 
@@ -106,31 +155,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        final List<Pair<String,String>> m_images_points = new ArrayList<>();
-        recyclerViewPoints= (RecyclerView) view.findViewById(R.id.m_list_points);
+        final List<Pair<String, String>> m_images_points = new ArrayList<>();
+        recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
         recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
-        pointsAdapter=new MapPointsRecyclerAdapter(m_images_points,R.layout.m_points_item);
-        recyclerViewVehicules.setAdapter(vehiculesAdapter);
+        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item);
+        recyclerViewPoints.setAdapter(pointsAdapter);
 
-        TransformImageToStringEtVs m_transform=new TransformImageToStringEtVs();
-
-
-
-       Bitmap largeIconeau= BitmapFactory.decodeResource(this.getResources(),
+        Bitmap largeIconeau = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.eau);
         ByteArrayOutputStream streameau = new ByteArrayOutputStream();
         largeIconeau.compress(Bitmap.CompressFormat.JPEG, 100, streameau);
         byte[] byteFormateau = streameau.toByteArray();
         String encodedImageeau = Base64.encodeToString(byteFormateau, Base64.NO_WRAP);
 
-        Bitmap largeIconpseau= BitmapFactory.decodeResource(this.getResources(),
+        Bitmap largeIconpseau = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.ps_eau);
         ByteArrayOutputStream streampseau = new ByteArrayOutputStream();
         largeIconpseau.compress(Bitmap.CompressFormat.JPEG, 100, streampseau);
         byte[] byteFormatpseau = streampseau.toByteArray();
         String encodedImagepseau = Base64.encodeToString(byteFormatpseau, Base64.NO_WRAP);
 
-        Bitmap largeIconps_hu= BitmapFactory.decodeResource(this.getResources(),
+        Bitmap largeIconps_hu = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.ps_hu);
         ByteArrayOutputStream streamps_hu = new ByteArrayOutputStream();
         largeIconps_hu.compress(Bitmap.CompressFormat.JPEG, 100, streamps_hu);
@@ -138,21 +183,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         String encodedImageps_hu = Base64.encodeToString(byteFormatps_hu, Base64.NO_WRAP);
 
 
-        Bitmap largeIconps_in= BitmapFactory.decodeResource(this.getResources(),
+        Bitmap largeIconps_in = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.ps_in);
         ByteArrayOutputStream streamps_in = new ByteArrayOutputStream();
         largeIconps_in.compress(Bitmap.CompressFormat.JPEG, 100, streamps_in);
         byte[] byteFormatps_in = streamps_in.toByteArray();
         String encodedImageps_in = Base64.encodeToString(byteFormatps_in, Base64.NO_WRAP);
 
-        Bitmap largeIconps_rp= BitmapFactory.decodeResource(this.getResources(),
+        Bitmap largeIconps_rp = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.ps_rp);
         ByteArrayOutputStream streamps_rp = new ByteArrayOutputStream();
         largeIconps_rp.compress(Bitmap.CompressFormat.JPEG, 100, streamps_rp);
         byte[] byteFormatps_rp = streamps_rp.toByteArray();
         String encodedImageps_rp = Base64.encodeToString(byteFormatps_rp, Base64.NO_WRAP);
-        m_images_points.add(new Pair<String,String>("eau",encodedImageeau));
-        m_images_points.add(new Pair<String,String>("eau",encodedImagepseau));
+        m_images_points.add(new Pair<String, String>("eau", encodedImageeau));
+        m_images_points.add(new Pair<String, String>("ps_eau", encodedImagepseau));
+        m_images_points.add(new Pair<String, String>("ps_hu", encodedImageps_hu));
+        m_images_points.add(new Pair<String, String>("ps_in", encodedImageps_in));
       /*  m_images_points.add(new Pair<String,String>("eau",m_transform.transform( R.drawable.eau)));
         m_images_points.add(new Pair<String,String>("ps_reau",m_transform.transform( R.drawable.ps_eau)));
       m_images_points.add(new Pair<String,String>("ps_hu",m_transform.transform( R.drawable.ps_hu) ));
@@ -160,7 +207,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
       m_images_points.add(new Pair<String,String>("ps_rp",m_transform.transform( R.drawable.ps_rp)));*/
 
         pointsAdapter.notifyDataSetChanged();
-
 
 
         points.setOnClickListener(new View.OnClickListener() {
@@ -176,9 +222,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 m_menu_vehicules.setVisibility(View.VISIBLE);
                 m_menu_choix.setVisibility(View.GONE);
+                System.out.println("ici");
+                final FloatingActionButton btn_add_moyen = (FloatingActionButton) m_menu_vehicules.findViewById(R.id.m_list_vehicules_add);
+                btn_add_moyen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        showSimplePopUp();
+                    }
+                });
+
+
                 //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
+
 
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
@@ -186,8 +243,142 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     }
 
+    private void showSimplePopUp() {
 
 
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
+        helpBuilder.setTitle("Moyens 1er depart");
+        /*helpBuilder.setMessage("This is a Simple Pop Up");*/
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
+
+
+        final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
+        final Spinner popupSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
+                android.R.layout.simple_spinner_item, categorie);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        popupSpinner.setAdapter(adapter);
+
+
+        final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
+
+
+        helpBuilder.setView(popupLayout);
+
+
+        helpBuilder.setPositiveButton("Ajouter",
+                new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //add to list vehicule
+
+                        vehicule = new Vehicule();
+
+
+                        vehicule.nom = nom_vehicule.getText().toString();
+                        int selectedId = radiogroup.getCheckedRadioButtonId();
+
+                        final RadioButton radioButton = (RadioButton) popupLayout.findViewById(selectedId);
+
+                        String radio_value = radioButton.getText().toString();
+                        switch (radio_value) {
+                            case "FPT":
+
+                                vehicule.type = TypeVehicule.FPT;
+                                break;
+                            case "VLCG":
+
+                                vehicule.type = TypeVehicule.VLCG;
+                                break;
+                            case "VSAV":
+
+                                vehicule.type = TypeVehicule.VSAV;
+                                break;
+                        }
+
+                        String selectedSpinner = popupSpinner.getSelectedItem().toString();
+                        switch (selectedSpinner) {
+
+                            case "SAUVETAGE":
+
+                                vehicule.categorie = Categorie.SAUVETAGE;
+                                break;
+                            case "INCENDIE":
+
+                                vehicule.categorie = Categorie.INCENDIE;
+                                break;
+                            case "RISQUE_PARTICULIER":
+
+                                vehicule.categorie = Categorie.RISQUE_PARTICULIER;
+                                break;
+                            case "EAU":
+
+                                vehicule.categorie = Categorie.EAU;
+                                break;
+                            case "COMMANDEMENT":
+
+                                vehicule.categorie = Categorie.COMMANDEMENT;
+                                break;
+                        }
+
+                        String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
+                        vehicule.heureDemande = currentTime;
+
+                        vehicule.etat = EtatVehicule.DEMANDE;
+                        vehicules.add(vehicule);
+                        vehiculesAdapter.notifyDataSetChanged();
+                        intervention.vehicules.add(vehicule);
+
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+
+                            }
+
+                        });
+
+                        /*InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
+                            @Override
+                            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
+                                Collections.reverse(response.body().vehicules);
+                                vehicules.clear();
+                                vehicules.addAll(response.body().vehicules);
+                                vehicules.add(vehicule);
+                                vehiculesAdapter.notifyDataSetChanged();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Intervention> call, Throwable t) {
+                                //DO NOTHING
+                                Log.e("MapActivity", t.toString());
+                            }
+                        });*/
+
+
+                        // Set the ArrayAdapter as the ListView's adapter.
+
+
+                        /*Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();*/
+
+
+                    }
+                });
+
+        // Remember, create doesn't show the dialog
+        AlertDialog helpDialog = helpBuilder.create();
+        helpDialog.show();
+
+
+    }
 
 
     @Override
@@ -206,8 +397,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-               // marker.showInfoWindow();
-               m_menu_choix.setVisibility(View.VISIBLE);
+                // marker.showInfoWindow();
+                m_menu_choix.setVisibility(View.VISIBLE);
 
                 Vehicule vTest = new Vehicule();
                 vTest.nom = "Batcopter";
@@ -261,9 +452,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                                 view.addView(boutonVehicule);
 
                                                 return view;*/
-             //   boutonMenu = new Button(getApplicationContext());
+                                                //   boutonMenu = new Button(getApplicationContext());
 
-               // boutonMenu.setText("Menu");
+                                                // boutonMenu.setText("Menu");
                /* boutonMenu.setOnClickListener(new View.OnClickListener() {
                     public void onClick(View v) {
                         System.out.println("okeeeeeeeey====++>");
@@ -297,9 +488,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     *
      * Methode pour ajouter sur la map un vehicule
-     *
      */
     private void ajoutImageFromVehicule(Vehicule vehicule) {
 
@@ -307,7 +496,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
         Canvas canvas1 = new Canvas(bmp);
 
 // paint defines the text color, stroke width and size
@@ -316,8 +505,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         color.setColor(Color.BLACK);
 
 // modify canvas
-        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, 200, 200), color); ///taille de l'image a coordinée avec la taille de bmp
-        canvas1.drawText(vehicule.nom, 10, 150, color);
+        //TODO utiliser le service de yousra pour charger la bonne image
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
         mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
@@ -325,20 +515,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
 
-
     }
 
     /**
-     *
      * Methode pour ajouter sur la map un point
-     *
      */
-    private void ajoutImageFromPoint(PointInteret point){
+    private void ajoutImageFromPoint(PointInteret point) {
 
     }
 
     /**
-     *
      * Methode qui converti un nom d'image en image
      */
     private Bitmap convertionDrawableToImageString(String drawableName){
@@ -346,4 +532,26 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         return BitmapFactory.decodeResource(getResources(),
                 R.drawable.ve_hu);
     }
+
+    /**
+     *
+     * Méthode qui synchronise l'intervention et appel le rechargement des vehicules et points si l'utilisateur n'effectue pas d'intéraction.
+     */
+    private void SynchroniserIntervention(){
+        //TODO avec idIntervention
+
+    }
+
+    /**
+     * Méthode qui parcourt la liste d'intervention et recupère la liste des véhicules et la liste des points, et la liste des points SP,
+     * puis ajoute tout les points sur la map.
+     */
+    private void reloadVehiculesPoints(){
+
+    }
+
+    /**
+     *
+     *
+     */
 }

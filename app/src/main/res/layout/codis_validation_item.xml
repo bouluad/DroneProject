@@ -1,58 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
 
-    <TableLayout
+    <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:stretchColumns="1">
 
         <TableRow
             android:id="@+id/tableRow1"
-            android:layout_height="wrap_content"
-            android:layout_margin="0dp"
-            android:background="#b1d9e5">
+            android:background="#b1d9e5"
+            android:layout_marginTop="2dp">
 
             <!-- Column 1 -->
             <TextView
                 android:id="@+id/ui_validation_item_nom"
-                android:layout_height="wrap_content"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 2 -->
             <TextView
-                android:id="@+id/ui_validation_item_heuredemande"
-                android:layout_height="wrap_content"
+                android:id="@+id/ui_validation_item_type"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 3 -->
             <TextView
-                android:id="@+id/ui_validation_item_libelle"
-                android:layout_height="wrap_content"
+                android:id="@+id/ui_validation_item_heuredemande"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 4 -->
+            <TextView
+                android:id="@+id/ui_validation_item_libelle"
+                android:layout_width="0dip"
+                android:layout_weight="1"/>
+
+            <!-- Column 5 -->
             <Button
                 android:id="@+id/ui_validation_item_validation"
-                android:layout_height="wrap_content"
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:text="Oui"/>
 
-            <!-- Column 5 -->
+            <!-- Column 6 -->
             <Button
                 android:id="@+id/ui_validation_item_refus"
-                android:layout_height="wrap_content"
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:text="Non"/>
         </TableRow>
 
     </TableLayout>
-</LinearLayout>
-
