@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -29,11 +30,13 @@ import android.widget.Toast;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.CodeSinistre;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
@@ -51,7 +54,9 @@ import retrofit2.Response;
 public class CodisNewInterventionActivity extends AppCompatActivity {
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     Intervention intervention;
-Vehicule vehicule;
+    Vehicule vehicule;
+    ListView listView ;
+    ArrayAdapter<String> listAdapter ;
 
 
     @Override
@@ -59,6 +64,20 @@ Vehicule vehicule;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.codis_new_intervention);
+
+
+        listView = (ListView) findViewById( R.id.listMoyens);
+        String[] names = new String[] { };
+        ArrayList<String> planetList = new ArrayList<String>();
+        planetList.addAll( Arrays.asList(names) );
+
+        // Create ArrayAdapter using the planet list.
+        listAdapter = new ArrayAdapter<String>(this, R.layout.codis_nom_vehicule_row, planetList);
+
+        listView.setAdapter( listAdapter );
+
+
+
         final EditText libelle = (EditText) findViewById(R.id.libelle);
         final EditText adresse = (EditText) findViewById(R.id.adresse);
 
@@ -238,10 +257,21 @@ Vehicule vehicule;
                         break;
                 }
 
+                String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
+                vehicule.heureDemande=currentTime;
+                vehicule.heureEngagement=currentTime;
+                vehicule.etat= EtatVehicule.ENGAGE;
+
+
 
 
 
                 intervention.vehicules.add(vehicule);
+                listAdapter.add( vehicule.nom );
+
+
+                // Set the ArrayAdapter as the ListView's adapter.
+
 
                 Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();
 
