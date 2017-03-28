@@ -69,6 +69,7 @@ import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.PointInteret;
 
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,6 +84,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Button boutonMenu;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
+    Intervention intervention;
 
     Vehicule vehicule;
     List<Vehicule> vehicules;
@@ -98,7 +100,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private String idIntervention;
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
 
-
+    //taille des icones sur la carte en X et en Y
+    private static final int iconSizeX = 200;
+    private static final int iconSizeY = 117;
     @Override
    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,6 +132,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         InterventionServiceCentral.getInstance().getInterventionById("58d1327e5bce7c234254cf28",new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                intervention=response.body();
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 int test = response.body().vehicules.size();
@@ -345,9 +350,24 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         vehicule.heureDemande=currentTime;
 
                         vehicule.etat= EtatVehicule.DEMANDE;
+                        vehicules.add(vehicule);
+                        vehiculesAdapter.notifyDataSetChanged();
+                        intervention.vehicules.add(vehicule);
 
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention,new Callback<Void>(){
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
 
-                        InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+
+                            }
+
+                        });
+
+                        /*InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
                             @Override
                             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                                 //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
@@ -363,7 +383,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                 //DO NOTHING
                                 Log.e("MapActivity", t.toString());
                             }
-                        });
+                        });*/
 
 
 
@@ -513,7 +533,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
         Canvas canvas1 = new Canvas(bmp);
 
 // paint defines the text color, stroke width and size
@@ -522,8 +542,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         color.setColor(Color.BLACK);
 
 // modify canvas
-        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, 200, 200), color); ///taille de l'image a coordinée avec la taille de bmp
-        canvas1.drawText(vehicule.nom, 10, 150, color);
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
         mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
