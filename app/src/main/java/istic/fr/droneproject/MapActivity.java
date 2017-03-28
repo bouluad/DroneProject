@@ -1,10 +1,13 @@
 package istic.fr.droneproject;
 
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -23,15 +26,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import istic.fr.droneproject.adapter.AlbumPhotoAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Photo;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MapActivity extends Fragment implements OnMapReadyCallback {
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     Marker myMarker;
@@ -44,25 +49,35 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     View m_menu_vehicules;
     View m_menu_points;
     View m_menu_choix;
+    private static final String ARG_ID = "idIntervention";
+    private String idIntervention;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+   public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_map);
-        m_menu_choix = (LinearLayout) findViewById(R.id.m_menu_choix);
-        m_menu_points = (LinearLayout) findViewById(R.id.m_menu_points);
-        m_menu_vehicules = (LinearLayout) findViewById(R.id.m_menu_vehicules);
+    }
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.activity_map, container, false);
+    }
 
-         Button points = (Button) findViewById(R.id.m_menu_choix_points);
-         Button vehicule=(Button)  findViewById(R.id.m_menu_choix_vehicules);
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        m_menu_choix = (LinearLayout) view.findViewById(R.id.m_menu_choix);
+        m_menu_points = (LinearLayout) view.findViewById(R.id.m_menu_points);
+        m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
+
+        Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
+        Button vehicule=(Button)  view.findViewById(R.id.m_menu_choix_vehicules);
         final List<Vehicule> vehicules = new ArrayList<>();
-        recyclerViewVehicules= (RecyclerView) findViewById(R.id.m_list_vehicules);
-        recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+        recyclerViewVehicules= (RecyclerView) view.findViewById(R.id.m_list_vehicules);
+        recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
         vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById("58d2a565509b272a2895c0a8",new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
@@ -98,10 +113,15 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         });
 
-        map = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.m_map);
+        map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
+
     }
+
+
+
+
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -197,6 +217,13 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
             }
         }
         );}
+    public static MapActivity newInstance(String idIntervention) {
+        MapActivity fragment = new MapActivity();
+        Bundle args = new Bundle();
+        args.putString(ARG_ID, idIntervention);
+        fragment.setArguments(args);
+        return fragment;
+    }
 
 
 
