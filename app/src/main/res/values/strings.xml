@@ -12,6 +12,7 @@
     <string name="libelle">Libellé</string>
     <string name="adresse">Adresse</string>
     <string name="code">Code</string>
+
     <string name="code_sap">SAP</string>
     <string name="code_inc">INC</string>
 
@@ -35,5 +36,9 @@
 
 
 
+
+
+    <string name="Points">Points</string>
+    <string name="Moyens">Moyens</string>
 
 </resources>

@@ -44,7 +44,7 @@ public class VehiculeRecyclerAdapter extends RecyclerView.Adapter<VehiculeRecycl
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         TextView nom;
         TextView type;
-
+//
         public VehiculeViewHolder(View itemView) {
             super(itemView);
             nom = (TextView) itemView.findViewById(R.id.ui_vehicule_item_nom);

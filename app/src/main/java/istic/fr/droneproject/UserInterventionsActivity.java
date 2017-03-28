@@ -1,5 +1,6 @@
 package istic.fr.droneproject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,14 +13,14 @@ import android.widget.TextView;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -49,29 +50,36 @@ public class UserInterventionsActivity extends AppCompatActivity {
         final List<Intervention> interventions = new ArrayList<>();
         InterventionRecyclerAdapter.InterventionClickListener interventionClickListener = new InterventionRecyclerAdapter.InterventionClickListener() {
             @Override
-            public void clickIntervention(Intervention intervention) {
+            public void clickIntervention(final Intervention intervention) {
                 layoutDetails.setVisibility(View.VISIBLE);
                 textLibelle.setText(intervention.libelle);
                 textAdresse.setText(intervention.adresse);
-                textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
-
+                if (intervention.position != null) {
+                    textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
+                }
+                /*
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
                 try {
 
-                    Date date = formatter.parse(intervention.date.toString());
-                    textDate.setText(formatter.format(date));
+                    if (intervention.date != null) {
+
+                        Date date = formatter.parse(intervention.date.toString());
+                        textDate.setText(formatter.format(date));
+                    }
 
                 } catch (ParseException e) {
                     e.printStackTrace();
-                }
+                }*/
 
+                textDate.setText(intervention.date);
                 textCode.setText(String.valueOf(intervention.code));
                 btnSelect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //  Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
-                        //  startActivity(intent);
+                        Intent intent = new Intent(getApplicationContext(), UserMainActivity.class);
+                        intent.putExtra("idIntervention", intervention._id);
+                        startActivity(intent);
                     }
                 });
                 VehiculeRecyclerAdapter vehiculeArrayAdapter = new VehiculeRecyclerAdapter(intervention.vehicules, R.layout.ui_vehicule_item);
@@ -81,10 +89,11 @@ public class UserInterventionsActivity extends AppCompatActivity {
         final InterventionRecyclerAdapter interventionArrayAdapter = new InterventionRecyclerAdapter(interventions, R.layout.ui_intervention_item, interventionClickListener);
         interventionsRecycler.setAdapter(interventionArrayAdapter);
 
-        InterventionService service = new InterventionServiceImpl();
-        service.getListeInterventions(new Callback<List<Intervention>>() {
+        InterventionServiceCentral.getInstance().getListeInterventions(new Callback<List<Intervention>>() {
             @Override
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
+                Collections.reverse(response.body());
+
                 interventions.clear();
                 interventions.addAll(response.body());
                 interventionArrayAdapter.notifyDataSetChanged();

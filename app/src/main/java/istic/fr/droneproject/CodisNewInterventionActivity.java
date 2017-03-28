@@ -1,5 +1,6 @@
 package istic.fr.droneproject;
 
+
 import android.content.DialogInterface;
 
 
@@ -11,7 +12,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.view.LayoutInflater;
+
+import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,7 +30,6 @@ import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 
 import istic.fr.droneproject.model.Categorie;
@@ -33,7 +38,7 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.InterventionService;
-import istic.fr.droneproject.service.impl.InterventionServiceImpl;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -46,7 +51,7 @@ import retrofit2.Response;
 public class CodisNewInterventionActivity extends AppCompatActivity {
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     Intervention intervention;
-
+Vehicule vehicule;
 
 
     @Override
@@ -68,19 +73,22 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
         });
 
         final Button btn_valider = (Button) findViewById(R.id.ButtonSendForm);
-
+        intervention = new Intervention();
+        intervention.vehicules= new ArrayList<Vehicule>();
 
         btn_valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                intervention = new Intervention();
+
                 intervention.libelle = libelle.getText().toString();
                 intervention.adresse = adresse.getText().toString();
                 intervention.code = CodeSinistre.INC;
-                intervention.vehicules= new ArrayList<Vehicule>();
+
+                intervention.position = new Double[2];
 
                 String currentDateandTime = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss").format(new Date());
                 intervention.date = currentDateandTime;
+                System.out.println(intervention.date);
 
 
                 boolean inc = radioButtonCode.isChecked();
@@ -99,11 +107,19 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
 
 
-                Toast.makeText(getApplicationContext(), intervention.code.toString(), Toast.LENGTH_SHORT).show();
-                InterventionService service = new InterventionServiceImpl();
-                service.addNouvelleIntervention(intervention, new Callback<Void>() {
+
+
+
+
+
+
+                InterventionServiceCentral.getInstance().addNouvelleIntervention(intervention, new Callback<Void>() {
+
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        Toast.makeText(getApplicationContext(), "Intervention ajoutée", Toast.LENGTH_SHORT).show();
+
 
 
 
@@ -114,13 +130,9 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
                     }
                 });
-
-
-
-
-
             }
         });
+
 
 
 
@@ -140,7 +152,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
 
 
-
+        final EditText nom_vehicule = (EditText)popupLayout.findViewById(R.id.nom_moyen);
         final Spinner popupSpinner = (Spinner)popupLayout.findViewById(R.id.spinnerCategorie);
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(CodisNewInterventionActivity.this,
@@ -177,7 +189,10 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
                 //add to list vehicule
 
-                Vehicule vehicule= new Vehicule();
+                vehicule= new Vehicule();
+
+
+                vehicule.nom=  nom_vehicule.getText().toString();
                 int selectedId = radiogroup.getCheckedRadioButtonId();
 
                 final RadioButton radioButton = (RadioButton) popupLayout.findViewById(selectedId);
@@ -228,9 +243,8 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
                 intervention.vehicules.add(vehicule);
 
+                Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();
 
-
-                Toast.makeText(getApplicationContext(), selectedSpinner, Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -238,6 +252,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
         // Remember, create doesn't show the dialog
         AlertDialog helpDialog = helpBuilder.create();
         helpDialog.show();
+
 
     }
 }
