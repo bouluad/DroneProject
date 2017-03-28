@@ -3,6 +3,7 @@ package istic.fr.droneproject.service;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Vehicule;
 import retrofit2.Callback;
 
 public interface InterventionService {
@@ -26,5 +27,11 @@ public interface InterventionService {
      */
 
     void getInterventionById(String id,Callback<Intervention> callback);
+
+    /**
+     * Récupérer la liste des vehicules d'une intervention by id
+     * @param callback Callback pour récupérer la réponse
+     */
+    void getListeVehicules( String id ,Callback<List<Vehicule>> callback);
 
 }
