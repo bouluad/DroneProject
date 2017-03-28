@@ -32,8 +32,12 @@ public class VehiculeRecyclerAdapter extends RecyclerView.Adapter<VehiculeRecycl
     public void onBindViewHolder(VehiculeViewHolder holder, int position) {
         Vehicule vehicule = vehicules.get(position);
 
-        holder.nom.setText(vehicule.nom);
-        holder.type.setText(vehicule.type.toString());
+        if(vehicule.nom != null) {
+            holder.nom.setText(vehicule.nom);
+        }
+        if(vehicule.type != null) {
+            holder.type.setText(vehicule.type.toString());
+        }
     }
 
     @Override

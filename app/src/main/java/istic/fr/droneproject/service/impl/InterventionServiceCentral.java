@@ -17,7 +17,6 @@ import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
 import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -113,7 +112,7 @@ public class InterventionServiceCentral implements InterventionService {
         call.enqueue(callback);
     }
 
-
+    @Override
     public void updateIntervention(Intervention intervention, Callback<Void> callback){
         this.interventionId = intervention._id;
         this.callback = callback;
