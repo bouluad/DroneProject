@@ -23,13 +23,15 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
 
     private final List<Vehicule> vehicules;
     private final int layout;
-    private final Intervention intervention;
+    private VehiculeClickListener listener;
 
-    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention) {
+    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout) {
         this.vehicules = vehicules;
         this.layout = layout;
-        this.intervention = intervention;
+
     }
+
+
 
     @Override
     public VehiculeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -65,33 +67,6 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
 
        }
 
-       /* holder.nom.setText(vehicule.nom);
-       Log.e("TMR","vehicule"+vehicule.heureEngagement);
-        holder.heure1.setText(vehicule.heureDemande);
-        if(vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()){
-            holder.heure1.setBackgroundColor(Color.GRAY);
-            holder.heure1.setText("----");
-        }
-        holder.heure2.setText(vehicule.heureEngagement);
-        if(vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()){
-            holder.heure2.setBackgroundColor(Color.GRAY);
-            holder.heure2.setText("----");
-        }
-        holder.heure3.setText(vehicule.heureArrivee);
-        if(vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()){
-            holder.heure3.setBackgroundColor(Color.GRAY);
-            holder.heure3.setText("----");
-        }else{
-            holder.btnConfirmer.setVisibility(View.INVISIBLE);
-        }
-        holder.heure4.setText(vehicule.heureLiberation);
-        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()){
-            holder.heure4.setBackgroundColor(Color.GRAY);
-            holder.heure4.setText("----");
-            holder.heure4.setVisibility(View.GONE);
-            holder.btnLiberer.setVisibility(View.VISIBLE);
-        }*/
-
     }
 
     @Override
@@ -114,5 +89,8 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
 
 
         }
+    }
+    public interface VehiculeClickListener {
+        void clickVehicule(Vehicule vehicule);
     }
 }
