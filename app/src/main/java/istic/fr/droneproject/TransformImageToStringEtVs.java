@@ -1,9 +1,11 @@
 package istic.fr.droneproject;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.app.Fragment;
 import android.util.Base64;
+import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 
@@ -13,10 +15,15 @@ import java.io.ByteArrayOutputStream;
  * Created by yousra on 28/03/17.
  */
 
-public class TransformImageToStringEtVs extends Fragment {
+public class TransformImageToStringEtVs{
+      private Context context;
+
+    public TransformImageToStringEtVs(Context context) {
+        this.context = context;
+    }
 
     public  String transformImageToString(int i){
-        Bitmap largeIcone= BitmapFactory.decodeResource(this.getResources(),i);
+        Bitmap largeIcone= BitmapFactory.decodeResource(context.getResources(),i);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         largeIcone.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteFormat = stream.toByteArray();
