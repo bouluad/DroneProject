@@ -17,9 +17,7 @@
                 <TableRow
                     android:id="@+id/tableRowheader"
                     android:layout_height="wrap_content"
-                    android:layout_margin="0dp"
-                    android:background="#000000"
-                    android:scrollbarSize="12dp">
+                    android:background="#000000">
 
                 <!-- Header Nom Validation -->
                 <TextView
@@ -66,5 +64,4 @@
             android:id="@+id/codis_list_validation"
             android:layout_weight="1"></android.support.v7.widget.RecyclerView>
     </LinearLayout>
-
 </LinearLayout>
