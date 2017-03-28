@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
@@ -29,6 +30,7 @@ import android.widget.Toast;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 
@@ -52,7 +54,9 @@ import retrofit2.Response;
 public class CodisNewInterventionActivity extends AppCompatActivity {
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     Intervention intervention;
-Vehicule vehicule;
+    Vehicule vehicule;
+    ListView listView ;
+    ArrayAdapter<String> listAdapter ;
 
 
     @Override
@@ -62,9 +66,15 @@ Vehicule vehicule;
         setContentView(R.layout.codis_new_intervention);
 
 
+        listView = (ListView) findViewById( R.id.listMoyens);
+        String[] names = new String[] { };
+        ArrayList<String> planetList = new ArrayList<String>();
+        planetList.addAll( Arrays.asList(names) );
 
+        // Create ArrayAdapter using the planet list.
+        listAdapter = new ArrayAdapter<String>(this, R.layout.codis_nom_vehicule_row, planetList);
 
-
+        listView.setAdapter( listAdapter );
 
 
 
@@ -254,7 +264,14 @@ Vehicule vehicule;
 
 
 
+
+
                 intervention.vehicules.add(vehicule);
+                listAdapter.add( vehicule.nom );
+
+
+                // Set the ArrayAdapter as the ListView's adapter.
+
 
                 Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();
 
