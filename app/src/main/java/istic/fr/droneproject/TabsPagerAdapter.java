@@ -31,7 +31,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return new VideosActivity();
             case 3:
                 // Moyens fragment activity
-                return new MoyensActivity();
+                return MoyensActivity.newInstance(idIntervention);
         }
 
         return null;

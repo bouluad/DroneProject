@@ -1,6 +1,7 @@
 package istic.fr.droneproject.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,12 @@ import android.widget.TextView;
 import java.util.List;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.EtatVehicule;
+import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Validation;
+import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.InterventionService;
+import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 
 /**
  * Created by nirina on 24/03/17.
@@ -30,6 +36,34 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
         this.validListener = validListener;
     }
 
+    public ValidationRecyclerAdapter(List<Validation> validations, int layout){
+        this.validations = validations;
+        this.layout = layout;
+        this.refusListener = new RefusClickListener() {
+            @Override
+            public void clickRefus(Validation validation) {
+                if (validation.vehicule.position == null){
+                    validation.vehicule.etat = EtatVehicule.PARKING;
+                }else{
+                    validation.vehicule.etat = EtatVehicule.ENGAGE;
+                }
+                //validations.remove(validation);
+                //InterventionService service = InterventionServiceCentral.getInstance();
+                //TODO modification dans la liste
+                //service.modifyIntervention(validation.intervention)
+
+            }
+        };
+        this.validListener = new ValidClickListener() {
+            @Override
+            public void clickValidation(Validation validation) {
+                validation.vehicule.etat = EtatVehicule.ANNULE;
+                //validations.remove(validation);
+                //InterventionService service = InterventionServiceCentral.getInstance();
+            }
+        };
+    }
+
     @Override
     public ValidationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(layout, parent, false);
@@ -41,7 +75,7 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
         final Validation validation = validations.get(position);
 
         holder.nom.setText(validation.vehicule.nom);
-        holder.libelle.setText(validation.libelle);
+        holder.libelle.setText(validation.intervention.libelle);
         holder.heuredemande.setText(validation.vehicule.heureDemande);
         holder.validation.setOnClickListener(new View.OnClickListener() {
             @Override

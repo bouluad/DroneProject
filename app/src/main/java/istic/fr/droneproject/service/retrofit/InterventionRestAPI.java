@@ -27,7 +27,7 @@ public interface InterventionRestAPI {
     @GET("interventions/{id}")
     Call<Intervention> getInterventionById(@Path("id") String id );
 
-    @GET("updateIntervention/{id}")
+    @POST("updateIntervention/{id}")
     Call<Void> updateIntervention(Intervention intervention);
 
     @GET("interventions/{id}/vehicules")
