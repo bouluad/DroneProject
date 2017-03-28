@@ -61,6 +61,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,13 +80,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         final List<Vehicule> vehicules = new ArrayList<>();
         recyclerViewVehicules= (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
+        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item,getContext());
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById("58d1327e5bce7c234254cf28",new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 vehicules.addAll(response.body().vehicules);
@@ -103,11 +103,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         recyclerViewPoints= (RecyclerView) view.findViewById(R.id.m_list_points);
         recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
         pointsAdapter=new MapPointsRecyclerAdapter(m_images_points,R.layout.m_points_item);
-        recyclerViewVehicules.setAdapter(vehiculesAdapter);
-
-        TransformImageToStringEtVs m_transform=new TransformImageToStringEtVs();
-
-
+        recyclerViewPoints.setAdapter(pointsAdapter);
 
        Bitmap largeIconeau= BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.eau);
@@ -145,7 +141,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         byte[] byteFormatps_rp = streamps_rp.toByteArray();
         String encodedImageps_rp = Base64.encodeToString(byteFormatps_rp, Base64.NO_WRAP);
         m_images_points.add(new Pair<String,String>("eau",encodedImageeau));
-        m_images_points.add(new Pair<String,String>("eau",encodedImagepseau));
+        m_images_points.add(new Pair<String,String>("ps_eau",encodedImagepseau));
+        m_images_points.add(new Pair<String,String>("ps_hu",encodedImageps_hu));
+        m_images_points.add(new Pair<String,String>("ps_in",encodedImageps_in));
       /*  m_images_points.add(new Pair<String,String>("eau",m_transform.transform( R.drawable.eau)));
         m_images_points.add(new Pair<String,String>("ps_reau",m_transform.transform( R.drawable.ps_eau)));
       m_images_points.add(new Pair<String,String>("ps_hu",m_transform.transform( R.drawable.ps_hu) ));
