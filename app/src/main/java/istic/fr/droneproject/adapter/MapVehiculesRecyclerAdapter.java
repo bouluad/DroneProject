@@ -1,5 +1,6 @@
 package istic.fr.droneproject.adapter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
@@ -21,13 +22,15 @@ import static istic.fr.droneproject.model.Categorie.SAUVETAGE;
 public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehiculesRecyclerAdapter.VehiculeViewHolder> {
 
 
-    private final List<Vehicule> vehicules;
-    private final int layout;
+    private  List<Vehicule> vehicules;
+    private  int layout;
     private VehiculeClickListener listener;
+    private Context context;
 
-    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout) {
+    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout,Context context) {
         this.vehicules = vehicules;
         this.layout = layout;
+        this.context=context;
 
     }
 
@@ -47,28 +50,26 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         Log.e("==========>",vehicule.categorie.toString());
        switch(vehicule.categorie){
            case COMMANDEMENT:
-               byte [] encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
-               Bitmap bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-              // Bitmap bMap = BitmapFactory.decodeFile(String.valueOf(R.drawable.vh_hu));
-              holder.image.setImageBitmap(bitmap);
+               Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_com);
+               holder.image.setImageBitmap(bitmap);
 
            case SAUVETAGE:
-               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
-               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+
+               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_hu);
                holder.image.setImageBitmap(bitmap);
            case INCENDIE:
-               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
-                bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+
+               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_in);
                holder.image.setImageBitmap(bitmap);
 
            case RISQUE_PARTICULIER:
-               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
-               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+
+               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_rp);
                holder.image.setImageBitmap(bitmap);
 
            default:
-               encodeByte= Base64.decode(String.valueOf(R.drawable.vh_hu),Base64.DEFAULT);
-               bitmap=BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
+
+               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_eau);
                holder.image.setImageBitmap(bitmap);
 
 
@@ -94,6 +95,7 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
             nom = (TextView) itemView.findViewById(R.id.m_vehicules_info_nom);
             type = (TextView) itemView.findViewById(R.id.m_vehicules_info_type);
             image = (ImageView) itemView.findViewById(R.id.m_vehicules_image);
+
 
 
         }
