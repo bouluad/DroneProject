@@ -2,6 +2,7 @@ package istic.fr.droneproject;
 
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -48,8 +49,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
+import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
@@ -127,7 +130,45 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         final List<Vehicule> vehicules = new ArrayList<>();
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext());
+       // vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
+        //recyclerViewVehicules.setAdapter(vehiculesAdapter);
+       MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
+            @Override
+            public void clickVehicule(final Vehicule vehicule) {
+                InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+                    @Override
+                    public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                        intervention = response.body();
+                        for(int i=0;i<intervention.vehicules.size();i++) {
+                            if (intervention.vehicules.get(i).equals(vehicule)) {
+                                intervention.vehicules.get(i).etat.equals(EtatVehicule.DEMANDE);
+                                InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable t) {
+                                        //DO NOTHING
+                                        Log.e("MapActivity", t.toString());
+                                    }
+                                });
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<Intervention> call, Throwable t) {
+                        //DO NOTHING
+                        Log.e("MapActivity", t.toString());
+                    }
+                });
+
+            }
+        };
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
@@ -136,7 +177,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 intervention = response.body();
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
-                int test = response.body().vehicules.size();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
 
                     if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position.length == 0) {

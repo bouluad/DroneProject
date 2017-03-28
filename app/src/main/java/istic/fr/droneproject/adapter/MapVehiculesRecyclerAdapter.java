@@ -27,10 +27,12 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
     private VehiculeClickListener listener;
     private Context context;
 
-    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout,Context context) {
+    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout,Context context,VehiculeClickListener listener) {
+
         this.vehicules = vehicules;
         this.layout = layout;
         this.context=context;
+        this.listener=listener;
 
     }
 
