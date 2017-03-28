@@ -58,9 +58,19 @@ public class CodisValidationFragment extends Fragment {
                 }
                 validations.remove(validation);
                 InterventionService service = InterventionServiceCentral.getInstance();
-                //TODO modification dans la liste
-                //service.modifyIntervention(validation.intervention)
-                int count = 0;
+                service.updateIntervention(validation.intervention, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("TestCodisValidationActi","modification OK");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("TestCodisValidationActi","modification KO");
+                    }
+                });
+
+                /*int count = 0;
                 for (Intervention i:interventions){
                     for (Vehicule v:i.vehicules){
                         if (v.etat == EtatVehicule.DEMANDE){
@@ -68,7 +78,7 @@ public class CodisValidationFragment extends Fragment {
                         }
                     }
                 }
-                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);
+                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);*/
 
             }
         };
@@ -78,9 +88,20 @@ public class CodisValidationFragment extends Fragment {
                 validation.vehicule.etat = EtatVehicule.ANNULE;
                 validations.remove(validation);
                 InterventionService service = InterventionServiceCentral.getInstance();
+                service.updateIntervention(validation.intervention, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("TestCodisValidationActi","modification OK");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("TestCodisValidationActi","modification KO");
+                    }
+                });
                 //TODO modification dans la liste
                 //service.modifyIntervention(validation.intervention)
-                int count = 0;
+                /*int count = 0;
                 for (Intervention i:interventions){
                     for (Vehicule v:i.vehicules){
                         if (v.etat == EtatVehicule.DEMANDE){
@@ -88,7 +109,7 @@ public class CodisValidationFragment extends Fragment {
                         }
                     }
                 }
-                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);
+                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);*/
 
             }
         };
@@ -104,9 +125,11 @@ public class CodisValidationFragment extends Fragment {
                 interventions.addAll(response.body());
                 validations.clear();
                 for (Intervention i:interventions){
-                    for (Vehicule v:i.vehicules){
-                        if (v.etat == EtatVehicule.DEMANDE){
-                            validations.add(new Validation(v,i));
+                    if (i.vehicules!= null) {
+                        for (Vehicule v : i.vehicules) {
+                            if (v.etat == EtatVehicule.DEMANDE) {
+                                validations.add(new Validation(v, i));
+                            }
                         }
                     }
                 }
