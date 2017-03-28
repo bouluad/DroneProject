@@ -98,7 +98,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private String idIntervention;
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
 
-
+    //taille des icones sur la carte en X et en Y
+    private static final int iconSizeX = 200;
+    private static final int iconSizeY = 117;
     @Override
    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -505,7 +507,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
         Canvas canvas1 = new Canvas(bmp);
 
 // paint defines the text color, stroke width and size
@@ -514,8 +516,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         color.setColor(Color.BLACK);
 
 // modify canvas
-        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, 200, 200), color); ///taille de l'image a coordinée avec la taille de bmp
-        canvas1.drawText(vehicule.nom, 10, 150, color);
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
         mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
