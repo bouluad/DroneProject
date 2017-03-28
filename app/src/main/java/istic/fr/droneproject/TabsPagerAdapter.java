@@ -22,7 +22,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         switch (index) {
             case 0:
                 // Carte fragment activity
-                return new CarteActivity();
+                return MapActivity.newInstance(idIntervention);
             case 1:
                 // Album fragment activity
                 return AlbumActivity.newInstance(idIntervention);
