@@ -34,6 +34,7 @@ import java.util.Date;
 
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.CodeSinistre;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
@@ -59,6 +60,14 @@ Vehicule vehicule;
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.codis_new_intervention);
+
+
+
+
+
+
+
+
         final EditText libelle = (EditText) findViewById(R.id.libelle);
         final EditText adresse = (EditText) findViewById(R.id.adresse);
 
@@ -238,6 +247,10 @@ Vehicule vehicule;
                         break;
                 }
 
+                String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
+                vehicule.heureDemande=currentTime;
+                vehicule.heureEngagement=currentTime;
+                vehicule.etat= EtatVehicule.ENGAGE;
 
 
 
