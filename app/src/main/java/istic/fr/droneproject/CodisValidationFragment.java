@@ -101,7 +101,8 @@ public class CodisValidationFragment extends Fragment {
                 });
                 //TODO modification dans la liste
                 //service.modifyIntervention(validation.intervention)
-                /*int count = 0;
+                /*
+                int count = 0;
                 for (Intervention i:interventions){
                     for (Vehicule v:i.vehicules){
                         if (v.etat == EtatVehicule.DEMANDE){
@@ -109,7 +110,8 @@ public class CodisValidationFragment extends Fragment {
                         }
                     }
                 }
-                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);*/
+                Log.e("TestCodisValidationActi","Nombre de véhicules à valider : "+count);
+                */
 
             }
         };

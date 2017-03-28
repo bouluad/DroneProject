@@ -1,14 +1,27 @@
 package istic.fr.droneproject;
 
+
 import android.content.DialogInterface;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.RectF;
+
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+
 import android.support.v7.app.AlertDialog;
+
+import android.support.v4.util.Pair;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,32 +30,44 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+
 import java.text.SimpleDateFormat;
+
+import java.io.ByteArrayOutputStream;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import istic.fr.droneproject.adapter.AlbumPhotoAdapter;
+import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Photo;
+
 import istic.fr.droneproject.model.TypeVehicule;
+
+import istic.fr.droneproject.model.PointInteret;
+
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -58,8 +83,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Button boutonMenu;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
+
     Vehicule vehicule;
     List<Vehicule> vehicules;
+
+    RecyclerView recyclerViewPoints;
+    MapPointsRecyclerAdapter pointsAdapter;
+
 
     View m_menu_vehicules;
     View m_menu_points;
@@ -72,6 +102,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -91,13 +122,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         vehicules = new ArrayList<>();
         recyclerViewVehicules= (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item);
+        vehiculesAdapter=new MapVehiculesRecyclerAdapter(vehicules,R.layout.m_vehicules_item,getContext());
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById("58d1327e5bce7c234254cf28",new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 vehicules.addAll(response.body().vehicules);
@@ -110,6 +140,59 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("MapActivity", t.toString());
             }
         });
+
+        final List<Pair<String,String>> m_images_points = new ArrayList<>();
+        recyclerViewPoints= (RecyclerView) view.findViewById(R.id.m_list_points);
+        recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
+        pointsAdapter=new MapPointsRecyclerAdapter(m_images_points,R.layout.m_points_item);
+        recyclerViewPoints.setAdapter(pointsAdapter);
+
+       Bitmap largeIconeau= BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.eau);
+        ByteArrayOutputStream streameau = new ByteArrayOutputStream();
+        largeIconeau.compress(Bitmap.CompressFormat.JPEG, 100, streameau);
+        byte[] byteFormateau = streameau.toByteArray();
+        String encodedImageeau = Base64.encodeToString(byteFormateau, Base64.NO_WRAP);
+
+        Bitmap largeIconpseau= BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.ps_eau);
+        ByteArrayOutputStream streampseau = new ByteArrayOutputStream();
+        largeIconpseau.compress(Bitmap.CompressFormat.JPEG, 100, streampseau);
+        byte[] byteFormatpseau = streampseau.toByteArray();
+        String encodedImagepseau = Base64.encodeToString(byteFormatpseau, Base64.NO_WRAP);
+
+        Bitmap largeIconps_hu= BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.ps_hu);
+        ByteArrayOutputStream streamps_hu = new ByteArrayOutputStream();
+        largeIconps_hu.compress(Bitmap.CompressFormat.JPEG, 100, streamps_hu);
+        byte[] byteFormatps_hu = streamps_hu.toByteArray();
+        String encodedImageps_hu = Base64.encodeToString(byteFormatps_hu, Base64.NO_WRAP);
+
+
+        Bitmap largeIconps_in= BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.ps_in);
+        ByteArrayOutputStream streamps_in = new ByteArrayOutputStream();
+        largeIconps_in.compress(Bitmap.CompressFormat.JPEG, 100, streamps_in);
+        byte[] byteFormatps_in = streamps_in.toByteArray();
+        String encodedImageps_in = Base64.encodeToString(byteFormatps_in, Base64.NO_WRAP);
+
+        Bitmap largeIconps_rp= BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.ps_rp);
+        ByteArrayOutputStream streamps_rp = new ByteArrayOutputStream();
+        largeIconps_rp.compress(Bitmap.CompressFormat.JPEG, 100, streamps_rp);
+        byte[] byteFormatps_rp = streamps_rp.toByteArray();
+        String encodedImageps_rp = Base64.encodeToString(byteFormatps_rp, Base64.NO_WRAP);
+        m_images_points.add(new Pair<String,String>("eau",encodedImageeau));
+        m_images_points.add(new Pair<String,String>("ps_eau",encodedImagepseau));
+        m_images_points.add(new Pair<String,String>("ps_hu",encodedImageps_hu));
+        m_images_points.add(new Pair<String,String>("ps_in",encodedImageps_in));
+      /*  m_images_points.add(new Pair<String,String>("eau",m_transform.transform( R.drawable.eau)));
+        m_images_points.add(new Pair<String,String>("ps_reau",m_transform.transform( R.drawable.ps_eau)));
+      m_images_points.add(new Pair<String,String>("ps_hu",m_transform.transform( R.drawable.ps_hu) ));
+      m_images_points.add(new Pair<String,String>("ps_in",m_transform.transform( R.drawable.ps_in)));
+      m_images_points.add(new Pair<String,String>("ps_rp",m_transform.transform( R.drawable.ps_rp)));*/
+
+        pointsAdapter.notifyDataSetChanged();
 
 
 
@@ -323,6 +406,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                // marker.showInfoWindow();
                m_menu_choix.setVisibility(View.VISIBLE);
+
+                Vehicule vTest = new Vehicule();
+                vTest.nom = "Batcopter";
+                ajoutImageFromVehicule(vTest);
                 return false;
             }
         });
@@ -407,9 +494,56 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         return fragment;
     }
 
+    /**
+     *
+     * Methode pour ajouter sur la map un vehicule
+     *
+     */
+    private void ajoutImageFromVehicule(Vehicule vehicule) {
+
+        //TODO afficher un marker custom
+        LatLng SYDNEY = markerChanged.getPosition();
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(200, 200, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(40);
+        color.setColor(Color.BLACK);
+
+// modify canvas
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, 200, 200), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(vehicule.nom, 10, 150, color);
+
+// add marker to Map
+        mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                // Specifies the anchor to be at a particular point in the marker image.
+                .anchor(0.5f, 1));
 
 
 
+    }
 
+    /**
+     *
+     * Methode pour ajouter sur la map un point
+     *
+     */
+    private void ajoutImageFromPoint(PointInteret point){
+
+    }
+
+    /**
+     *
+     * Methode qui converti un nom d'image en image
+     */
+    private Bitmap convertionDrawableToImageString(String drawableName){
+        //TODO faire une vrai convertion
+        return BitmapFactory.decodeResource(getResources(),
+                R.drawable.ve_hu);
+    }
 
 }
