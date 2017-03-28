@@ -96,7 +96,7 @@
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_weight="2"
-            tools:context=".MapsActivity" />
+            tools:context=".MapActivity" />
 
     </LinearLayout>
 
