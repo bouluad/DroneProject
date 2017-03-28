@@ -15,26 +15,51 @@
         android:gravity="center"
         android:hint="@string/adresse" />
 
-    <EditText android:id="@+id/code"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:hint="@string/code" />
 
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checkedButton="@+id/code_radio_inc"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Code" />
+
+        <RadioButton
+            android:id="@+id/code_radio_inc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/code_inc" />
+
+        <RadioButton
+            android:id="@+id/code_radio_sap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/code_sap" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Moyens 1er depart"/>
     <ListView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/listMoyens"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/add"
+        android:id="@+id/btn_addMoyen"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
 
         android:layout_margin="16dp"
         android:clickable="true"
-        android:src="@drawable/ic_plus" />
+        android:src="@drawable/ic_plus"
+        />
 
     <Button
         android:id="@+id/ButtonSendForm"

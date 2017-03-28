@@ -57,6 +57,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
                 if (intervention.position != null) {
                     textPosition.setText(String.valueOf(intervention.position[0]) + " ; " + String.valueOf(intervention.position[1]));
                 }
+                /*
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy");
 
                 try {
@@ -69,8 +70,9 @@ public class UserInterventionsActivity extends AppCompatActivity {
 
                 } catch (ParseException e) {
                     e.printStackTrace();
-                }
+                }*/
 
+                textDate.setText(intervention.date);
                 textCode.setText(String.valueOf(intervention.code));
                 btnSelect.setOnClickListener(new View.OnClickListener() {
                     @Override
