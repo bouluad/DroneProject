@@ -69,7 +69,7 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
         holder.heure4.setText(vehicule.heureLiberation);
-        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()) {
+        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty() ) {
             holder.heure4.setBackgroundColor(Color.GRAY);
             holder.heure4.setText("----");
             holder.btnLiberer.setVisibility(View.VISIBLE);
@@ -81,6 +81,7 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             });
         }else {
             holder.btnLiberer.setVisibility(View.INVISIBLE);
+            holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
     }
 

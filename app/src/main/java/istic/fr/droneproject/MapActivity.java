@@ -75,6 +75,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Intervention intervention;
     Vehicule vehicule;
     private List<Vehicule> vehicules;
+
+    //liste de points et vehicules synchroniser a afficher sur la carte
+    private List<Vehicule> vehiculesCarte;
+    private List<PointInteret> pointsCarte;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
@@ -83,6 +87,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_choix;
     Double[] list;
     Double[] list2;
+    View m_menu_Actionvehicule;
+    View m_menu_Actionpoint;
+
+    public enum ListeMenu {
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint
+    }
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
@@ -127,6 +137,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_choix = (LinearLayout) view.findViewById(R.id.m_menu_choix);
         m_menu_points = (LinearLayout) view.findViewById(R.id.m_menu_points);
         m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
+        m_menu_Actionvehicule = (LinearLayout) view.findViewById(R.id.m_menu_Actionvehicule);
+        m_menu_Actionpoint = (LinearLayout) view.findViewById(R.id.m_menu_Actionpoint);
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
@@ -304,6 +316,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
     }
 
+    /**
+     * Methode pour l'ajout d'un vehicule
+     */
+
     private void showSimplePopUp() {
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
@@ -389,16 +405,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
-                .title("I'm here"));
+                .title("-1"));
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 m_menu_choix.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
+                    //TODO on clique sur une icone d'un vehicule
+                    Log.e("MapMarkerClick", "marker: " + marker);
+                    Log.e("MapMarkerClick", "title: " + marker.getTitle());
+                    Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
+                    Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
+                    m_menu_Actionvehicule.setVisibility(View.VISIBLE);
+                }
+                else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
+                    //TODO
+                    m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                }
+                else{
+                    //TODO faire l'ajout depuis le menu vers la base
+                    //TODO parcourir la liste des vehicules pour afficher les vehicules
+                    m_menu_Actionvehicule.setVisibility(View.GONE);
+                    Vehicule vTest = new Vehicule();
+                    vTest.nom = "Batmobile"+vehicules.size();
+                    vehicules.add(vTest);
+                    ajoutImageFromVehicule(vTest, vehicules.size()-1);
 
-                Vehicule vTest = new Vehicule();
-                vTest.nom = "Batcopter";
-                ajoutImageFromVehicule(vTest);
+
+                }
                 return false;
             }
         });
@@ -408,13 +443,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
+
+                m_menu_Actionvehicule.setVisibility(View.GONE);
                 myMarker.remove();
                 pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
-                        .title("I'm here now"));
+                        .title("-1"));
 
 
                 Log.e("Position Marker", point.toString());
@@ -487,8 +524,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Methode pour ajouter sur la map un vehicule
      */
-    private void ajoutImageFromVehicule(Vehicule vehicule) {
-
+    private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
+        Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
         LatLng SYDNEY = markerChanged.getPosition();
 
@@ -500,18 +537,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Paint color = new Paint();
         color.setTextSize(40);
         color.setColor(Color.BLACK);
-
+        //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
-        mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
                 .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
-
+        newMarker.setTitle(""+positionDansListeVehicules);
+        newMarker.setSnippet(vehicule.nom);
     }
 
     /**
@@ -549,6 +587,46 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     /**
      *
-     *
+     * Methode pour afficher un seul menu a la foit
      */
+    private void ChangerMenu(ListeMenu menu){
+        switch (menu){
+        //TODO
+            case m_menu_vehicules:
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case m_menu_points:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case m_menu_choix:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.VISIBLE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case m_menu_Actionvehicule:
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.VISIBLE);
+                break;
+            case m_menu_Actionpoint:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+        }
+    }
 }
