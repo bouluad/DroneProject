@@ -564,17 +564,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_vehicules.setVisibility(View.VISIBLE);
                 m_menu_points.setVisibility(View.GONE);
                 m_menu_choix.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
                 m_menu_Actionpoint.setVisibility(View.GONE);
                 m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_points:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.VISIBLE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_choix:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.VISIBLE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_Actionvehicule:
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.VISIBLE);
                 break;
             case m_menu_Actionpoint:
+                m_menu_vehicules.setVisibility(View.GONE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
         }
     }
