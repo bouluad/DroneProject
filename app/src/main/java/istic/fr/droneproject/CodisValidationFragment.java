@@ -1,8 +1,8 @@
 package istic.fr.droneproject;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.LayoutInflaterCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +10,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -63,7 +61,7 @@ public class CodisValidationFragment extends Fragment {
                     tmpEtat = EtatVehicule.ENGAGE;
                 }
                 tmpValidation = validation;
-                confirmerPopUp(savedStateInstance);
+                confirmerPopUp();
             }
         };
         ValidationRecyclerAdapter.RefusClickListener refusListener = new ValidationRecyclerAdapter.RefusClickListener() {
@@ -71,7 +69,7 @@ public class CodisValidationFragment extends Fragment {
             public void clickRefus(Validation validation) {
                 tmpEtat = EtatVehicule.ANNULE;
                 tmpValidation = validation;
-                confirmerPopUp(savedStateInstance);
+                confirmerPopUp();
             }
         };
         adapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
@@ -110,30 +108,23 @@ public class CodisValidationFragment extends Fragment {
         });
     }
 
-    public void confirmerPopUp(Bundle savedInstanceState) {
+    public void confirmerPopUp() {
         AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getContext());
-        confirmBuilder.setTitle("Confirmation");
-        LayoutInflater inflater = getLayoutInflater(savedInstanceState);
-        final View popupLayout = inflater.inflate(R.layout.codis_validation_popup, null);
-        confirmBuilder.setView(popupLayout);
-        final AlertDialog alert = confirmBuilder.create();
-        TextView confirmerText = (TextView) popupLayout.findViewById(R.id.codis_validation_text);
+        String text;
         if (tmpEtat.equals(EtatVehicule.ANNULE)){
-            confirmerText.setText("Refuser ?");
+            text = "Confirmer le refus ?";
         }else{
-            confirmerText.setText("Accepter ?");
+            text = "Confirmer la validation ?";
         }
-        Button confirmerButton = (Button) popupLayout.findViewById(R.id.codis_validation_button);
-        confirmerButton.setOnClickListener(new View.OnClickListener() {
+        confirmBuilder.setMessage(text).setPositiveButton("Oui", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(DialogInterface dialog, int which) {
                 tmpValidation.vehicule.etat = tmpEtat;
                 tmpValidation.vehicule.heureEngagement = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                 InterventionService service = InterventionServiceCentral.getInstance();
                 service.updateIntervention(tmpValidation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        alert.dismiss();
                         chargerValidations();
                         Log.e("TestCodisValidationActi","modification OK");
                     }
@@ -143,8 +134,13 @@ public class CodisValidationFragment extends Fragment {
                         Log.e("TestCodisValidationActi","modification KO");
                     }
                 });
+                dialog.cancel();
             }
-        });
-        alert.show();
+        }).setNegativeButton("Non", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        }).setCancelable(false).show();
     }
 }
