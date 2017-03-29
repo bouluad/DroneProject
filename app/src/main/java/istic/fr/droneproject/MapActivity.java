@@ -434,9 +434,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
                         .title("-1"));
+                //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(lng, 10));
 
-                /*CameraUpdate center =
-                        CameraUpdateFactory.newLatLng(lng);
+               /* CameraUpdate center = CameraUpdateFactory.newLatLngBounds(lng,10);
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo();
 
                 mGoogleMap.moveCamera(center);
@@ -446,7 +446,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
 
                 // Zoom in, animating the camera.
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
             }
 
@@ -575,8 +575,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
         Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
-        if(markerChanged == null)
-            markerChanged = myMarker;
+            
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
