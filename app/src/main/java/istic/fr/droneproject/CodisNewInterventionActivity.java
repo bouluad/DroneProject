@@ -52,7 +52,7 @@ import retrofit2.Response;
  */
 
 public class CodisNewInterventionActivity extends AppCompatActivity {
-    String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
+    /*String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};*/
     Intervention intervention;
     Vehicule vehicule;
     ListView listView ;
@@ -172,12 +172,18 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
 
         final EditText nom_vehicule = (EditText)popupLayout.findViewById(R.id.nom_moyen);
-        final Spinner popupSpinner = (Spinner)popupLayout.findViewById(R.id.spinnerCategorie);
+        final Spinner categorieSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
+        Categorie[] categories = Categorie.values();
+        ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(CodisNewInterventionActivity.this, android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        categorieSpinner.setAdapter(adapter);
+        /*final Spinner popupSpinner = (Spinner)popupLayout.findViewById(R.id.spinnerCategorie);
+
         ArrayAdapter<String> adapter =
                 new ArrayAdapter<String>(CodisNewInterventionActivity.this,
                         android.R.layout.simple_spinner_item, categorie);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        popupSpinner.setAdapter(adapter);
+        popupSpinner.setAdapter(adapter);*/
 
 
 
@@ -232,7 +238,9 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
                         break;
                 }
 
-                String selectedSpinner = popupSpinner.getSelectedItem().toString();
+                vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
+
+                /*String selectedSpinner = popupSpinner.getSelectedItem().toString();
                 switch(selectedSpinner) {
 
                     case "SAUVETAGE":
@@ -255,7 +263,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
 
                         vehicule.categorie=Categorie.COMMANDEMENT;
                         break;
-                }
+                }*/
 
                 String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
                 vehicule.heureDemande=currentTime;

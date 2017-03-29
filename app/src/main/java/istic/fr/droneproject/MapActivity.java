@@ -27,9 +27,9 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
@@ -73,22 +74,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
-    List<Vehicule> vehicules;
+    private List<Vehicule> vehicules;
+
+    //liste de points et vehicules synchroniser a afficher sur la carte
+    private List<Vehicule> vehiculesCarte;
+    private List<PointInteret> pointsCarte;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
     View m_menu_points;
+    LatLng pointVehicule;
     View m_menu_choix;
-    String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
+    View m_menu_Actionvehicule;
+    View m_menu_Actionpoint;
+
+    public enum ListeMenu {
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint
+    }
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
     private static final int iconSizeX = 200;
     private static final int iconSizeY = 117;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            idIntervention = getArguments().getString(ARG_ID);
+        }
     }
 
     @Override
@@ -121,39 +135,46 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_choix = (LinearLayout) view.findViewById(R.id.m_menu_choix);
         m_menu_points = (LinearLayout) view.findViewById(R.id.m_menu_points);
         m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
+        m_menu_Actionvehicule = (LinearLayout) view.findViewById(R.id.m_menu_Actionvehicule);
+        m_menu_Actionpoint = (LinearLayout) view.findViewById(R.id.m_menu_Actionpoint);
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
-        final List<Vehicule> vehicules = new ArrayList<>();
+        vehicules = new ArrayList<>();
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext());
+       MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
+            @Override
+            public void clickVehicule(final Vehicule vehicule) {
+                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
+                //vehicule
+                               int k =intervention.vehicules.indexOf(vehicule);
+                                intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+                                 Double[] list = new Double[2];
+                                 list[0]=pointVehicule.latitude;
+                                 list[1]=pointVehicule.longitude;
+                                intervention.vehicules.get(k).setPosition(list);
+                     Log.e("Vehicule cliqué","Vehicule cliqué 2=========>");
+                                InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+                                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                                        Log.e("Vehicule cliqué","Vehicule cliqué 3=========>");
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable t) {
+                                        //DO NOTHING
+                                        Log.e("MapActivity", t.toString());
+                                    }
+                                });
+            }
+        };
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
-            @Override
-            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                intervention = response.body();
-                Collections.reverse(response.body().vehicules);
-                vehicules.clear();
-                int test = response.body().vehicules.size();
-                for (int i = 0; i < response.body().vehicules.size(); i++) {
-
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position.length == 0) {
-                        vehicules.add(response.body().vehicules.get(i));
-                    }
-                }
-                /*vehicules.clear();
-                vehicules.addAll(response.body().vehicules);*/
-                vehiculesAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<Intervention> call, Throwable t) {
-                //DO NOTHING
-                Log.e("MapActivity", t.toString());
-            }
-        });
+       chargerIntervention();
 
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
@@ -214,7 +235,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 m_menu_points.setVisibility(View.VISIBLE);
                 m_menu_choix.setVisibility(View.GONE);
-                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
         vehicule.setOnClickListener(new View.OnClickListener() {
@@ -230,12 +250,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         showSimplePopUp();
                     }
                 });
-
-
-                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
-
 
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
@@ -243,12 +259,39 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     }
 
+    private void chargerIntervention() {
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                intervention = response.body();
+                Collections.reverse(response.body().vehicules);
+                vehicules.clear();
+                for (int i = 0; i < response.body().vehicules.size(); i++) {
+
+
+                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position == null) {
+                        vehicules.add(response.body().vehicules.get(i));
+                    }
+                }
+                vehiculesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Intervention> call, Throwable t) {
+                //DO NOTHING
+                Log.e("MapActivity", t.toString());
+            }
+        });
+    }
+
+    /**
+     * Methode pour l'ajout d'un vehicule
+     */
+
     private void showSimplePopUp() {
 
-
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
-        helpBuilder.setTitle("Moyens 1er depart");
-        /*helpBuilder.setMessage("This is a Simple Pop Up");*/
+        helpBuilder.setTitle("Demander un véhicule");
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
@@ -256,8 +299,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
         final Spinner popupSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item, categorie);
+        Categorie[] categories = Categorie.values();
+        ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         popupSpinner.setAdapter(adapter);
 
@@ -274,68 +317,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //add to list vehicule
-
                         vehicule = new Vehicule();
-
-
                         vehicule.nom = nom_vehicule.getText().toString();
+
                         int selectedId = radiogroup.getCheckedRadioButtonId();
-
-                        final RadioButton radioButton = (RadioButton) popupLayout.findViewById(selectedId);
-
-                        String radio_value = radioButton.getText().toString();
-                        switch (radio_value) {
-                            case "FPT":
-
+                        switch (selectedId) {
+                            case R.id.type_radio_fpt:
                                 vehicule.type = TypeVehicule.FPT;
                                 break;
-                            case "VLCG":
-
+                            case R.id.type_radio_vlcg:
                                 vehicule.type = TypeVehicule.VLCG;
                                 break;
-                            case "VSAV":
-
+                            case R.id.type_radio_vsav:
                                 vehicule.type = TypeVehicule.VSAV;
                                 break;
                         }
 
-                        String selectedSpinner = popupSpinner.getSelectedItem().toString();
-                        switch (selectedSpinner) {
-
-                            case "SAUVETAGE":
-
-                                vehicule.categorie = Categorie.SAUVETAGE;
-                                break;
-                            case "INCENDIE":
-
-                                vehicule.categorie = Categorie.INCENDIE;
-                                break;
-                            case "RISQUE_PARTICULIER":
-
-                                vehicule.categorie = Categorie.RISQUE_PARTICULIER;
-                                break;
-                            case "EAU":
-
-                                vehicule.categorie = Categorie.EAU;
-                                break;
-                            case "COMMANDEMENT":
-
-                                vehicule.categorie = Categorie.COMMANDEMENT;
-                                break;
-                        }
-
-                        String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
-                        vehicule.heureDemande = currentTime;
+                        vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
 
                         vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicules.add(vehicule);
-                        vehiculesAdapter.notifyDataSetChanged();
+                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+
+//                        vehicules.add(vehicule);
                         intervention.vehicules.add(vehicule);
 
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-
+                                chargerIntervention();
                             }
 
                             @Override
@@ -344,38 +353,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             }
 
                         });
-
-                        /*InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
-                            @Override
-                            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
-                                Collections.reverse(response.body().vehicules);
-                                vehicules.clear();
-                                vehicules.addAll(response.body().vehicules);
-                                vehicules.add(vehicule);
-                                vehiculesAdapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onFailure(Call<Intervention> call, Throwable t) {
-                                //DO NOTHING
-                                Log.e("MapActivity", t.toString());
-                            }
-                        });*/
-
-
-                        // Set the ArrayAdapter as the ListView's adapter.
-
-
-                        /*Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();*/
-
-
                     }
                 });
-
-        // Remember, create doesn't show the dialog
-        AlertDialog helpDialog = helpBuilder.create();
-        helpDialog.show();
+        helpBuilder.create().show();
 
 
     }
@@ -393,16 +373,31 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
-                .title("I'm here"));
+                .title("-1"));
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 m_menu_choix.setVisibility(View.VISIBLE);
+                if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
+                    //TODO on clique sur une icone d'un vehicule
+                    Log.e("MapMarkerClick", "marker: " + marker);
+                    Log.e("MapMarkerClick", "title: " + marker.getTitle());
+                    Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
+                    Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
+                    m_menu_Actionvehicule.setVisibility(View.VISIBLE);
+                }
+                else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ){
 
-                Vehicule vTest = new Vehicule();
-                vTest.nom = "Batcopter";
-                ajoutImageFromVehicule(vTest);
+                    //TODO faire l'ajout depuis le menu vers la base
+                    //TODO parcourir la liste des vehicules pour afficher les vehicules
+                    m_menu_Actionvehicule.setVisibility(View.GONE);
+                    Vehicule vTest = new Vehicule();
+                    vTest.nom = "Batmobile"+vehicules.size();
+                    vehicules.add(vTest);
+                    ajoutImageFromVehicule(vTest, vehicules.size()-1);
+
+                }
                 return false;
             }
         });
@@ -412,12 +407,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
+
+                m_menu_Actionvehicule.setVisibility(View.GONE);
                 myMarker.remove();
+                pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
-                        .title("I'm here now"));
+                        .title("-1"));
 
 
                 Log.e("Position Marker", point.toString());
@@ -490,7 +488,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Methode pour ajouter sur la map un vehicule
      */
-    private void ajoutImageFromVehicule(Vehicule vehicule) {
+    private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
 
         //TODO afficher un marker custom
         LatLng SYDNEY = markerChanged.getPosition();
@@ -503,18 +501,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Paint color = new Paint();
         color.setTextSize(40);
         color.setColor(Color.BLACK);
-
+        //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
-        mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
                 .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
-
+        newMarker.setTitle(""+positionDansListeVehicules);
+        newMarker.setSnippet(vehicule.nom);
     }
 
     /**
@@ -552,6 +551,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     /**
      *
-     *
+     * Methode pour afficher un seul menu a la foit
      */
+    private void ChangerMenu(ListeMenu menu){
+        switch (menu){
+        //TODO
+            case m_menu_vehicules:
+                m_menu_vehicules.setVisibility(View.VISIBLE);
+                m_menu_points.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_choix.setVisibility(View.GONE);
+                m_menu_Actionpoint.setVisibility(View.GONE);
+                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case m_menu_points:
+                break;
+            case m_menu_choix:
+                break;
+            case m_menu_Actionvehicule:
+                break;
+            case m_menu_Actionpoint:
+                break;
+        }
+    }
 }

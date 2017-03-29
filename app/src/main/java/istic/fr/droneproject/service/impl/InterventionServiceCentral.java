@@ -126,15 +126,5 @@ public class InterventionServiceCentral implements InterventionService {
         call.enqueue(callback);
     }
 
-    @Override
-    public void getListeVehicules(String id, Callback<List<Vehicule>> callback) {
-        this.callback = callback;
-        this.interventionId = id;
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
 
-        Call<List<Vehicule>> call = interventionRestAPI.getListeVehicules(id);
-        call.enqueue(callback);
-    }
 }
