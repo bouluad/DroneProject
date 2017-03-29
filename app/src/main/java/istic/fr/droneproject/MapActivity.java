@@ -434,9 +434,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
                         .title("-1"));
+                //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(lng, 10));
+
+
+
 
                 /*CameraUpdate center =
                         CameraUpdateFactory.newLatLng(lng);
+
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo();
 
                 mGoogleMap.moveCamera(center);
@@ -446,7 +451,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
 
                 // Zoom in, animating the camera.
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
 
                 SynchroniserIntervention();
@@ -502,14 +507,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Map", "Map clicked");
 
                 m_menu_Actionvehicule.setVisibility(View.GONE);
-                myMarker.remove();
+               /* myMarker.remove();*/
                 pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
                         .title("-1"));
-
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
@@ -577,8 +582,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
         Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
-        if(markerChanged == null)
-            markerChanged = myMarker;
+            
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
