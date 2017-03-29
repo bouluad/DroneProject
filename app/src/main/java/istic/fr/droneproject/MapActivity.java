@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -81,6 +82,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
     View m_menu_points;
+    LatLng pointVehicule;
     View m_menu_choix;
     String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     private String idIntervention;
@@ -131,22 +133,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
        // vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
-        //recyclerViewVehicules.setAdapter(vehiculesAdapter);
+       // recyclerViewVehicules.setAdapter(vehiculesAdapter);
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
-                InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
-                    @Override
-                    public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                        intervention = response.body();
-                        for(int i=0;i<intervention.vehicules.size();i++) {
-                            if (intervention.vehicules.get(i).equals(vehicule)) {
-                                intervention.vehicules.get(i).etat.equals(EtatVehicule.DEMANDE);
+                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
+                //vehicule
+                               int k =intervention.vehicules.indexOf(vehicule);
+                                intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+                                 Double[] list = new Double[2];
+                                 list[0]=pointVehicule.latitude;
+                                 list[1]=pointVehicule.longitude;
+                                intervention.vehicules.get(k).setPosition(list);
+                     Log.e("Vehicule cliqué","Vehicule cliqué 2=========>");
                                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                                     @Override
                                     public void onResponse(Call<Void> call, Response<Void> response) {
 
-
+                                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                                        Log.e("Vehicule cliqué","Vehicule cliqué 3=========>");
                                     }
 
                                     @Override
@@ -155,23 +160,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                         Log.e("MapActivity", t.toString());
                                     }
                                 });
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<Intervention> call, Throwable t) {
-                        //DO NOTHING
-                        Log.e("MapActivity", t.toString());
-                    }
-                });
-
             }
         };
         vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById("58d1327e5bce7c234254cf28", new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
@@ -179,7 +173,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehicules.clear();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
 
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position.length == 0) {
+                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position== null) {
                         vehicules.add(response.body().vehicules.get(i));
                     }
                 }
@@ -453,6 +447,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
                 myMarker.remove();
+                pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
