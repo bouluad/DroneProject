@@ -36,4 +36,11 @@ public interface InterventionService {
      */
     void updateIntervention(Intervention intervention, Callback<Void> callback);
 
+    /**
+     * Cloturer une intervention by id
+     * @param callback Callback pour récupérer la réponse
+     */
+
+    void cloturerIntervention(String idIntervention, Callback<Void> callback);
+
 }
