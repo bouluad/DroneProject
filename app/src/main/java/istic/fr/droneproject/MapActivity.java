@@ -84,6 +84,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
     boolean synchronisationBloquer = false;
     boolean synchronisationNeedUpdate = false;
+
+    //Service de convertion en image et couler
+    TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
+
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
@@ -549,10 +553,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Paint color = new Paint();
         color.setTextSize(40);
         color.setColor(Color.BLACK);
+        TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
-        TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
