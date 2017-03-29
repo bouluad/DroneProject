@@ -85,10 +85,7 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
             @Override
             public void clickConfirmer(Vehicule vehicule) {
-
-                System.out.println(" TEST : "+vehicule.etat+" -  "+vehicule.heureEngagement);
                 if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) || (EtatVehicule.PARKING.equals(vehicule.etat)) ) {
-
                   vehicule.etat=EtatVehicule.ARRIVE;
                     vehicule.heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                     InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {

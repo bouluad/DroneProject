@@ -10,6 +10,7 @@ import java.io.ByteArrayOutputStream;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Categorie;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Vehicule;
 
 
@@ -44,23 +45,38 @@ public class TransformImageToStringEtVs{
          int drawable;
          switch (vehicule.categorie) {
              case COMMANDEMENT:
-                 drawable = R.drawable.vh_com;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_com;
+                 else
+                     drawable = R.drawable.vh_com;
                  break;
 
              case SAUVETAGE:
-                 drawable = R.drawable.vh_hu;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_hu;
+                 else
+                    drawable = R.drawable.vh_hu;
                  break;
 
              case INCENDIE:
-                 drawable = R.drawable.vh_in;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_in;
+                 else
+                    drawable = R.drawable.vh_in;
                  break;
 
              case RISQUE_PARTICULIER:
-                 drawable = R.drawable.vh_rp;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_rp;
+                 else
+                     drawable = R.drawable.vh_rp;
                  break;
 
              case EAU:
-                 drawable = R.drawable.vh_eau;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_eau;
+                 else
+                     drawable = R.drawable.vh_eau;
                  break;
 
              default:

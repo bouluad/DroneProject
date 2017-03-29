@@ -14,6 +14,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
 
@@ -48,6 +49,7 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             holder.heure1.setBackgroundColor(Color.GRAY);
             holder.heure1.setText("----");
         }
+        if(! EtatVehicule.ANNULE.equals(vehicule.etat)){
         holder.heure2.setText(vehicule.heureEngagement);
         if(vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()){
             holder.heure2.setBackgroundColor(Color.GRAY);
@@ -80,6 +82,15 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 }
             });
         }else {
+            holder.btnLiberer.setVisibility(View.INVISIBLE);
+            holder.btnConfirmer.setVisibility(View.INVISIBLE);
+        }} else{
+            holder.heure2.setBackgroundColor(Color.CYAN);
+            holder.heure2.setText("annulé");
+            holder.heure3.setBackgroundColor(Color.CYAN);
+            holder.heure3.setText("----");
+            holder.heure4.setBackgroundColor(Color.CYAN);
+            holder.heure4.setText("----");
             holder.btnLiberer.setVisibility(View.INVISIBLE);
             holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
