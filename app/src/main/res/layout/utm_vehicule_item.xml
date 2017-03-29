@@ -1,70 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/utm_vi_Linear"
-    android:layout_width="match_parent"
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_collapseParallaxMultiplier="1.0">
+    android:stretchColumns="1">
 
-    <TextView
-        android:id="@+id/utm_vi_Nom"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="2.5"
-        android:text="TextView"
-        android:textSize="24sp" />
+    <TableRow
+        android:id="@+id/tableRowUserMoyen"
+        android:layout_marginTop="2dp"
+        android:background="#b1d9e5">
 
-    <TextView
-        android:id="@+id/utm_vi_heure1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="time"
-        android:text="TextView"
-        android:textSize="24sp" />
+        <!-- Column 1 -->
+        <TextView
+            android:id="@+id/utm_vi_Nom"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp" />
 
-    <TextView
-        android:id="@+id/utm_vi_heure2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="time"
-        android:text="TextView"
-        android:textSize="24sp" />
+        <!-- Column 2 -->
+        <TextView
+            android:id="@+id/utm_vi_heure1"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp" />
 
-    <TextView
-        android:id="@+id/utm_vi_heure3"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="time"
-        android:text="TextView"
-        android:textSize="24sp" />
+        <!-- Column 3 -->
+        <TextView
+            android:id="@+id/utm_vi_heure2"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp" />
 
-    <TextView
-        android:id="@+id/utm_vi_heure4"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:inputType="time"
-        android:text="TextView"
-        android:textSize="24sp" />
+        <!-- Column 4 -->
+        <TextView
+            android:id="@+id/utm_vi_heure3"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp" />
+        <!-- Column 5 -->
+        <TextView
+            android:id="@+id/utm_vi_heure4"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp" />
 
-    <Button
-        android:id="@+id/utm_vi_btn_liberation"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:text="Liberation"
-        android:textSize="24sp" />
+        <!-- Column 6 -->
+        <Button
+            android:id="@+id/utm_vi_btn_Confirmer"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text="Confirmation" />
 
-    <Button
-        android:id="@+id/utm_vi_btn_Confirmer"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1.5"
-        android:contentDescription="Confirmer Position Vehicule"
-        android:text="Confirmer"
-        android:textSize="24sp" />
-</LinearLayout>
+        <!-- Column 7 -->
+        <Button
+            android:id="@+id/utm_vi_btn_liberation"
+            android:layout_width="0dip"
+            android:layout_weight="1"
+            android:padding="10dp"
+            android:text="Liberation" />
+    </TableRow>
+
+</TableLayout>
