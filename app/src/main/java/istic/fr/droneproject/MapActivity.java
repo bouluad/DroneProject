@@ -387,8 +387,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
                     m_menu_Actionvehicule.setVisibility(View.VISIBLE);
                 }
-                else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ){
-
+                else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
+                    //TODO
+                    m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                }
+                else{
                     //TODO faire l'ajout depuis le menu vers la base
                     //TODO parcourir la liste des vehicules pour afficher les vehicules
                     m_menu_Actionvehicule.setVisibility(View.GONE);
@@ -396,6 +399,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     vTest.nom = "Batmobile"+vehicules.size();
                     vehicules.add(vTest);
                     ajoutImageFromVehicule(vTest, vehicules.size()-1);
+
 
                 }
                 return false;
@@ -489,7 +493,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Methode pour ajouter sur la map un vehicule
      */
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
-
+        Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
         LatLng SYDNEY = markerChanged.getPosition();
 
