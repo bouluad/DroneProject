@@ -41,4 +41,10 @@
     <string name="Points">Points</string>
     <string name="Moyens">Moyens</string>
 
+    <string name="deplacer">Déplacer</string>
+    <string name="confirmer">Confirmer</string>
+    <string name="liberer">Liberer</string>
+    <string name="parking">Parking</string>
+    <string name="supprimer">Supprimer</string>
+
 </resources>
