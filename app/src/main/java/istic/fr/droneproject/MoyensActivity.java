@@ -1,5 +1,6 @@
 package istic.fr.droneproject;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,7 +16,9 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Toast;
 
+import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -84,35 +87,51 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
             @Override
             public void clickConfirmer(Vehicule vehicule) {
-                vehicule.etat=EtatVehicule.ARRIVE;
-                vehicule.heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("MoyensActivity","UPDATE INTERVENTION");
-                        chargerIntervention();
-                    }
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                    }
-                });
+
+                System.out.println(" TEST : "+vehicule.etat+" -  "+vehicule.heureEngagement);
+                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) || (EtatVehicule.PARKING.equals(vehicule.etat)) ) {
+
+                  vehicule.etat=EtatVehicule.ARRIVE;
+                    vehicule.heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                    InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Log.e("MoyensActivity","UPDATE INTERVENTION");
+                            chargerIntervention();
+                            Toast.makeText(getActivity(),
+                                    "Vehicule confirmé", Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                        }
+                    });
+                }else {
+
+                    Toast.makeText(getActivity(),
+                       "Veuillez attendre l'arrivée avant de confirmer", Toast.LENGTH_LONG).show();
+            }
             }
             @Override
             public void clickLiberer(Vehicule vehicule) {
-                vehicule.etat = EtatVehicule.LIBERE;
-                vehicule.heureLiberation = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
 
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("MoyensActivity", "UPDATE INTERVENTION");
-                        chargerIntervention();
-                    }
+                    vehicule.etat = EtatVehicule.LIBERE;
+                    vehicule.heureLiberation = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                    InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                    }
-                });
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Log.e("MoyensActivity", "UPDATE INTERVENTION");
+                            chargerIntervention();
+                            Toast.makeText(getActivity(),
+                                    "Vehicule liberé", Toast.LENGTH_LONG).show();
+                        }
+
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                        }
+                    });
+
+
             }
         };
         vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, currentIntervention,eventsVehiculeClickListener);

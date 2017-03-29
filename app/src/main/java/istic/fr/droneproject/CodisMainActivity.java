@@ -34,14 +34,17 @@ public class CodisMainActivity extends AppCompatActivity {
         tabLayout.setupWithViewPager(mViewPager);
 
     }
-    public class CodisTabsPagerAdapter extends FragmentPagerAdapter{
+
+    public class CodisTabsPagerAdapter extends FragmentPagerAdapter {
 
 
-        public CodisTabsPagerAdapter(FragmentManager fm){ super(fm);}
+        public CodisTabsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
 
         @Override
         public Fragment getItem(int position) {
-            switch(position){
+            switch (position) {
                 case 0:
                     return CodisInterventionsFragment.newInstance();
                 case 1:
@@ -61,7 +64,7 @@ public class CodisMainActivity extends AppCompatActivity {
                 case 0:
                     return "Interventions";
                 case 1:
-                    return "Moyens";
+                    return "Validation moyens";
             }
             return null;
         }
