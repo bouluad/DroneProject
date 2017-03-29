@@ -147,6 +147,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
         vehicules = new ArrayList<>();
+        vehiculesCarte = new ArrayList<>();
+        pointsCarte = new ArrayList<>();
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
@@ -400,12 +402,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        LatLng lng;
         // Add a marker in Sydney and move the camera
 
         this.mGoogleMap = googleMap;
-
-        LatLng lng = new LatLng(40.76793169992044, -73.98180484771729);
+        Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+         if(intervention.position!=null) {
+             lng = new LatLng(intervention.position[0], intervention.position[1]);
+         }
+        else{
+              lng = new LatLng(40.76793169992044, -73.98180484771729);}
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
@@ -415,6 +421,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
+                SynchroniserIntervention();
                 changerMenu(ListeMenu.m_menu_choix);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
