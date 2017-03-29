@@ -87,6 +87,8 @@ public class TransformImageToStringEtVs{
 
     public static int FindColorByVehicule(Categorie categorie){
         int color;
+        if(categorie == null)
+            return Color.BLACK;
         switch (categorie) {
             case COMMANDEMENT:
                 color = Color.rgb(164,87,142);

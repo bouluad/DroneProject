@@ -576,13 +576,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 // paint defines the text color, stroke width and size
         Paint color = new Paint();
         color.setTextSize(40);
-        color.setColor(Color.BLACK);
+        color.setColor(titsev.FindColorByVehicule(vehicule.categorie));
         TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
         titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
-        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawBitmap(
+                titsev.transformStringToImage(titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule)))
+                , null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
