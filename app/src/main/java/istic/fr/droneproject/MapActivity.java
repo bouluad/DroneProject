@@ -38,6 +38,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -407,7 +408,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(final GoogleMap googleMap) {
 
         // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
@@ -440,6 +441,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 mGoogleMap.moveCamera(center);
                 mGoogleMap.animateCamera(zoom);*/
+
+              // Move the camera instantly to hamburg with a zoom of 15.
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
+
+                // Zoom in, animating the camera.
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(10), 2000, null);
+
             }
 
             @Override
@@ -567,6 +575,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
         Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
+        if(markerChanged == null)
+            
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
