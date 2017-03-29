@@ -576,7 +576,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
         if(markerChanged == null)
-            
+            markerChanged = myMarker;
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
