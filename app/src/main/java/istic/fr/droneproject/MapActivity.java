@@ -294,7 +294,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     }
 
     private void chargerIntervention() {
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+        InterventionServiceCentral.getInstance().getInterventionById("58da8b518bfbfc2c8a87a620", new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
@@ -396,12 +396,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        LatLng lng;
         // Add a marker in Sydney and move the camera
 
         this.mGoogleMap = googleMap;
-
-        LatLng lng = new LatLng(40.76793169992044, -73.98180484771729);
+        Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+         if(intervention.position!=null) {
+             lng = new LatLng(intervention.position[0], intervention.position[1]);
+         }
+        else{
+              lng = new LatLng(40.76793169992044, -73.98180484771729);}
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
