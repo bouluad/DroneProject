@@ -435,6 +435,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .position(lng)
                         .title("-1"));
 
+
+
                 /*CameraUpdate center =
                         CameraUpdateFactory.newLatLng(lng);
                 CameraUpdate zoom = CameraUpdateFactory.zoomTo();
@@ -500,14 +502,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Map", "Map clicked");
 
                 m_menu_Actionvehicule.setVisibility(View.GONE);
-                myMarker.remove();
+               /* myMarker.remove();*/
                 pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
                         .title("-1"));
-
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
