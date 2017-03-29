@@ -412,7 +412,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         this.mGoogleMap = googleMap;
         Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
-         if(intervention.position!=null) {
+         if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
              lng = new LatLng(intervention.position[0], intervention.position[1]);
          }
         else{
