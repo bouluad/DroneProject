@@ -43,6 +43,9 @@ public class TransformImageToStringEtVs{
 
      public int FindImageIdByVehicule(Vehicule vehicule){
          int drawable;
+         if(vehicule == null || vehicule.categorie == null)
+             return R.drawable.vh_eau;
+
          switch (vehicule.categorie) {
              case COMMANDEMENT:
                  if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
