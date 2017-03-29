@@ -4,13 +4,12 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.support.v4.app.Fragment;
 import android.util.Base64;
-import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.Vehicule;
 
 
@@ -70,27 +69,27 @@ public class TransformImageToStringEtVs{
          return drawable;
      }
 
-    public int FindColorByVehicule(Vehicule vehicule){
+    public int FindColorByVehicule(Categorie categorie){
         int color;
-        switch (vehicule.categorie) {
+        switch (categorie) {
             case COMMANDEMENT:
-                color = Color.MAGENTA;
+                color = Color.rgb(164,87,142);
                 break;
 
             case SAUVETAGE:
-                color = Color.GREEN;
+                color = Color.rgb(143,224,64);
                 break;
 
             case INCENDIE:
-                color = Color.RED;
+                color = Color.rgb(242,61,45);
                 break;
 
             case RISQUE_PARTICULIER:
-                color = Color.YELLOW;
+                color = Color.rgb(250,193,41);
                 break;
 
             case EAU:
-                color = Color.BLUE;
+                color = Color.rgb(130,140,174);
                 break;
 
             default:
