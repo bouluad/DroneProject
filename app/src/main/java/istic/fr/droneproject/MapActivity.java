@@ -57,6 +57,7 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.TransformImageToStringEtVs;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -83,6 +84,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
     boolean synchronisationBloquer = false;
     boolean synchronisationNeedUpdate = false;
+
+    //Service de convertion en image et couler
+    TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
+
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
@@ -95,7 +100,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_Actionpoint;
 
     public enum ListeMenu {
-        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, aucun
     }
     private String idIntervention;
 
@@ -147,6 +152,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
         vehicules = new ArrayList<>();
+        vehiculesCarte = new ArrayList<>();
+        pointsCarte = new ArrayList<>();
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
@@ -190,13 +197,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_listPositionPoint[0]=pointVehicule.latitude;
                 m_listPositionPoint[1]=pointVehicule.longitude;
                 pointInteret.setPosition(m_listPositionPoint);
+                if(intervention.points == null){
+                    intervention.points = new ArrayList<>();
+                }
                 intervention.points.add(pointInteret);
 
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
 
-                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(),"L'intervention a été modifiée",Toast.LENGTH_SHORT).show();
                         Log.e("Point cliqué","=========>Point cliqué ");
                     }
 
@@ -270,15 +280,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         points.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_menu_points.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
+                changerMenu(ListeMenu.m_menu_points);
             }
         });
         vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
+                changerMenu(ListeMenu.m_menu_vehicules);
             }
         });
 
@@ -399,12 +407,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-
+        LatLng lng;
         // Add a marker in Sydney and move the camera
 
         this.mGoogleMap = googleMap;
-
-        LatLng lng = new LatLng(40.76793169992044, -73.98180484771729);
+        Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+         if(intervention.position!=null) {
+             lng = new LatLng(intervention.position[0], intervention.position[1]);
+         }
+        else{
+              lng = new LatLng(40.76793169992044, -73.98180484771729);}
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
@@ -415,18 +427,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 SynchroniserIntervention();
-                m_menu_choix.setVisibility(View.VISIBLE);
+                changerMenu(ListeMenu.m_menu_choix);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
                     Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
-                    m_menu_Actionvehicule.setVisibility(View.VISIBLE);
+
+                    changerMenu(ListeMenu.m_menu_Actionvehicule);
                 }
                 else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
                     //TODO
-                    m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                    changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
                 else{
                     //TODO faire l'ajout depuis le menu vers la base
@@ -460,7 +473,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 Log.e("Position Marker", point.toString());
-                ChangerMenu(ListeMenu.m_menu_choix);
+                changerMenu(ListeMenu.m_menu_choix);
             }
         });
         CameraUpdate center =
@@ -540,9 +553,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Paint color = new Paint();
         color.setTextSize(40);
         color.setColor(Color.BLACK);
+        TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
+        titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
@@ -603,43 +618,31 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      *
      * Methode pour afficher un seul menu a la foit
      */
-    public void ChangerMenu(ListeMenu menu){
+    public void changerMenu(ListeMenu menu){
+
+        m_menu_vehicules.setVisibility(View.GONE);
+        m_menu_points.setVisibility(View.GONE);
+        m_menu_choix.setVisibility(View.GONE);
+        m_menu_Actionpoint.setVisibility(View.GONE);
+        m_menu_Actionvehicule.setVisibility(View.GONE);
+
         switch (menu){
-        //TODO
             case m_menu_vehicules:
                 m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_points:
-                m_menu_vehicules.setVisibility(View.GONE);
                 m_menu_points.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_choix:
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
                 m_menu_choix.setVisibility(View.VISIBLE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_Actionvehicule:
-                m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
                 m_menu_Actionvehicule.setVisibility(View.VISIBLE);
                 break;
             case m_menu_Actionpoint:
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case aucun:
                 break;
         }
     }
