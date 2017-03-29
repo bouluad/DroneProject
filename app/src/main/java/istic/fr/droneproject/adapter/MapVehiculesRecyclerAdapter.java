@@ -27,6 +27,7 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
     private VehiculeClickListener listener;
     private Context context;
 
+
     public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout,Context context,VehiculeClickListener listener) {
 
         this.vehicules = vehicules;
@@ -46,8 +47,14 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
 
     @Override
     public void onBindViewHolder(VehiculeViewHolder holder, int position) {
-        Vehicule vehicule = vehicules.get(position);
+        final Vehicule vehicule = vehicules.get(position);
         holder.nom.setText(vehicule.nom);
+        holder.nom.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                listener.clickVehicule(vehicule);
+            }
+        });
         holder.type.setText(vehicule.type.toString());
         Log.e("==========>",vehicule.categorie.toString());
        switch(vehicule.categorie){
