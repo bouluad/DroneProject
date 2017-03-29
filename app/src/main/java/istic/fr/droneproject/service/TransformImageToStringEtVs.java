@@ -69,7 +69,7 @@ public class TransformImageToStringEtVs{
          return drawable;
      }
 
-    public int FindColorByVehicule(Categorie categorie){
+    public static int FindColorByVehicule(Categorie categorie){
         int color;
         switch (categorie) {
             case COMMANDEMENT:

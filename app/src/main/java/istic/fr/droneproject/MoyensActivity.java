@@ -1,6 +1,5 @@
 package istic.fr.droneproject;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -18,7 +17,6 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.sql.SQLOutput;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -173,53 +171,57 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getContext());
         helpBuilder.setTitle("Demander un véhicule");
+
         LayoutInflater inflater = getLayoutInflater(savedInstanceState);
         final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
+
         final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
+
         final Spinner categorieSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
         Categorie[] categories = Categorie.values();
         ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         categorieSpinner.setAdapter(adapter);
+
         final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
+
         helpBuilder.setView(popupLayout);
-        helpBuilder.setPositiveButton("Ajouter",
-                new DialogInterface.OnClickListener() {
+        helpBuilder.setPositiveButton("Ajouter", new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, int which) {
 
-                        Vehicule vehicule = new Vehicule();
-                        vehicule.nom = nom_vehicule.getText().toString();
-                        int selectedId = radiogroup.getCheckedRadioButtonId();
-                        switch (selectedId) {
-                            case R.id.type_radio_fpt:
-                                vehicule.type = TypeVehicule.FPT;
-                                break;
-                            case R.id.type_radio_vlcg:
-                                vehicule.type = TypeVehicule.VLCG;
-                                break;
-                            case R.id.type_radio_vsav:
-                                vehicule.type = TypeVehicule.VSAV;
-                                break;
-                        }
-                        vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
+                Vehicule vehicule = new Vehicule();
+                vehicule.nom = nom_vehicule.getText().toString();
+                int selectedId = radiogroup.getCheckedRadioButtonId();
+                switch (selectedId) {
+                    case R.id.type_radio_fpt:
+                        vehicule.type = TypeVehicule.FPT;
+                        break;
+                    case R.id.type_radio_vlcg:
+                        vehicule.type = TypeVehicule.VLCG;
+                        break;
+                    case R.id.type_radio_vsav:
+                        vehicule.type = TypeVehicule.VSAV;
+                        break;
+                }
+                vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
 
-                        vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                        currentIntervention.vehicules.add(vehicule);
-                        InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                Log.e("MoyensActivity","UPDATE INTERVENTION");
-                                chargerIntervention();
-                            }
+                vehicule.etat = EtatVehicule.DEMANDE;
+                vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                currentIntervention.vehicules.add(vehicule);
+                InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("MoyensActivity", "UPDATE INTERVENTION");
+                        chargerIntervention();
+                    }
 
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                            }
-                        });
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
                     }
                 });
+            }
+        });
         helpBuilder.create().show();
     }
 
