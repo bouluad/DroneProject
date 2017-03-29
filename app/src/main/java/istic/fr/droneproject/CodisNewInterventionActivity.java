@@ -4,6 +4,8 @@ package istic.fr.droneproject;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,10 +15,13 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -40,10 +45,11 @@ import retrofit2.Response;
  * Created by salma on 21/03/17.
  */
 
-public class CodisNewInterventionActivity extends AppCompatActivity {
+public class CodisNewInterventionActivity extends AppCompatActivity implements CodisMapFragment.ValiderPositionListener{
     Intervention intervention;
     RecyclerView moyensRecyclerView;
     CodisPremierDepartAdapter moyensAdapter;
+    FrameLayout frameFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +64,10 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
         moyensRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
         moyensRecyclerView.setAdapter(moyensAdapter);
 
+        frameFragment = (FrameLayout) findViewById(R.id.codis_new_frame_fragment);
+        frameFragment.setVisibility(View.GONE);
+
         final EditText libelle = (EditText) findViewById(R.id.libelle);
-        final EditText adresse = (EditText) findViewById(R.id.adresse);
 
         final RadioButton radioBtnINC = (RadioButton) findViewById(R.id.code_radio_inc);
 
@@ -77,8 +85,6 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
             public void onClick(View view) {
 
                 intervention.libelle = libelle.getText().toString();
-                intervention.adresse = adresse.getText().toString();
-                intervention.position = new Double[2];
                 intervention.date = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss", Locale.FRANCE).format(new Date());
 
                 if (radioBtnINC.isChecked()) {
@@ -101,6 +107,22 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
                 });
             }
         });
+
+        Button btnAdresse = (Button) findViewById(R.id.codis_new_btn_adresse);
+        btnAdresse.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showGoogleMap();
+            }
+        });
+    }
+
+    private void showGoogleMap() {
+        frameFragment.setVisibility(View.VISIBLE);
+        Fragment fragment = CodisMapFragment.newInstance(intervention);
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.codis_new_frame_fragment, fragment).addToBackStack(null);
+        transaction.commit();
     }
 
     private void popupAjoutVehicule() {
@@ -159,5 +181,16 @@ public class CodisNewInterventionActivity extends AppCompatActivity {
         });
 
         helpBuilder.create().show();
+    }
+
+    @Override
+    public void validerPosition(LatLng position, String adresse) {
+        Double[] nouvellePosition = new Double[2];
+        nouvellePosition[0] = position.latitude;
+        nouvellePosition[1] = position.longitude;
+        intervention.position = nouvellePosition;
+        intervention.adresse = adresse;
+
+        frameFragment.setVisibility(View.GONE);
     }
 }
