@@ -68,8 +68,12 @@ public class ValidationRecyclerAdapter extends RecyclerView.Adapter<ValidationRe
                 holder.tablerow.setBackgroundColor(Color.parseColor("#fff402"));
                 break;
             //COMMANDEMENT - VIOLET
-            default:
+            case "commandement":
                 holder.tablerow.setBackgroundColor(Color.parseColor("#927ae8"));
+                break;
+            //PAR DEFAUT  - VERT CLAIR
+            default:
+                holder.tablerow.setBackgroundColor(Color.parseColor("#d0fff0"));
                 break;
         }
 
