@@ -57,6 +57,7 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.TransformImageToStringEtVs;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -551,6 +552,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
+        TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
+        titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
         canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
