@@ -69,6 +69,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     Marker myMarker;
     Marker markerChanged;
+    LatLng lng;
     ViewGroup view;
     Button boutonMenu;
     RecyclerView recyclerViewVehicules;
@@ -407,10 +408,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng lng;
-        // Add a marker in Sydney and move the camera
 
+        // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
         Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
          if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
              lng = new LatLng(intervention.position[0], intervention.position[1]);
@@ -419,9 +422,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
               lng = new LatLng(40.76793169992044, -73.98180484771729);}
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
-                .position(lng)
-                .title("-1"));
+                Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+                if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
+                    lng = new LatLng(intervention.position[0], intervention.position[1]);
+                }
+                else{
+                    lng = new LatLng(40.76793169992044, -73.98180484771729);}
+                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+                myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .position(lng)
+                        .title("-1"));
+
+                /*CameraUpdate center =
+                        CameraUpdateFactory.newLatLng(lng);
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo();
+
+                mGoogleMap.moveCamera(center);
+                mGoogleMap.animateCamera(zoom);*/
+            }
+
+            @Override
+            public void onFailure(Call<Intervention> call, Throwable t) {
+                //DO NOTHING
+                Log.e("MapActivity", t.toString());
+            }
+        });
+
+
+
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -476,12 +505,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 changerMenu(ListeMenu.m_menu_choix);
             }
         });
-        CameraUpdate center =
-                CameraUpdateFactory.newLatLng(lng);
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
-        mGoogleMap.moveCamera(center);
-        mGoogleMap.animateCamera(zoom);
 
         mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
@@ -573,8 +597,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Methode pour ajouter sur la map un point
      */
-    private void ajoutImageFromPoint(PointInteret point) {
+    private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
 
+        Log.e("Map ajout point","Ajout de point a la position "+positionDansListePoints);
+        //TODO afficher un marker custom
+        LatLng SYDNEY = markerChanged.getPosition();
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(40);
+        color.setColor(Color.BLACK);
+        //TODO choisir la bonne couleur
+// modify canvas
+        //TODO utiliser le service de yousra pour charger la bonne image
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(point.code_image, iconSizeX/20, iconSizeY/5*3, color);
+
+// add marker to Map
+        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                // Specifies the anchor to be at a particular point in the marker image.
+                .anchor(0.5f, 1));
+        newMarker.setTitle(""+positionDansListePoints);
+        newMarker.setSnippet(point.code_image
+        );
     }
 
     /**
