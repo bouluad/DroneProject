@@ -2,7 +2,6 @@ package istic.fr.droneproject;
 
 
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -28,7 +27,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -49,11 +47,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
-import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
@@ -77,23 +74,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
-    List<Vehicule> vehicules;
+    private List<Vehicule> vehicules;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
     View m_menu_points;
     LatLng pointVehicule;
     View m_menu_choix;
-    String[] categorie = {"SAUVETAGE", "INCENDIE", "RISQUE PARTICULIER", "EAU", "COMMANDEMENT"};
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
     private static final int iconSizeX = 200;
     private static final int iconSizeY = 117;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        if (getArguments() != null) {
+            idIntervention = getArguments().getString(ARG_ID);
+        }
     }
 
     @Override
@@ -129,11 +128,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
-        final List<Vehicule> vehicules = new ArrayList<>();
+        vehicules = new ArrayList<>();
         recyclerViewVehicules = (RecyclerView) view.findViewById(R.id.m_list_vehicules);
         recyclerViewVehicules.setLayoutManager(new LinearLayoutManager(getContext()));
-       // vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
-       // recyclerViewVehicules.setAdapter(vehiculesAdapter);
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
@@ -165,29 +162,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
-        InterventionServiceCentral.getInstance().getInterventionById("58d1327e5bce7c234254cf28", new Callback<Intervention>() {
-            @Override
-            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                intervention = response.body();
-                Collections.reverse(response.body().vehicules);
-                vehicules.clear();
-                for (int i = 0; i < response.body().vehicules.size(); i++) {
-
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position== null) {
-                        vehicules.add(response.body().vehicules.get(i));
-                    }
-                }
-                /*vehicules.clear();
-                vehicules.addAll(response.body().vehicules);*/
-                vehiculesAdapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<Intervention> call, Throwable t) {
-                //DO NOTHING
-                Log.e("MapActivity", t.toString());
-            }
-        });
+       chargerIntervention();
 
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
@@ -248,7 +223,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 m_menu_points.setVisibility(View.VISIBLE);
                 m_menu_choix.setVisibility(View.GONE);
-                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
         vehicule.setOnClickListener(new View.OnClickListener() {
@@ -264,12 +238,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         showSimplePopUp();
                     }
                 });
-
-
-                //findViewById(R.id.m_list_vehicules).setVisibility(View.VISIBLE);
             }
         });
-
 
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
@@ -277,12 +247,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     }
 
+    private void chargerIntervention() {
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                intervention = response.body();
+                Collections.reverse(response.body().vehicules);
+                vehicules.clear();
+                for (int i = 0; i < response.body().vehicules.size(); i++) {
+
+                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position == null) {
+                        vehicules.add(response.body().vehicules.get(i));
+                    }
+                }
+                vehiculesAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onFailure(Call<Intervention> call, Throwable t) {
+                //DO NOTHING
+                Log.e("MapActivity", t.toString());
+            }
+        });
+    }
+
     private void showSimplePopUp() {
 
-
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
-        helpBuilder.setTitle("Moyens 1er depart");
-        /*helpBuilder.setMessage("This is a Simple Pop Up");*/
+        helpBuilder.setTitle("Demander un véhicule");
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
@@ -290,8 +282,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
         final Spinner popupSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(getContext(),
-                android.R.layout.simple_spinner_item, categorie);
+        Categorie[] categories = Categorie.values();
+        ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         popupSpinner.setAdapter(adapter);
 
@@ -308,68 +300,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     public void onClick(DialogInterface dialog, int which) {
 
                         //add to list vehicule
-
                         vehicule = new Vehicule();
-
-
                         vehicule.nom = nom_vehicule.getText().toString();
+
                         int selectedId = radiogroup.getCheckedRadioButtonId();
-
-                        final RadioButton radioButton = (RadioButton) popupLayout.findViewById(selectedId);
-
-                        String radio_value = radioButton.getText().toString();
-                        switch (radio_value) {
-                            case "FPT":
-
+                        switch (selectedId) {
+                            case R.id.type_radio_fpt:
                                 vehicule.type = TypeVehicule.FPT;
                                 break;
-                            case "VLCG":
-
+                            case R.id.type_radio_vlcg:
                                 vehicule.type = TypeVehicule.VLCG;
                                 break;
-                            case "VSAV":
-
+                            case R.id.type_radio_vsav:
                                 vehicule.type = TypeVehicule.VSAV;
                                 break;
                         }
 
-                        String selectedSpinner = popupSpinner.getSelectedItem().toString();
-                        switch (selectedSpinner) {
-
-                            case "SAUVETAGE":
-
-                                vehicule.categorie = Categorie.SAUVETAGE;
-                                break;
-                            case "INCENDIE":
-
-                                vehicule.categorie = Categorie.INCENDIE;
-                                break;
-                            case "RISQUE_PARTICULIER":
-
-                                vehicule.categorie = Categorie.RISQUE_PARTICULIER;
-                                break;
-                            case "EAU":
-
-                                vehicule.categorie = Categorie.EAU;
-                                break;
-                            case "COMMANDEMENT":
-
-                                vehicule.categorie = Categorie.COMMANDEMENT;
-                                break;
-                        }
-
-                        String currentTime = new SimpleDateFormat("HH:mm").format(new Date());
-                        vehicule.heureDemande = currentTime;
+                        vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
 
                         vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicules.add(vehicule);
-                        vehiculesAdapter.notifyDataSetChanged();
+                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+
+//                        vehicules.add(vehicule);
                         intervention.vehicules.add(vehicule);
 
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-
+                                chargerIntervention();
                             }
 
                             @Override
@@ -378,38 +336,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             }
 
                         });
-
-                        /*InterventionServiceCentral.getInstance().getInterventionById(idIntervention,new Callback<Intervention>() {
-                            @Override
-                            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                                //Log.e("Cateeeegoriiiie======",response.body().vehicules.get(0).categorie.toString());
-                                Collections.reverse(response.body().vehicules);
-                                vehicules.clear();
-                                vehicules.addAll(response.body().vehicules);
-                                vehicules.add(vehicule);
-                                vehiculesAdapter.notifyDataSetChanged();
-                            }
-
-                            @Override
-                            public void onFailure(Call<Intervention> call, Throwable t) {
-                                //DO NOTHING
-                                Log.e("MapActivity", t.toString());
-                            }
-                        });*/
-
-
-                        // Set the ArrayAdapter as the ListView's adapter.
-
-
-                        /*Toast.makeText(getApplicationContext(), "Véhicule enregistré", Toast.LENGTH_SHORT).show();*/
-
-
                     }
                 });
-
-        // Remember, create doesn't show the dialog
-        AlertDialog helpDialog = helpBuilder.create();
-        helpDialog.show();
+        helpBuilder.create().show();
 
 
     }
