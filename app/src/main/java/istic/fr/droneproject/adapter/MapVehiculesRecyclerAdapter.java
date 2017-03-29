@@ -1,43 +1,34 @@
 package istic.fr.droneproject.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
+
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Vehicule;
-import static istic.fr.droneproject.model.Categorie.COMMANDEMENT;
-import static istic.fr.droneproject.model.Categorie.INCENDIE;
-import static istic.fr.droneproject.model.Categorie.RISQUE_PARTICULIER;
-import static istic.fr.droneproject.model.Categorie.SAUVETAGE;
 
 public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehiculesRecyclerAdapter.VehiculeViewHolder> {
 
-
-    private  List<Vehicule> vehicules;
-    private  int layout;
+    private List<Vehicule> vehicules;
+    private int layout;
     private VehiculeClickListener listener;
     private Context context;
 
-
-    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout,Context context,VehiculeClickListener listener) {
+    public MapVehiculesRecyclerAdapter(List<Vehicule> vehicules, int layout, Context context, VehiculeClickListener listener) {
 
         this.vehicules = vehicules;
         this.layout = layout;
-        this.context=context;
-        this.listener=listener;
-
+        this.context = context;
+        this.listener = listener;
     }
-
-
 
     @Override
     public VehiculeViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -48,6 +39,7 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
     @Override
     public void onBindViewHolder(VehiculeViewHolder holder, int position) {
         final Vehicule vehicule = vehicules.get(position);
+
         holder.nom.setText(vehicule.nom);
         holder.nom.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,34 +48,33 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
             }
         });
         holder.type.setText(vehicule.type.toString());
-        Log.e("==========>",vehicule.categorie.toString());
-       switch(vehicule.categorie){
-           case COMMANDEMENT:
-               Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_com);
-               holder.image.setImageBitmap(bitmap);
 
-           case SAUVETAGE:
+        int drawable;
+        switch (vehicule.categorie) {
+            case COMMANDEMENT:
+                drawable = R.drawable.vh_com;
+                break;
 
-               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_hu);
-               holder.image.setImageBitmap(bitmap);
-           case INCENDIE:
+            case SAUVETAGE:
+                drawable = R.drawable.vh_hu;
+                break;
 
-               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_in);
-               holder.image.setImageBitmap(bitmap);
+            case INCENDIE:
+                drawable = R.drawable.vh_in;
+                break;
 
-           case RISQUE_PARTICULIER:
+            case RISQUE_PARTICULIER:
+                drawable = R.drawable.vh_rp;
+                break;
 
-               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_rp);
-               holder.image.setImageBitmap(bitmap);
+            case EAU:
+                drawable = R.drawable.vh_eau;
+                break;
 
-           default:
-
-               bitmap=BitmapFactory.decodeResource(context.getResources(),R.drawable.vh_eau);
-               holder.image.setImageBitmap(bitmap);
-
-
-
-       }
+            default:
+                drawable = R.drawable.vh_eau;
+        }
+        Picasso.with(context).load(drawable).resize(200,150).into(holder.image);
 
     }
 
@@ -98,17 +89,14 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         TextView type;
         ImageView image;
 
-
         public VehiculeViewHolder(final View itemView) {
             super(itemView);
             nom = (TextView) itemView.findViewById(R.id.m_vehicules_info_nom);
             type = (TextView) itemView.findViewById(R.id.m_vehicules_info_type);
             image = (ImageView) itemView.findViewById(R.id.m_vehicules_image);
-
-
-
         }
     }
+
     public interface VehiculeClickListener {
         void clickVehicule(Vehicule vehicule);
     }

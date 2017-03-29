@@ -79,6 +79,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //liste de points et vehicules synchroniser a afficher sur la carte
     private List<Vehicule> vehiculesCarte;
     private List<PointInteret> pointsCarte;
+
+    //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
+    boolean synchronisationBloquer = false;
+    boolean synchronisationNeedUpdate = false;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
@@ -148,6 +152,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
+                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
                 //vehicule
                                int k =intervention.vehicules.indexOf(vehicule);
                                 intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
@@ -171,9 +176,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                 });
             }
         };
-
-
-        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
         MapPointsRecyclerAdapter.PointClickListener pointsClickListener = new MapPointsRecyclerAdapter.PointClickListener() {
@@ -276,14 +279,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 m_menu_vehicules.setVisibility(View.VISIBLE);
                 m_menu_choix.setVisibility(View.GONE);
-                System.out.println("ici");
-                final FloatingActionButton btn_add_moyen = (FloatingActionButton) m_menu_vehicules.findViewById(R.id.m_list_vehicules_add);
-                btn_add_moyen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        showSimplePopUp();
-                    }
-                });
+            }
+        });
+
+        final FloatingActionButton btn_add_moyen = (FloatingActionButton) m_menu_vehicules.findViewById(R.id.m_list_vehicules_add);
+        btn_add_moyen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSimplePopUp();
             }
         });
 
@@ -415,6 +418,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
+                SynchroniserIntervention();
                 m_menu_choix.setVisibility(View.VISIBLE);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
@@ -460,9 +464,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 Log.e("Position Marker", point.toString());
-                m_menu_choix.setVisibility(View.VISIBLE);
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
+                ChangerMenu(ListeMenu.m_menu_choix);
             }
         });
         CameraUpdate center =
@@ -579,7 +581,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void SynchroniserIntervention(){
         //TODO avec idIntervention
-
+        if(!synchronisationBloquer){
+            chargerIntervention();
+            vehiculesCarte.clear();
+            vehiculesCarte = intervention.vehicules;
+            pointsCarte.clear();
+            pointsCarte = intervention.points;
+            reloadVehiculesPoints();
+        }
     }
 
     /**
@@ -587,14 +596,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * puis ajoute tout les points sur la map.
      */
     private void reloadVehiculesPoints(){
-
+    mGoogleMap.clear();
+        //ajoits des vehicules
+        for (int i = 0; i < vehicules.size(); i++) {
+            ajoutImageFromVehicule(vehicules.get(i),i);
+        }
     }
 
     /**
      *
      * Methode pour afficher un seul menu a la foit
      */
-    private void ChangerMenu(ListeMenu menu){
+    public void ChangerMenu(ListeMenu menu){
         switch (menu){
         //TODO
             case m_menu_vehicules:

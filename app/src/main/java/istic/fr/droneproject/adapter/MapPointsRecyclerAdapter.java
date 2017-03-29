@@ -2,7 +2,6 @@ package istic.fr.droneproject.adapter;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.support.v4.util.Pair;
 import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
@@ -10,18 +9,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+
 import java.util.List;
+
 import istic.fr.droneproject.R;
-import istic.fr.droneproject.model.Vehicule;
 
 public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecyclerAdapter.PointViewHolder> {
 
 
-    private final List<Pair<String,String>> listeImages;
+    private final List<Pair<String, String>> listeImages;
     private final int layout;
     private PointClickListener listener;
 
-    public MapPointsRecyclerAdapter(List<Pair<String,String>> images, int layout,PointClickListener listener) {
+    public MapPointsRecyclerAdapter(List<Pair<String, String>> images, int layout, PointClickListener listener) {
         this.listeImages = images;
 //        this.listeImages.add("eau.png");
 //        this.listeImages.add("eau_np.png");
@@ -38,7 +38,7 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
 //        this.listeImages.add("ve_in.png");
 //        this.listeImages.add("ve_rp.png");
         this.layout = layout;
-        this.listener=listener;
+        this.listener = listener;
     }
 
     @Override
@@ -49,7 +49,7 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
 
     @Override
     public void onBindViewHolder(PointViewHolder holder, int position) {
-      final Pair<String, String> imageCourante = listeImages.get(position);
+        final Pair<String, String> imageCourante = listeImages.get(position);
         byte[] encodeByte = Base64.decode(imageCourante.second, Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
         holder.image.setImageBitmap(bitmap);
@@ -68,6 +68,10 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
         return listeImages.size();
     }
 
+    public interface PointClickListener {
+        void clickPoint(Pair<String, String> image);
+    }
+
     public class PointViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
 
@@ -77,8 +81,5 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
 
 
         }
-    }
-    public interface PointClickListener {
-        void clickPoint( Pair<String, String> image);
     }
 }
