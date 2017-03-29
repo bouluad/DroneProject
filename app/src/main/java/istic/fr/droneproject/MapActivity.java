@@ -95,7 +95,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_Actionpoint;
 
     public enum ListeMenu {
-        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, aucun
     }
     private String idIntervention;
 
@@ -190,13 +190,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_listPositionPoint[0]=pointVehicule.latitude;
                 m_listPositionPoint[1]=pointVehicule.longitude;
                 pointInteret.setPosition(m_listPositionPoint);
+                if(intervention.points == null){
+                    intervention.points = new ArrayList<>();
+                }
                 intervention.points.add(pointInteret);
 
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
 
-                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(),"L'intervention a été modifiée",Toast.LENGTH_SHORT).show();
                         Log.e("Point cliqué","=========>Point cliqué ");
                     }
 
@@ -270,15 +273,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         points.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_menu_points.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
+                changerMenu(ListeMenu.m_menu_points);
             }
         });
         vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
+                changerMenu(ListeMenu.m_menu_vehicules);
             }
         });
 
@@ -414,18 +415,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
-                m_menu_choix.setVisibility(View.VISIBLE);
+                changerMenu(ListeMenu.m_menu_choix);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
                     Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
-                    m_menu_Actionvehicule.setVisibility(View.VISIBLE);
+
+                    changerMenu(ListeMenu.m_menu_Actionvehicule);
                 }
                 else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
                     //TODO
-                    m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                    changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
                 else{
                     //TODO faire l'ajout depuis le menu vers la base
@@ -459,7 +461,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 Log.e("Position Marker", point.toString());
-                ChangerMenu(ListeMenu.m_menu_choix);
+                changerMenu(ListeMenu.m_menu_choix);
             }
         });
         CameraUpdate center =
@@ -602,43 +604,31 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      *
      * Methode pour afficher un seul menu a la foit
      */
-    public void ChangerMenu(ListeMenu menu){
+    public void changerMenu(ListeMenu menu){
+
+        m_menu_vehicules.setVisibility(View.GONE);
+        m_menu_points.setVisibility(View.GONE);
+        m_menu_choix.setVisibility(View.GONE);
+        m_menu_Actionpoint.setVisibility(View.GONE);
+        m_menu_Actionvehicule.setVisibility(View.GONE);
+
         switch (menu){
-        //TODO
             case m_menu_vehicules:
                 m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_points:
-                m_menu_vehicules.setVisibility(View.GONE);
                 m_menu_points.setVisibility(View.VISIBLE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_choix:
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
                 m_menu_choix.setVisibility(View.VISIBLE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
                 break;
             case m_menu_Actionvehicule:
-                m_menu_vehicules.setVisibility(View.VISIBLE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
-                m_menu_Actionpoint.setVisibility(View.GONE);
                 m_menu_Actionvehicule.setVisibility(View.VISIBLE);
                 break;
             case m_menu_Actionpoint:
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
-                m_menu_choix.setVisibility(View.GONE);
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
-                m_menu_Actionvehicule.setVisibility(View.GONE);
+                break;
+            case aucun:
                 break;
         }
     }
