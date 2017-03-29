@@ -81,6 +81,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_points;
     LatLng pointVehicule;
     View m_menu_choix;
+    Double[] list;
+    Double[] list2;
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
@@ -134,21 +136,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
-                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
                 //vehicule
                                int k =intervention.vehicules.indexOf(vehicule);
                                 intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
-                                 Double[] list = new Double[2];
-                                 list[0]=pointVehicule.latitude;
-                                 list[1]=pointVehicule.longitude;
+                                list2 = new Double[2];
+                                 list2[0]=pointVehicule.latitude;
+                                 list2[1]=pointVehicule.longitude;
                                 intervention.vehicules.get(k).setPosition(list);
-                     Log.e("Vehicule cliqué","Vehicule cliqué 2=========>");
                                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                                     @Override
                                     public void onResponse(Call<Void> call, Response<Void> response) {
 
                                         Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
-                                        Log.e("Vehicule cliqué","Vehicule cliqué 3=========>");
+                                        Log.e("Vehicule cliqué","=========>Vehicule cliqué ");
                                     }
 
                                     @Override
@@ -159,15 +159,48 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                 });
             }
         };
+
+
         vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
+
+        MapPointsRecyclerAdapter.PointClickListener pointsClickListener = new MapPointsRecyclerAdapter.PointClickListener() {
+            @Override
+            public void clickPoint(final Pair<String, String> image) {
+
+                //point
+                PointInteret pointInteret=new PointInteret();
+                pointInteret.setCode_image(image.first);
+                 list = new Double[2];
+                list[0]=pointVehicule.latitude;
+                list[1]=pointVehicule.longitude;
+                pointInteret.setPosition(list);
+                intervention.points.add(pointInteret);
+
+                InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+
+                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        Log.e("Point cliqué","=========>Point cliqué ");
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        //DO NOTHING
+                        Log.e("MapActivity", t.toString());
+                    }
+                });
+                chargerIntervention();
+            }
+        };
 
        chargerIntervention();
 
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
         recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
-        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item);
+        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item,pointsClickListener);
         recyclerViewPoints.setAdapter(pointsAdapter);
 
         Bitmap largeIconeau = BitmapFactory.decodeResource(this.getResources(),
@@ -256,7 +289,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehicules.clear();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
 
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).position == null) {
+                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).etat == EtatVehicule.DEMANDE|| response.body().vehicules.get(i).position == null) {
                         vehicules.add(response.body().vehicules.get(i));
                     }
                 }
