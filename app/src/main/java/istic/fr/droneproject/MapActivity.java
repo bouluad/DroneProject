@@ -414,6 +414,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+        Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+         if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
+             lng = new LatLng(intervention.position[0], intervention.position[1]);
+         }
+        else{
+              lng = new LatLng(40.76793169992044, -73.98180484771729);}
+        mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
                 Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
                 if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {

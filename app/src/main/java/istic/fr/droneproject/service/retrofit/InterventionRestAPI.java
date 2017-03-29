@@ -29,5 +29,8 @@ public interface InterventionRestAPI {
     @POST("interventions/")
     Call<Void> updateIntervention(@Body Intervention intervention);
 
+    @POST("interventions/{id}/cloturer")
+    Call<Void> cloturerIntervention(@Path("id") String id );
+
 
 }

@@ -126,5 +126,17 @@ public class InterventionServiceCentral implements InterventionService {
         call.enqueue(callback);
     }
 
+    @Override
+    public void cloturerIntervention(String idIntervention, Callback<Void> callback) {
+        this.interventionId = null;
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+
+        InterventionRestAPI apiService = retrofit.create(InterventionRestAPI.class);
+
+        Call<Void> call =  apiService.cloturerIntervention(idIntervention);
+        call.enqueue(callback);
+    }
+
 
 }

@@ -4,13 +4,13 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.support.v4.app.Fragment;
 import android.util.Base64;
-import android.view.View;
 
 import java.io.ByteArrayOutputStream;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.Categorie;
+import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Vehicule;
 
 
@@ -45,23 +45,38 @@ public class TransformImageToStringEtVs{
          int drawable;
          switch (vehicule.categorie) {
              case COMMANDEMENT:
-                 drawable = R.drawable.vh_com;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_com;
+                 else
+                     drawable = R.drawable.vh_com;
                  break;
 
              case SAUVETAGE:
-                 drawable = R.drawable.vh_hu;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_hu;
+                 else
+                    drawable = R.drawable.vh_hu;
                  break;
 
              case INCENDIE:
-                 drawable = R.drawable.vh_in;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_in;
+                 else
+                    drawable = R.drawable.vh_in;
                  break;
 
              case RISQUE_PARTICULIER:
-                 drawable = R.drawable.vh_rp;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_rp;
+                 else
+                     drawable = R.drawable.vh_rp;
                  break;
 
              case EAU:
-                 drawable = R.drawable.vh_eau;
+                 if(vehicule.etat == EtatVehicule.DEMANDE || vehicule.etat == EtatVehicule.ENGAGE)
+                     drawable = R.drawable.ve_eau;
+                 else
+                     drawable = R.drawable.vh_eau;
                  break;
 
              default:
@@ -70,27 +85,27 @@ public class TransformImageToStringEtVs{
          return drawable;
      }
 
-    public int FindColorByVehicule(Vehicule vehicule){
+    public int FindColorByVehicule(Categorie categorie){
         int color;
-        switch (vehicule.categorie) {
+        switch (categorie) {
             case COMMANDEMENT:
-                color = Color.MAGENTA;
+                color = Color.rgb(164,87,142);
                 break;
 
             case SAUVETAGE:
-                color = Color.GREEN;
+                color = Color.rgb(143,224,64);
                 break;
 
             case INCENDIE:
-                color = Color.RED;
+                color = Color.rgb(242,61,45);
                 break;
 
             case RISQUE_PARTICULIER:
-                color = Color.YELLOW;
+                color = Color.rgb(250,193,41);
                 break;
 
             case EAU:
-                color = Color.BLUE;
+                color = Color.rgb(130,140,174);
                 break;
 
             default:
