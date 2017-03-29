@@ -85,8 +85,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_points;
     LatLng pointVehicule;
     View m_menu_choix;
-    Double[] list;
-    Double[] list2;
+    Double[] m_listPositionPoint;
+    Double[] m_listPositionVehicule;
     View m_menu_Actionvehicule;
     View m_menu_Actionpoint;
 
@@ -151,10 +151,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //vehicule
                                int k =intervention.vehicules.indexOf(vehicule);
                                 intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
-                                list2 = new Double[2];
-                                 list2[0]=pointVehicule.latitude;
-                                 list2[1]=pointVehicule.longitude;
-                                intervention.vehicules.get(k).setPosition(list);
+                                m_listPositionVehicule = new Double[2];
+                m_listPositionVehicule[0]=pointVehicule.latitude;
+                m_listPositionVehicule[1]=pointVehicule.longitude;
+                                intervention.vehicules.get(k).setPosition(m_listPositionVehicule);
                                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                                     @Override
                                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -183,10 +183,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //point
                 PointInteret pointInteret=new PointInteret();
                 pointInteret.setCode_image(image.first);
-                 list = new Double[2];
-                list[0]=pointVehicule.latitude;
-                list[1]=pointVehicule.longitude;
-                pointInteret.setPosition(list);
+                m_listPositionPoint = new Double[2];
+                m_listPositionPoint[0]=pointVehicule.latitude;
+                m_listPositionPoint[1]=pointVehicule.longitude;
+                pointInteret.setPosition(m_listPositionPoint);
                 intervention.points.add(pointInteret);
 
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
@@ -254,6 +254,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_images_points.add(new Pair<String, String>("ps_eau", encodedImagepseau));
         m_images_points.add(new Pair<String, String>("ps_hu", encodedImageps_hu));
         m_images_points.add(new Pair<String, String>("ps_in", encodedImageps_in));
+        m_images_points.add(new Pair<String, String>("ps_rp", encodedImageps_rp));
       /*  m_images_points.add(new Pair<String,String>("eau",m_transform.transform( R.drawable.eau)));
         m_images_points.add(new Pair<String,String>("ps_reau",m_transform.transform( R.drawable.ps_eau)));
       m_images_points.add(new Pair<String,String>("ps_hu",m_transform.transform( R.drawable.ps_hu) ));
