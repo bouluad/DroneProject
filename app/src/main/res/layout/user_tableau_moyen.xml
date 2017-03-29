@@ -33,7 +33,7 @@
                     android:layout_weight="1"
                     android:text="Nom"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
 
 
                 <!-- Header Type Demande -->
@@ -43,7 +43,7 @@
                     android:layout_weight="1"
                     android:text="Demande"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
                 <!-- Header Heure Demande -->
                 <TextView
                     android:layout_width="0dip"
@@ -51,7 +51,7 @@
                     android:layout_weight="1"
                     android:text="Engagement"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
 
                 <!-- Header Libelle Validation -->
                 <TextView
@@ -60,7 +60,7 @@
                     android:layout_weight="1"
                     android:text="Arrivé"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
 
                 <!-- Header Libelle Validation -->
                 <TextView
@@ -69,7 +69,7 @@
                     android:layout_weight="1"
                     android:text="Libération"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
 
                 <!-- Header Btn "Oui" et "Non" - Valider la demande -->
                 <TextView
@@ -78,12 +78,12 @@
                     android:layout_weight="2"
                     android:text="Confirmer/Libérer"
                     android:textColor="#FFFFFF"
-                    android:textSize="10dp" />
+                    android:textSize="13dp" />
             </TableRow>
         </TableLayout>
     </LinearLayout>
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal">
@@ -100,10 +100,14 @@
             android:id="@+id/utm_btn_add"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_gravity="bottom|right"
             android:layout_weight="0"
             android:clickable="true"
-            app:fabSize="mini"
-            app:srcCompat="@android:drawable/ic_input_add" />
-    </LinearLayout>
+            android:src="@drawable/ic_plus"
+            app:fabSize="normal" />
+
+    </RelativeLayout>
 </LinearLayout>
