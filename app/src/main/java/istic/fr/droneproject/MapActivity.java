@@ -79,6 +79,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //liste de points et vehicules synchroniser a afficher sur la carte
     private List<Vehicule> vehiculesCarte;
     private List<PointInteret> pointsCarte;
+
+    //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
+    boolean synchronisationBloquer = false;
+    boolean synchronisationNeedUpdate = false;
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
     View m_menu_vehicules;
@@ -455,9 +459,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 Log.e("Position Marker", point.toString());
-                m_menu_choix.setVisibility(View.VISIBLE);
-                m_menu_vehicules.setVisibility(View.GONE);
-                m_menu_points.setVisibility(View.GONE);
+                ChangerMenu(ListeMenu.m_menu_choix);
             }
         });
         CameraUpdate center =
@@ -574,7 +576,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void SynchroniserIntervention(){
         //TODO avec idIntervention
-
+        if(!synchronisationBloquer){
+            chargerIntervention();
+            vehiculesCarte.clear();
+            vehiculesCarte = intervention.vehicules;
+            pointsCarte.clear();
+            pointsCarte = intervention.points;
+            reloadVehiculesPoints();
+        }
     }
 
     /**
@@ -582,14 +591,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * puis ajoute tout les points sur la map.
      */
     private void reloadVehiculesPoints(){
-
+    mGoogleMap.clear();
+        //ajoits des vehicules
+        for (int i = 0; i < vehicules.size(); i++) {
+            ajoutImageFromVehicule(vehicules.get(i),i);
+        }
     }
 
     /**
      *
      * Methode pour afficher un seul menu a la foit
      */
-    private void ChangerMenu(ListeMenu menu){
+    public void ChangerMenu(ListeMenu menu){
         switch (menu){
         //TODO
             case m_menu_vehicules:

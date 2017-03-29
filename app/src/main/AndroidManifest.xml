@@ -36,8 +36,19 @@
         </activity>
         <activity android:name=".CodisNewInterventionActivity" />
         <activity android:name=".CodisInterventionsActivity"></activity>
-        <activity android:name=".UserInterventionsActivity"></activity>
-        <activity android:name=".UserMainActivity"></activity>
+        <activity android:name=".UserInterventionsActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".UserMainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter></activity>
         <activity android:name=".CodisMainActivity"/>
         <!--<activity android:name=".CodisValidationActivity"></activity>-->
     </application>
