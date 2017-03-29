@@ -48,12 +48,15 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Moyens 1er depart" />
+        android:text="Moyens 1er depart"/>
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/listMoyens"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:scrollIndicators="left|right"
+        android:scrollbarSize="15dp" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_addMoyen"

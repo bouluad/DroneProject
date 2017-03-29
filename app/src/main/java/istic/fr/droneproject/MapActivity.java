@@ -38,6 +38,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -69,6 +70,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     Marker myMarker;
     Marker markerChanged;
+    LatLng lng;
     ViewGroup view;
     Button boutonMenu;
     RecyclerView recyclerViewVehicules;
@@ -406,11 +408,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        LatLng lng;
-        // Add a marker in Sydney and move the camera
+    public void onMapReady(final GoogleMap googleMap) {
 
+        // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
+        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+            @Override
+            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
         Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
          if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
              lng = new LatLng(intervention.position[0], intervention.position[1]);
@@ -419,22 +423,62 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
               lng = new LatLng(40.76793169992044, -73.98180484771729);}
         mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
-        myMarker = this.mGoogleMap.addMarker(new MarkerOptions()
-                .position(lng)
-                .title("-1"));
+                Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+                if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
+                    lng = new LatLng(intervention.position[0], intervention.position[1]);
+                }
+                else{
+                    lng = new LatLng(40.76793169992044, -73.98180484771729);}
+                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+
+                myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .position(lng)
+                        .title("-1"));
+                //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(lng, 10));
+
+
+
+
+                /*CameraUpdate center =
+                        CameraUpdateFactory.newLatLng(lng);
+
+                CameraUpdate zoom = CameraUpdateFactory.zoomTo();
+
+                mGoogleMap.moveCamera(center);
+                mGoogleMap.animateCamera(zoom);*/
+
+              // Move the camera instantly to hamburg with a zoom of 15.
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
+
+                // Zoom in, animating the camera.
+                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
+
+
+                SynchroniserIntervention();
+            }
+
+            @Override
+            public void onFailure(Call<Intervention> call, Throwable t) {
+                //DO NOTHING
+                Log.e("MapActivity", t.toString());
+            }
+        });
+
+
+
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
-                SynchroniserIntervention();
                 changerMenu(ListeMenu.m_menu_choix);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
-                    Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
-
+                    try {
+                        Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
+                    }catch (Exception exception){}
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
                 }
                 else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
@@ -447,8 +491,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     m_menu_Actionvehicule.setVisibility(View.GONE);
                     Vehicule vTest = new Vehicule();
                     vTest.nom = "Batmobile"+vehicules.size();
-                    vehicules.add(vTest);
-                    ajoutImageFromVehicule(vTest, vehicules.size()-1);
+                    vehiculesCarte.add(vTest);
+                    ajoutImageFromVehicule(vTest, vehiculesCarte.size()-1);
 
 
                 }
@@ -463,25 +507,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Map", "Map clicked");
 
                 m_menu_Actionvehicule.setVisibility(View.GONE);
-                myMarker.remove();
+               /* myMarker.remove();*/
                 pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
                         .title("-1"));
-
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
             }
         });
-        CameraUpdate center =
-                CameraUpdateFactory.newLatLng(lng);
-        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
 
-        mGoogleMap.moveCamera(center);
-        mGoogleMap.animateCamera(zoom);
 
         mGoogleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
@@ -543,6 +582,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
         Log.e("Map ajout vehicule","Ahout de "+vehicule.nom+" a la position "+positionDansListeVehicules);
         //TODO afficher un marker custom
+            
         LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
@@ -552,13 +592,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 // paint defines the text color, stroke width and size
         Paint color = new Paint();
         color.setTextSize(40);
-        color.setColor(Color.BLACK);
+        color.setColor(titsev.FindColorByVehicule(vehicule.categorie));
         TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         //TODO choisir la bonne couleur
 // modify canvas
         //TODO utiliser le service de yousra pour charger la bonne image
         titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
-        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawBitmap(
+                titsev.transformStringToImage(titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule)))
+                , null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
@@ -573,8 +615,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Methode pour ajouter sur la map un point
      */
-    private void ajoutImageFromPoint(PointInteret point) {
+    private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
 
+        Log.e("Map ajout point","Ajout de point a la position "+positionDansListePoints);
+        //TODO afficher un marker custom
+        LatLng SYDNEY = markerChanged.getPosition();
+
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
+        Canvas canvas1 = new Canvas(bmp);
+
+// paint defines the text color, stroke width and size
+        Paint color = new Paint();
+        color.setTextSize(40);
+        color.setColor(Color.BLACK);
+        //TODO choisir la bonne couleur
+// modify canvas
+        //TODO utiliser le service de yousra pour charger la bonne image
+        canvas1.drawBitmap(convertionDrawableToImageString("eiage_eau"), null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+        canvas1.drawText(point.code_image, iconSizeX/20, iconSizeY/5*3, color);
+
+// add marker to Map
+        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                // Specifies the anchor to be at a particular point in the marker image.
+                .anchor(0.5f, 1));
+        newMarker.setTitle(""+positionDansListePoints);
+        newMarker.setSnippet(point.code_image
+        );
     }
 
     /**
@@ -609,8 +677,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void reloadVehiculesPoints(){
     mGoogleMap.clear();
         //ajoits des vehicules
-        for (int i = 0; i < vehicules.size(); i++) {
-            ajoutImageFromVehicule(vehicules.get(i),i);
+        for (int i = 0; i < vehiculesCarte.size(); i++) {
+            ajoutImageFromVehicule(vehiculesCarte.get(i),i);
         }
     }
 
