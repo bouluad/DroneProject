@@ -148,6 +148,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
        MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
+                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
                 //vehicule
                                int k =intervention.vehicules.indexOf(vehicule);
                                 intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
@@ -269,7 +270,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_choix.setVisibility(View.GONE);
             }
         });
-
         vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
