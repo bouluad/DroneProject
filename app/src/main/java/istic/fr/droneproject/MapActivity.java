@@ -171,9 +171,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                 });
             }
         };
-
-
-        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_item, getContext(),interventionClickListener);
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(),interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
         MapPointsRecyclerAdapter.PointClickListener pointsClickListener = new MapPointsRecyclerAdapter.PointClickListener() {
@@ -271,19 +269,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_choix.setVisibility(View.GONE);
             }
         });
+
         vehicule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 m_menu_vehicules.setVisibility(View.VISIBLE);
                 m_menu_choix.setVisibility(View.GONE);
-                System.out.println("ici");
-                final FloatingActionButton btn_add_moyen = (FloatingActionButton) m_menu_vehicules.findViewById(R.id.m_list_vehicules_add);
-                btn_add_moyen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        showSimplePopUp();
-                    }
-                });
+            }
+        });
+
+        final FloatingActionButton btn_add_moyen = (FloatingActionButton) m_menu_vehicules.findViewById(R.id.m_list_vehicules_add);
+        btn_add_moyen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                showSimplePopUp();
             }
         });
 
