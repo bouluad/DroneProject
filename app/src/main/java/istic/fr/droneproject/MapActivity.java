@@ -414,6 +414,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
+                SynchroniserIntervention();
                 m_menu_choix.setVisibility(View.VISIBLE);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
