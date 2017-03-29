@@ -6,37 +6,42 @@
         android:stretchColumns="1">
 
         <TableRow
-            android:id="@+id/tableRow1"
+            android:id="@+id/tableRowValidMoyen"
             android:background="#b1d9e5"
             android:layout_marginTop="2dp">
 
             <!-- Column 1 -->
             <TextView
                 android:id="@+id/ui_validation_item_nom"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 2 -->
             <TextView
                 android:id="@+id/ui_validation_item_type"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 3 -->
             <TextView
                 android:id="@+id/ui_validation_item_heuredemande"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 4 -->
             <TextView
                 android:id="@+id/ui_validation_item_libelle"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"/>
 
             <!-- Column 5 -->
             <Button
                 android:id="@+id/ui_validation_item_validation"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:text="Oui"/>
@@ -44,6 +49,7 @@
             <!-- Column 6 -->
             <Button
                 android:id="@+id/ui_validation_item_refus"
+                android:padding="10dp"
                 android:layout_width="0dip"
                 android:layout_weight="1"
                 android:text="Non"/>
