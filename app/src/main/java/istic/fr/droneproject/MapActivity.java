@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -54,7 +55,9 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.BaseSPService;
 import istic.fr.droneproject.service.TransformImageToStringEtVs;
+import istic.fr.droneproject.service.impl.BaseSPServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -62,6 +65,7 @@ import retrofit2.Response;
 
 public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
+
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     Marker myMarker;
@@ -330,6 +334,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehiculesCarte.clear();
                 vehiculesCarte = intervention.vehicules;
                 pointsCarte.clear();
+                System.out.println("je suis laaaa");
+              /*  recupererBaseSP();*/
                 pointsCarte = intervention.points;
                 //remplissage du tableau des vehicules placeable sur la carte
                 Collections.reverse(response.body().vehicules);
@@ -447,6 +453,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 }
                 else{
                     lng = new LatLng(40.76793169992044, -73.98180484771729);}
+                /*recupererBaseSP();*/
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -613,6 +620,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints(){
         mGoogleMap.clear();
+        recupererBaseSP();
         myMarker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
                 .title("-1"));
@@ -660,5 +668,67 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             case aucun:
                 break;
         }
+    }
+
+    private void recupererBaseSP() {
+        int height = 100;
+        int width = 100;
+
+        BaseSPService baseSP = new BaseSPServiceImpl();
+        baseSP.getBaseSP(new Callback<List<PointInteret>>() {
+            @Override
+            public void onResponse(Call<List<PointInteret>> call, Response<List<PointInteret>> response) {
+
+                System.out.println("je suis dans sp");
+                for(PointInteret pointInteret:response.body() ){
+                    if(pointInteret.getCode_image()!=null) {
+                        System.out.println(pointInteret.getCode_image());
+
+
+
+                        int height = 50;
+                        int width = 50;
+                        String mDrawableName = pointInteret.getCode_image().toLowerCase();
+                        BitmapDrawable bitmapdraw=(BitmapDrawable)getResources().getDrawable(getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName()));
+                        Bitmap b=bitmapdraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+
+
+                       /* String mDrawableName = pointInteret.getCode_image().toLowerCase();
+                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());*/
+
+
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
+
+                               /* .icon(BitmapDescriptorFactory.fromResource(resID))*/
+                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                                .title(mDrawableName));
+                    }
+                }
+                /*for (PointInteret pointInteret : intervention.points){
+
+                    String mDrawableName = pointInteret.getCode_image();
+                    int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());
+
+
+                    mGoogleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
+
+                            .icon(BitmapDescriptorFactory.fromResource(resID))
+                            .title("TEST"));
+                }*/
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<List<PointInteret>> call, Throwable t) {
+                //DO NOTHING
+                Log.e("UserInterventionsActivi", t.toString());
+            }
+        });
     }
 }
