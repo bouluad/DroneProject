@@ -6,8 +6,11 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.RectF;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -22,6 +25,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,6 +38,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.Projection;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -45,6 +51,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
@@ -71,6 +79,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
+    Vehicule vehiculeselected;
+    boolean clicked;
     private List<Vehicule> vehicules;
 
     //liste de points et vehicules synchroniser a afficher sur la carte
@@ -148,6 +158,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
+        Button deplacer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_deplacer);
+        Button confirmer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
+        Button liberer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
+        Button parking=(Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -317,7 +331,72 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.m_map);
         map.getMapAsync(this);
 
+     deplacer.setOnClickListener(new View.OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             Double[]list =new Double[2];
+                 list[0] = pointVehicule.latitude;
+                 list[1] = pointVehicule.longitude;
+             Log.e("","vehicule.nom"+vehiculeselected.nom);
+             for(int i=0;i<intervention.vehicules.size();i++) {
+                 if(intervention.vehicules.get(i).position !=null){
+                 Double k1=intervention.vehicules.get(i).position[0];
+                 Double k2=intervention.vehicules.get(i).position[1];}
+                 Double s1=vehiculeselected.position[0];
+                 Double s2=vehiculeselected.position[1];
+                 String nom1=intervention.vehicules.get(i).nom;
+                 String nom2=vehiculeselected.nom;
 
+                 if ((intervention.vehicules.get(i).position !=null && vehiculeselected.position !=null)
+                 &&(intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString() ) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()) )
+                 && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
+
+                     intervention.vehicules.get(i).setPosition(list);
+                     InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                         @Override
+                         public void onResponse(Call<Void> call, Response<Void> response) {
+                             Log.e("Position Vehicule","=========>Position Vehicule updated ");
+
+                         }
+
+                         @Override
+                         public void onFailure(Call<Void> call, Throwable t) {
+                             //DO NOTHING
+                             Log.e("MapActivity", t.toString());
+                         }
+                     });
+                     SynchroniserIntervention();
+                 }
+                 // int k= intervention.vehicules.indexOf(vehiculeselected);
+             } // Log.e("",": "+k);
+
+
+             // animateMarker(myMarker,pointVehicule,false);
+
+
+         }
+     });
+
+        confirmer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        liberer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        parking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     private void chargerIntervention() {
@@ -469,12 +548,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //les vehicules on un ii entre 0 et 999
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
+
+                    vehiculeselected=vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
                     try {
-                        Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
+                        Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehiculesCarte.get(Integer.parseInt(marker.getTitle())));
                     }catch (Exception exception){}
                 }
                 //les points on un id entre 1000 et beaucoups
@@ -502,7 +583,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
-
+                   clicked=true;
                 m_menu_Actionvehicule.setVisibility(View.GONE);
                /* myMarker.remove();*/
                 pointVehicule=point;
@@ -648,5 +729,42 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             case aucun:
                 break;
         }
+    }
+
+    public void animateMarker(final Marker marker, final LatLng toPosition,
+                              final boolean hideMarker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = mGoogleMap.getProjection();
+        Point startPoint = proj.toScreenLocation(marker.getPosition());
+        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
+        final long duration = 500;
+
+        final Interpolator interpolator = new LinearInterpolator();
+
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * toPosition.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * toPosition.latitude + (1 - t)
+                        * startLatLng.latitude;
+                marker.setPosition(new LatLng(lat, lng));
+
+                if (t < 1.0) {
+                    // Post again 16ms later.
+                    handler.postDelayed(this, 16);
+                } else {
+                    if (hideMarker) {
+                        marker.setVisible(false);
+                    } else {
+                        marker.setVisible(true);
+                    }
+                }
+            }
+        });
     }
 }
