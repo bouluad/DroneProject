@@ -1,6 +1,7 @@
 package istic.fr.droneproject.adapter;
 
 import android.graphics.Color;
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -39,6 +40,33 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     @Override
     public void onBindViewHolder(VehiculeViewHolder holder, final int position) {
         Vehicule vehicule = vehicules.get(position);
+
+        switch (vehicule.categorie.toString()) {
+            //SAUVETAGE - VERT
+            case "sauvetage":
+                holder.nom.setTextColor(Color.parseColor("#009D4F"));
+                break;
+            //INCENDIE - ROUGE
+            case "incendie":
+                holder.nom.setTextColor(Color.parseColor("#e12b2b"));
+                break;
+            //EAU - BLEU
+            case "eau":
+                holder.nom.setTextColor(Color.parseColor("#1343f0"));
+                break;
+            //RISQUE_PARTICULIER - JAUNE
+            case "risque_particulier":
+                holder.nom.setTextColor(Color.parseColor("#cee514"));
+                break;
+            //COMMANDEMENT - VIOLET
+            case "commandement":
+                holder.nom.setTextColor(Color.parseColor("#ae07b8"));
+                break;
+            //PAR DEFAUT  - NOIR
+            default:
+                holder.nom.setTextColor(Color.parseColor("#060606"));
+                break;
+        }
 
         holder.nom.setText(vehicule.nom);
         holder.heure1.setText(vehicule.heureDemande);
@@ -83,12 +111,12 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 holder.btnConfirmer.setVisibility(View.INVISIBLE);
             }
         } else {
-            holder.heure2.setBackgroundColor(Color.CYAN);
+            holder.heure2.setPaintFlags(holder.heure2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.heure2.setText("annulé");
-            holder.heure3.setBackgroundColor(Color.CYAN);
-            holder.heure3.setText("----");
-            holder.heure4.setBackgroundColor(Color.CYAN);
-            holder.heure4.setText("----");
+            holder.heure3.setPaintFlags(holder.heure3.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.heure4.setPaintFlags(holder.heure4.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.heure1.setPaintFlags(holder.heure1.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.nom.setPaintFlags(holder.nom.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.btnLiberer.setVisibility(View.INVISIBLE);
             holder.btnConfirmer.setVisibility(View.INVISIBLE);
         }
