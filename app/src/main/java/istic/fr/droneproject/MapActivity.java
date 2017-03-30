@@ -80,7 +80,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
     boolean synchronisationBloquer = false;
     boolean synchronisationNeedUpdate = false;
-
+    boolean secondClickSurMap = false;
     //Service de convertion en image et couler
     TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
 
@@ -466,7 +466,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 changerMenu(ListeMenu.m_menu_choix);
+                //les vehicules on un ii entre 0 et 999
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
+                    changerMenu(ListeMenu.m_menu_Actionvehicule);
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
@@ -474,8 +476,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     try {
                         Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
                     }catch (Exception exception){}
-                    changerMenu(ListeMenu.m_menu_Actionvehicule);
                 }
+                //les points on un id entre 1000 et beaucoups
                 else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
@@ -483,7 +485,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 else{
                     //TODO faire l'ajout depuis le menu vers la base
                     //TODO parcourir la liste des vehicules pour afficher les vehicules
-                    m_menu_Actionvehicule.setVisibility(View.GONE);
+                    changerMenu(ListeMenu.aucun);
                     Vehicule vTest = new Vehicule();
                     vTest.nom = "Batmobile"+vehicules.size();
                     vehiculesCarte.add(vTest);
@@ -533,6 +535,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO afficher un marker custom
         if(markerChanged == null)
             markerChanged = myMarker;
+        
+        //LatLng SYDNEY = markerChanged.getPosition();
 
     //LatLng SYDNEY = markerChanged.getPosition();
 
@@ -554,8 +558,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             , null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
     canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
-    // add marker to Map
-    LatLng posVehicule = new LatLng(vehicule.position[0],vehicule.position[1]);
+    // add marker to
+        LatLng posVehicule;
+        if(vehicule.position == null ||vehicule.position[0] == null || vehicule.position[1] == null)
+             posVehicule = markerChanged.getPosition();
+        else
+            posVehicule = new LatLng(vehicule.position[0],vehicule.position[1]);
     Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(posVehicule)
             .icon(BitmapDescriptorFactory.fromBitmap(bmp))
             // Specifies the anchor to be at a particular point in the marker image.
