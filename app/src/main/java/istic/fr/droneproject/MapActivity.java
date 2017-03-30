@@ -329,12 +329,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
-
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).etat == EtatVehicule.DEMANDE|| response.body().vehicules.get(i).position == null) {
+                    Vehicule vehiculeCourant = response.body().vehicules.get(i);
+                    if (
+                            (vehiculeCourant.etat == EtatVehicule.PARKING || vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
+                                    && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                        ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
                     }
                 }
                 vehiculesAdapter.notifyDataSetChanged();
+
+                vehiculesCarte.clear();
+                vehiculesCarte = intervention.vehicules;
+                pointsCarte.clear();
+                pointsCarte = intervention.points;
+                reloadVehiculesPoints();
             }
 
             @Override
@@ -593,11 +602,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO avec idIntervention
         if(!synchronisationBloquer){
             chargerIntervention();
-            vehiculesCarte.clear();
-            vehiculesCarte = intervention.vehicules;
-            pointsCarte.clear();
-            pointsCarte = intervention.points;
-            reloadVehiculesPoints();
         }
     }
 
@@ -607,9 +611,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints(){
         mGoogleMap.clear();
+        myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                .position(lng)
+                .title("-1"));
         //ajoits des vehicules
         for (int i = 0; i < vehiculesCarte.size(); i++) {
-            ajoutImageFromVehicule(vehiculesCarte.get(i),i);
+            Vehicule vehiculeCourant = vehiculesCarte.get(i);
+            if(
+                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat  == EtatVehicule.ARRIVE)
+                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null))
+            {
+                ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+            }
         }
         //TODO Salma inserer les points dans la carte avec 1000+i
     }

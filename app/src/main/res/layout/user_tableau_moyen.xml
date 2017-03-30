@@ -34,7 +34,7 @@
                     android:gravity="center"
                     android:text="Nom"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
 
 
                 <!-- Header Type Demande -->
@@ -45,7 +45,7 @@
                     android:gravity="center"
                     android:text="Demande"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
                 <!-- Header Heure Demande -->
                 <TextView
                     android:layout_width="0dip"
@@ -54,7 +54,7 @@
                     android:gravity="center"
                     android:text="Engagement"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
 
                 <!-- Header Libelle Validation -->
                 <TextView
@@ -64,7 +64,7 @@
                     android:gravity="center"
                     android:text="Arrivé"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
 
                 <!-- Header Libelle Validation -->
                 <TextView
@@ -74,7 +74,7 @@
                     android:gravity="center"
                     android:text="Libération"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
 
                 <!-- Header Btn "Oui" et "Non" - Valider la demande -->
                 <TextView
@@ -84,7 +84,7 @@
                     android:gravity="center"
                     android:text="Confirmer/Libérer"
                     android:textColor="#FFFFFF"
-                    android:textSize="13dp" />
+                    android:textSize="15dp" />
             </TableRow>
         </TableLayout>
     </LinearLayout>

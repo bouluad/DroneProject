@@ -14,7 +14,8 @@
             android:layout_width="0dip"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textSize="20dp" />
 
         <!-- Column 2 -->
         <TextView
@@ -22,7 +23,8 @@
             android:layout_width="0dip"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 3 -->
         <TextView
@@ -30,7 +32,8 @@
             android:layout_width="0dip"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 4 -->
         <TextView
@@ -38,14 +41,16 @@
             android:layout_width="0dip"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textSize="15dp" />
         <!-- Column 5 -->
         <TextView
             android:id="@+id/utm_vi_heure4"
             android:layout_width="0dip"
             android:layout_weight="1"
             android:gravity="center"
-            android:padding="10dp" />
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 6 -->
         <Button
