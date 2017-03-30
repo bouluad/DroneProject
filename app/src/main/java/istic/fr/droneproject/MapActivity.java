@@ -29,6 +29,7 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -430,6 +431,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 // Zoom in, animating the camera.
                 mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
 
+
+                SynchroniserIntervention();
             }
 
             @Override
@@ -445,15 +448,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
-                SynchroniserIntervention();
                 changerMenu(ListeMenu.m_menu_choix);
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
-                    Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
-
+                    try {
+                        Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehicules.get(Integer.parseInt(marker.getTitle())));
+                    }catch (Exception exception){}
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
                 }
                 else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
@@ -466,8 +469,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     m_menu_Actionvehicule.setVisibility(View.GONE);
                     Vehicule vTest = new Vehicule();
                     vTest.nom = "Batmobile"+vehicules.size();
-                    vehicules.add(vTest);
-                    ajoutImageFromVehicule(vTest, vehicules.size()-1);
+                    vehiculesCarte.add(vTest);
+                    ajoutImageFromVehicule(vTest, vehiculesCarte.size()-1);
 
 
                 }
@@ -482,14 +485,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Map", "Map clicked");
 
                 m_menu_Actionvehicule.setVisibility(View.GONE);
-                myMarker.remove();
+               /* myMarker.remove();*/
                 pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
                         .title("-1"));
-
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
@@ -582,9 +585,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints(){
     mGoogleMap.clear();
-        //ajout des vehicules
-        for (int i = 0; i < vehicules.size(); i++) {
-            ajoutImageFromVehicule(vehicules.get(i),i);
+        //ajoits des vehicules
+        for (int i = 0; i < vehiculesCarte.size(); i++) {
+            ajoutImageFromVehicule(vehiculesCarte.get(i),i);
         }
     }
 

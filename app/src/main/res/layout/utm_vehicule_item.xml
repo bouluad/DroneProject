@@ -6,9 +6,8 @@
 
     <TableRow
         android:id="@+id/tableRowUserMoyen"
-        android:layout_marginTop="2dp"
-        android:background="#b1d9e5">
-
+        android:layout_marginTop="2dp">
+        <!--android:background="#b1d9e5">-->
         <!-- Column 1 -->
         <TextView
             android:id="@+id/utm_vi_Nom"
