@@ -599,7 +599,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
 
-
                 if(secondClickSurMap == true){
                     changerMenu(ListeMenu.aucun);
                     secondClickSurMap = false;
