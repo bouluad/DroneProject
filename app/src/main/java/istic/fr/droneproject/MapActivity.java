@@ -425,13 +425,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
-       // SynchroniserIntervention();
-        // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+                intervention = response.body();
+
                 if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
                     lng = new LatLng(intervention.position[0], intervention.position[1]);
                 }
@@ -443,7 +442,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .position(lng)
                         .title("-1"));
 
-                // Move the camera instantly to hamburg with a zoom of 15.
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
                 SynchroniserIntervention();
