@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -44,6 +43,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
 
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
@@ -111,8 +110,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
-    private static final int iconSizeX = 200;
-    private static final int iconSizeY = 117;
+    private static final int iconSizeX = 100;
+    private static final int iconSizeY = 60;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -246,11 +245,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("MapActivity", t.toString());
                     }
                 });
-                chargerIntervention();
+                SynchroniserIntervention();
             }
         };
 
-        chargerIntervention();
+        SynchroniserIntervention();
 
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
@@ -404,15 +403,26 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
+                //rechargement des 2 listes de vehicules & points
+                vehiculesCarte.clear();
+                vehiculesCarte = intervention.vehicules;
+                pointsCarte.clear();
+                pointsCarte = intervention.points;
+                //remplissage du tableau des vehicules placeable sur la carte
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
-
-                    if (response.body().vehicules.get(i).etat == EtatVehicule.PARKING || response.body().vehicules.get(i).etat == EtatVehicule.DEMANDE|| response.body().vehicules.get(i).position == null) {
+                    Vehicule vehiculeCourant = response.body().vehicules.get(i);
+                    if (
+                            (vehiculeCourant.etat == EtatVehicule.PARKING || vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
+                                    && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                        ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
                     }
                 }
                 vehiculesAdapter.notifyDataSetChanged();
+
+                reloadVehiculesPoints();
             }
 
             @Override
@@ -483,7 +493,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                chargerIntervention();
+                                SynchroniserIntervention();
                             }
 
                             @Override
@@ -503,13 +513,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
-       // SynchroniserIntervention();
-        // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                Log.e("position","==========>Position Intervention"+intervention.position[0]+" "+intervention.position[1]);
+                intervention = response.body();
+
                 if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
                     lng = new LatLng(intervention.position[0], intervention.position[1]);
                 }
@@ -521,12 +530,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .position(lng)
                         .title("-1"));
 
-                // Move the camera instantly to hamburg with a zoom of 15.
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
-
-                // Zoom in, animating the camera.
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
                 SynchroniserIntervention();
             }
@@ -563,6 +567,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
+                //TODO Salma <1000 SP
                 else{
                     //TODO faire l'ajout depuis le menu vers la base
                     //TODO parcourir la liste des vehicules pour afficher les vehicules
@@ -657,7 +662,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Methode pour ajouter sur la map un point
      */
     private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
-
+    //TODO Salma ajouter tout les pointscarte sur la map
 
     }
 
@@ -676,13 +681,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void SynchroniserIntervention(){
         //TODO avec idIntervention
-        if(!synchronisationBloquer){
+        if(!synchronisationBloquer && mGoogleMap != null){
             chargerIntervention();
-            vehiculesCarte.clear();
-            vehiculesCarte = intervention.vehicules;
-            pointsCarte.clear();
-            pointsCarte = intervention.points;
-            reloadVehiculesPoints();
         }
     }
 
@@ -692,10 +692,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints(){
         mGoogleMap.clear();
+        myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                .position(lng)
+                .title("-1"));
         //ajoits des vehicules
         for (int i = 0; i < vehiculesCarte.size(); i++) {
-            ajoutImageFromVehicule(vehiculesCarte.get(i),i);
+            Vehicule vehiculeCourant = vehiculesCarte.get(i);
+            if(
+                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat  == EtatVehicule.ARRIVE)
+                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null))
+            {
+                ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+            }
         }
+        //TODO Salma inserer les points dans la carte avec 1000+i
     }
 
     /**

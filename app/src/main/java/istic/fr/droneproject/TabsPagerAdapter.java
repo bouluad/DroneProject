@@ -24,14 +24,15 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 // Carte fragment activity
                 return MapActivity.newInstance(idIntervention);
             case 1:
-                // Album fragment activity
-                return AlbumActivity.newInstance(idIntervention);
-            case 2:
-                // Videos fragment activity
-                return new VideosActivity();
-            case 3:
+
                 // Moyens fragment activity
                 return MoyensActivity.newInstance(idIntervention);
+            case 2:
+                // Album fragment activity
+                return AlbumActivity.newInstance(idIntervention);
+            case 3:
+                // Videos fragment activity
+                return new VideosActivity();
         }
 
         return null;
@@ -49,11 +50,12 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
             case 0:
                 return "Carte";
             case 1:
-                return "Album";
-            case 2:
-                return "Vidéos";
-            case 3:
                 return "Moyens";
+
+            case 2:
+                return "Point d'intérêt";
+            case 3:
+                return "Vidéos";
         }
         return null;
     }

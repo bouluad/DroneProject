@@ -13,40 +13,51 @@
             android:id="@+id/utm_vi_Nom"
             android:layout_width="0dip"
             android:layout_weight="1"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="20dp" />
 
         <!-- Column 2 -->
         <TextView
             android:id="@+id/utm_vi_heure1"
             android:layout_width="0dip"
             android:layout_weight="1"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 3 -->
         <TextView
             android:id="@+id/utm_vi_heure2"
             android:layout_width="0dip"
             android:layout_weight="1"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 4 -->
         <TextView
             android:id="@+id/utm_vi_heure3"
             android:layout_width="0dip"
             android:layout_weight="1"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="15dp" />
         <!-- Column 5 -->
         <TextView
             android:id="@+id/utm_vi_heure4"
             android:layout_width="0dip"
             android:layout_weight="1"
-            android:padding="10dp" />
+            android:gravity="center"
+            android:padding="10dp"
+            android:textSize="15dp" />
 
         <!-- Column 6 -->
         <Button
             android:id="@+id/utm_vi_btn_Confirmer"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp"
             android:text="Confirmation" />
 
@@ -55,6 +66,7 @@
             android:id="@+id/utm_vi_btn_liberation"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp"
             android:text="Liberation" />
     </TableRow>
