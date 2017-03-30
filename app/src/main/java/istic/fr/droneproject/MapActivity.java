@@ -4,7 +4,6 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Bundle;
@@ -38,6 +37,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -45,6 +45,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
@@ -101,8 +102,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
-    private static final int iconSizeX = 200;
-    private static final int iconSizeY = 117;
+    private static final int iconSizeX = 100;
+    private static final int iconSizeY = 60;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -443,11 +444,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .title("-1"));
 
                 // Move the camera instantly to hamburg with a zoom of 15.
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 15));
-
-                // Zoom in, animating the camera.
-                mGoogleMap.animateCamera(CameraUpdateFactory.zoomTo(15), 2000, null);
-
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
                 SynchroniserIntervention();
             }
