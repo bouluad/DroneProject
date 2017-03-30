@@ -22,7 +22,7 @@ public class CodisMainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.codis_main_activity);
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment for each of the two
         // primary sections of the activity.
         mSectionsPagerAdapter = new CodisTabsPagerAdapter(getSupportFragmentManager());
 
@@ -64,7 +64,7 @@ public class CodisMainActivity extends AppCompatActivity {
                 case 0:
                     return "Interventions";
                 case 1:
-                    return "Validation moyens";
+                    return "Demandes en attente";
             }
             return null;
         }
