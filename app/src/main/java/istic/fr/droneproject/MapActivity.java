@@ -90,6 +90,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     //liste de points et vehicules synchroniser a afficher sur la carte
     private List<Vehicule> vehiculesCarte;
     private List<PointInteret> pointsCarte;
+    private List<PointInteret> pointsSPCarte;
 
     //Booleans pour bloquer la synchro des interventions et stocker une notification de MAJ
     boolean synchronisationBloquer = false;
@@ -487,6 +488,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
+        recupererBaseSP();
         this.mGoogleMap = googleMap;
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
@@ -540,13 +542,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     } catch (Exception exception) {
                     }
                 }
-                //les points on un id entre 1000 et beaucoups
-                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000) {
+                //les points temporaire pout 1 intervention on un id entre 1000 et 2000
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 && Integer.parseInt(marker.getTitle()) < 2000) {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
-                //TODO Salma <1000 SP
-
+                // les points SP
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
+                    //TODO Salma <1000 SP
+                    changerMenu(ListeMenu.aucun);
+                    if(markerChanged != null)
+                        markerChanged.remove();
+                }
                 else{
                     SynchroniserIntervention();
                     changerMenu(ListeMenu.aucun);
@@ -692,9 +699,31 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Methode pour ajouter sur la map un point
      */
     private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
-        //TODO Salma ajouter tout les pointscarte sur la map
+            if (point.getCode_image() != null) {
+                System.out.println(point.getCode_image());
 
+                String mDrawableName = point.getCode_image().toLowerCase();
+                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName()));
+                Bitmap b = bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX/2, iconSizeX/2, false);
+
+
+
+                       /* String mDrawableName = pointInteret.getCode_image().toLowerCase();
+                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());*/
+
+
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(point.getPosition()[0], point.getPosition()[1]))
+
+                               /* .icon(BitmapDescriptorFactory.fromResource(resID))*/
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                        .title(""+positionDansListePoints)
+                        .snippet(""+mDrawableName));
+            }
     }
+
+
 
     /**
      * Methode qui converti un nom d'image en image
@@ -724,11 +753,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints() {
         mGoogleMap.clear();
-        recupererBaseSP();
         myMarker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
                 .title("-1"));
-        //ajoits des vehicules
+        //ajouts des vehicules
         for (int i = 0; i < vehiculesCarte.size(); i++) {
             Vehicule vehiculeCourant = vehiculesCarte.get(i);
             if (
@@ -737,7 +765,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 ajoutImageFromVehicule(vehiculesCarte.get(i), i);
             }
         }
-        //TODO Salma inserer les points dans la carte avec 1000+i
+        //ajouts des points
+        for (int i = 0; i < pointsCarte.size(); i++) {
+            PointInteret pointCourant = pointsCarte.get(i);
+            ajoutImageFromPoint(pointCourant, 1000+i);
+
+        }
+
+        //ajouts des points SP
+        for (int i = 0; i < pointsSPCarte.size(); i++) {
+            PointInteret pointCourant = pointsSPCarte.get(i);
+            ajoutImageFromPoint(pointCourant, 2000+i);
+
+        }
     }
 
     /**
@@ -777,54 +817,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     private void recupererBaseSP() {
-        int height = 100;
-        int width = 100;
 
         BaseSPService baseSP = new BaseSPServiceImpl();
         baseSP.getBaseSP(new Callback<List<PointInteret>>() {
             @Override
             public void onResponse(Call<List<PointInteret>> call, Response<List<PointInteret>> response) {
-
-                System.out.println("je suis dans sp");
-                for (PointInteret pointInteret : response.body()) {
-                    if (pointInteret.getCode_image() != null) {
-                        System.out.println(pointInteret.getCode_image());
-
-
-                        int height = 50;
-                        int width = 50;
-                        String mDrawableName = pointInteret.getCode_image().toLowerCase();
-                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName()));
-                        Bitmap b = bitmapdraw.getBitmap();
-                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
-
-
-
-                       /* String mDrawableName = pointInteret.getCode_image().toLowerCase();
-                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());*/
-
-
-                        mGoogleMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
-
-                               /* .icon(BitmapDescriptorFactory.fromResource(resID))*/
-                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                                .title(mDrawableName));
-                    }
-                }
-                /*for (PointInteret pointInteret : intervention.points){
-
-                    String mDrawableName = pointInteret.getCode_image();
-                    int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());
-
-
-                    mGoogleMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
-
-                            .icon(BitmapDescriptorFactory.fromResource(resID))
-                            .title("TEST"));
-                }*/
-
+                pointsSPCarte = response.body();
 
             }
 
