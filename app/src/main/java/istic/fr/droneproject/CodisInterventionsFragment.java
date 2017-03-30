@@ -78,7 +78,7 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
         InterventionRecyclerAdapter.InterventionClickListener interventionClickListener = new InterventionRecyclerAdapter.InterventionClickListener() {
             @Override
             public void clickIntervention(Intervention intervention) {
-                showSimplePopUp(intervention._id);
+                showSimplePopUp(intervention);
 
             }
         };
@@ -114,12 +114,12 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
         });
     }
 
-    private void showSimplePopUp(final String idIntervention) {
+    private void showSimplePopUp(final Intervention intervention) {
 
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getActivity());
         helpBuilder.setTitle("Cloturer");
-        helpBuilder.setMessage("This is a Simple Pop Up");
+        helpBuilder.setMessage("Voulez vous cloturer cette intervention ?\n Date: "+intervention.date+"\n Adresse: "+intervention.adresse);
 
 
 
@@ -127,13 +127,14 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
                 new DialogInterface.OnClickListener() {
 
                     public void onClick(DialogInterface dialog, int which) {
-                        InterventionServiceCentral.getInstance().cloturerIntervention(idIntervention, new Callback<Void>() {
+                        InterventionServiceCentral.getInstance().cloturerIntervention(intervention._id, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                Log.e("Intervention","CLOTURER "+idIntervention);
+                                Toast.makeText(getContext(), "Intervention cloturée", Toast.LENGTH_SHORT).show();
                             }
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(getContext(), "Erreur", Toast.LENGTH_SHORT).show();
                             }
                         });
 
