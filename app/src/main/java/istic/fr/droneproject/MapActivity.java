@@ -379,7 +379,39 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-       
+        confirmer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String heureArrivee = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.FRANCE).format(new Date());
+                for (int i = 0; i < intervention.vehicules.size(); i++) {
+                    if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
+                            && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
+                            && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
+
+                        intervention.vehicules.get(i).setEtat(EtatVehicule.ARRIVE);
+                        if(intervention.vehicules.get(i).heureArrivee==null)
+                            intervention.vehicules.get(i).setHeureArrivee(heureArrivee);
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Log.e("Vehicule confirmé", "=========>Vehicule confirmé ");
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //DO NOTHING
+                                Log.e("MapActivity", t.toString());
+                            }
+                        });
+                        changerMenu(ListeMenu.aucun);
+                        SynchroniserIntervention();
+                    }
+                }
+
+            }
+        });
     }
 
     private void chargerIntervention() {
