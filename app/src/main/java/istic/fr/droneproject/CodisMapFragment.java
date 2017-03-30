@@ -70,6 +70,10 @@ public class CodisMapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment map = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.codis_map);
         map.getMapAsync(this);
 
+
+        final EditText adresseInput = (EditText) view.findViewById(R.id.codis_map_adresse);
+        adresseInput.requestFocus();
+
         final Geocoder geocoder = new Geocoder(getContext(), Locale.getDefault());
 
         Button btnChercher = (Button) view.findViewById(R.id.codis_map_btn_chercher);
@@ -78,7 +82,6 @@ public class CodisMapFragment extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
 
                 if (googleMap != null) {
-                    EditText adresseInput = (EditText) view.findViewById(R.id.codis_map_adresse);
                     adresseCourante = adresseInput.getText().toString();
                     try {
                         List<Address> addresses = geocoder.getFromLocationName(adresseCourante, 1);
@@ -87,8 +90,14 @@ public class CodisMapFragment extends Fragment implements OnMapReadyCallback {
                             double lat = address.getLatitude();
                             double lng = address.getLongitude();
 
-                            LatLng latlng = new LatLng(lat, lng);
-                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 15));
+                            LatLng latLng = new LatLng(lat, lng);
+                            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15));
+                            positionCourante = latLng;
+                            googleMap.clear();
+                            MarkerOptions marker = new MarkerOptions();
+                            marker.position(latLng);
+                            googleMap.addMarker(marker);
+                            btnValider.setEnabled(true);
 
                         } else {
                             Toast.makeText(getContext(), "Aucun résultat pour cette adresse", Toast.LENGTH_SHORT).show();
