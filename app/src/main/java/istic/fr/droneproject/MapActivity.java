@@ -115,6 +115,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             idIntervention = getArguments().getString(ARG_ID);
+
         }
     }
 
@@ -193,7 +194,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void clickPoint(final Pair<String, String> image) {
 
                 //point
-                PointInteret pointInteret=new PointInteret();
+                final PointInteret pointInteret=new PointInteret();
                 pointInteret.setCode_image(image.first);
                 m_listPositionPoint = new Double[2];
                 m_listPositionPoint[0]=pointVehicule.latitude;
@@ -210,6 +211,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         Toast.makeText(getContext(),"L'intervention a été modifiée",Toast.LENGTH_SHORT).show();
                         Log.e("Point cliqué","=========>Point cliqué ");
+                        Log.e("Point cliqué", m_listPositionPoint.toString());
+                        Log.e("Point cliqué", ""+pointInteret.getCode_image());
+
+                        String mDrawableName = pointInteret.getCode_image();
+                        int resID = getResources().getIdentifier(mDrawableName , "drawable", getContext().getPackageName());
+                        
+                        
+
+
+
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
+
+                                .icon(BitmapDescriptorFactory.fromResource(resID))
+                                .title("TEST"));
                     }
 
                     @Override
