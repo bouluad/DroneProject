@@ -337,46 +337,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      deplacer.setOnClickListener(new View.OnClickListener() {
          @Override
          public void onClick(View v) {
-             Double[]list =new Double[2];
-                 list[0] = pointVehicule.latitude;
-                 list[1] = pointVehicule.longitude;
-             Log.e("","vehicule.nom"+vehiculeselected.nom);
-             for(int i=0;i<intervention.vehicules.size();i++) {
-                 if(intervention.vehicules.get(i).position !=null){
-                 Double k1=intervention.vehicules.get(i).position[0];
-                 Double k2=intervention.vehicules.get(i).position[1];}
-                 Double s1=vehiculeselected.position[0];
-                 Double s2=vehiculeselected.position[1];
-                 String nom1=intervention.vehicules.get(i).nom;
-                 String nom2=vehiculeselected.nom;
-
-                 if ((intervention.vehicules.get(i).position !=null && vehiculeselected.position !=null)
-                 &&(intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString() ) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()) )
-                 && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
-
-                     intervention.vehicules.get(i).setPosition(list);
-                     InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
-                         @Override
-                         public void onResponse(Call<Void> call, Response<Void> response) {
-                             Log.e("Position Vehicule","=========>Position Vehicule updated ");
-
-                         }
-
-                         @Override
-                         public void onFailure(Call<Void> call, Throwable t) {
-                             //DO NOTHING
-                             Log.e("MapActivity", t.toString());
-                         }
-                     });
-                     SynchroniserIntervention();
-                 }
-                 // int k= intervention.vehicules.indexOf(vehiculeselected);
-             } // Log.e("",": "+k);
-
-
-             // animateMarker(myMarker,pointVehicule,false);
-
-
+             clicked = true;
          }
      });
 
@@ -556,6 +517,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 changerMenu(ListeMenu.m_menu_choix);
+                if(markerChanged != null)
+                    markerChanged.remove();
                 //les vehicules on un ii entre 0 et 999
                 if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
@@ -588,8 +551,51 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
-                   clicked=true;
-                if(secondClickSurMap == true){
+                if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
+                    Double[]list =new Double[2];
+                    pointVehicule=point;
+                    list[0] = pointVehicule.latitude;
+                    list[1] = pointVehicule.longitude;
+                    Log.e("","vehicule.nom"+vehiculeselected.nom);
+                    for(int i=0;i<intervention.vehicules.size();i++) {
+                        if(intervention.vehicules.get(i).position !=null){
+                            Double k1=intervention.vehicules.get(i).position[0];
+                            Double k2=intervention.vehicules.get(i).position[1];}
+                        Double s1=vehiculeselected.position[0];
+                        Double s2=vehiculeselected.position[1];
+                        String nom1=intervention.vehicules.get(i).nom;
+                        String nom2=vehiculeselected.nom;
+
+                        if ((intervention.vehicules.get(i).position !=null && vehiculeselected.position !=null)
+                                &&(intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString() ) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()) )
+                                && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
+
+                            intervention.vehicules.get(i).setPosition(list);
+                            InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    Log.e("Position Vehicule","=========>Position Vehicule updated ");
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    //DO NOTHING
+                                    Log.e("MapActivity", t.toString());
+                                }
+                            });
+                            SynchroniserIntervention();
+                            changerMenu(ListeMenu.aucun);
+                            clicked=false;
+                        }
+                        // int k= intervention.vehicules.indexOf(vehiculeselected);
+                    } // Log.e("",": "+k);
+
+
+                    // animateMarker(myMarker,pointVehicule,false);
+
+                }
+                else if(secondClickSurMap == true){
                     changerMenu(ListeMenu.aucun);
                     secondClickSurMap = false;
                     markerChanged.remove();
@@ -598,7 +604,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                /* myMarker.remove();*/
-                pointVehicule=point;
                 if (markerChanged != null)
                     markerChanged.remove();
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
