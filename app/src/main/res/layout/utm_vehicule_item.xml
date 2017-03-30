@@ -13,6 +13,7 @@
             android:id="@+id/utm_vi_Nom"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp" />
 
         <!-- Column 2 -->
@@ -20,6 +21,7 @@
             android:id="@+id/utm_vi_heure1"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp" />
 
         <!-- Column 3 -->
@@ -27,6 +29,7 @@
             android:id="@+id/utm_vi_heure2"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp" />
 
         <!-- Column 4 -->
@@ -34,12 +37,14 @@
             android:id="@+id/utm_vi_heure3"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp" />
         <!-- Column 5 -->
         <TextView
             android:id="@+id/utm_vi_heure4"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp" />
 
         <!-- Column 6 -->
@@ -47,6 +52,7 @@
             android:id="@+id/utm_vi_btn_Confirmer"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp"
             android:text="Confirmation" />
 
@@ -55,6 +61,7 @@
             android:id="@+id/utm_vi_btn_liberation"
             android:layout_width="0dip"
             android:layout_weight="1"
+            android:gravity="center"
             android:padding="10dp"
             android:text="Liberation" />
     </TableRow>

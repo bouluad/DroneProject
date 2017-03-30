@@ -2,15 +2,12 @@ package istic.fr.droneproject.adapter;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.util.Calendar;
 import java.util.List;
 
 import istic.fr.droneproject.R;
@@ -25,7 +22,8 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     private final int layout;
     private final Intervention intervention;
     EventsVehiculeClickListener eventsVehiculeClickListener;
-    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention,EventsVehiculeClickListener listener) {
+
+    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention, EventsVehiculeClickListener listener) {
         this.vehicules = vehicules;
         this.layout = layout;
         this.intervention = intervention;
@@ -43,48 +41,48 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
         Vehicule vehicule = vehicules.get(position);
 
         holder.nom.setText(vehicule.nom);
-        Log.e("TMR","vehicule"+vehicule.heureEngagement);
         holder.heure1.setText(vehicule.heureDemande);
-        if(vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()){
+        if (vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()) {
             holder.heure1.setBackgroundColor(Color.GRAY);
             holder.heure1.setText("----");
         }
-        if(! EtatVehicule.ANNULE.equals(vehicule.etat)){
-        holder.heure2.setText(vehicule.heureEngagement);
-        if(vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()){
-            holder.heure2.setBackgroundColor(Color.GRAY);
-            holder.heure2.setText("----");
-        }
-        holder.heure3.setText(vehicule.heureArrivee);
-        if(vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()){
-            holder.heure3.setBackgroundColor(Color.GRAY);
-            holder.heure3.setText("----");
-            holder.btnConfirmer.setVisibility(View.VISIBLE);
-            holder.btnConfirmer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    eventsVehiculeClickListener.clickConfirmer(vehicules.get(position));
-                }
-            });
+        if (!EtatVehicule.ANNULE.equals(vehicule.etat)) {
+            holder.heure2.setText(vehicule.heureEngagement);
+            if (vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()) {
+                holder.heure2.setBackgroundColor(Color.GRAY);
+                holder.heure2.setText("----");
+            }
+            holder.heure3.setText(vehicule.heureArrivee);
+            if (vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()) {
+                holder.heure3.setBackgroundColor(Color.GRAY);
+                holder.heure3.setText("----");
+                holder.btnConfirmer.setVisibility(View.VISIBLE);
+                holder.btnConfirmer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        eventsVehiculeClickListener.clickConfirmer(vehicules.get(position));
+                    }
+                });
 
-        }else{
-            holder.btnConfirmer.setVisibility(View.INVISIBLE);
-        }
-        holder.heure4.setText(vehicule.heureLiberation);
-        if(vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty() ) {
-            holder.heure4.setBackgroundColor(Color.GRAY);
-            holder.heure4.setText("----");
-            holder.btnLiberer.setVisibility(View.VISIBLE);
-            holder.btnLiberer.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    eventsVehiculeClickListener.clickLiberer(vehicules.get(position));
-                }
-            });
-        }else {
-            holder.btnLiberer.setVisibility(View.INVISIBLE);
-            holder.btnConfirmer.setVisibility(View.INVISIBLE);
-        }} else{
+            } else {
+                holder.btnConfirmer.setVisibility(View.INVISIBLE);
+            }
+            holder.heure4.setText(vehicule.heureLiberation);
+            if (vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()) {
+                holder.heure4.setBackgroundColor(Color.GRAY);
+                holder.heure4.setText("----");
+                holder.btnLiberer.setVisibility(View.VISIBLE);
+                holder.btnLiberer.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        eventsVehiculeClickListener.clickLiberer(vehicules.get(position));
+                    }
+                });
+            } else {
+                holder.btnLiberer.setVisibility(View.INVISIBLE);
+                holder.btnConfirmer.setVisibility(View.INVISIBLE);
+            }
+        } else {
             holder.heure2.setBackgroundColor(Color.CYAN);
             holder.heure2.setText("annulé");
             holder.heure3.setBackgroundColor(Color.CYAN);
@@ -99,6 +97,29 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     @Override
     public int getItemCount() {
         return vehicules.size();
+    }
+
+    /**
+     * interface pour les evenement du tableau des moyens
+     */
+    public interface EventsVehiculeClickListener {
+        /**
+         * Action à effectuer quand le button confirmer-
+         * est appuyé dans la liste des moyens
+         *
+         * @param vehicule Le vehicule à confirmer
+         *                 c
+         */
+        void clickConfirmer(Vehicule vehicule);
+
+        /**
+         * Action à effectuer quand le button Liberer-
+         * est appuyé dans la liste des moyens
+         *
+         * @param vehicule Le vehicule à liberer
+         *                 c
+         */
+        void clickLiberer(Vehicule vehicule);
     }
 
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
@@ -120,25 +141,5 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
             btnConfirmer = (Button) itemView.findViewById((R.id.utm_vi_btn_Confirmer));
             btnLiberer = (Button) itemView.findViewById((R.id.utm_vi_btn_liberation));
         }
-    }
-
-    /**
-       * interface pour les evenement du tableau des moyens
-     */
-    public interface EventsVehiculeClickListener {
-        /**
-         * Action à effectuer quand le button confirmer-
-         * est appuyé dans la liste des moyens
-         * @param vehicule Le vehicule à confirmer
-         * c
-         */
-        void clickConfirmer(Vehicule vehicule);
-        /**
-         * Action à effectuer quand le button Liberer-
-         * est appuyé dans la liste des moyens
-         * @param vehicule Le vehicule à liberer
-         * c
-         */
-        void clickLiberer(Vehicule vehicule);
     }
 }
