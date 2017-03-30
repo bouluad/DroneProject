@@ -40,26 +40,25 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     @Override
     public void onBindViewHolder(VehiculeViewHolder holder, final int position) {
         Vehicule vehicule = vehicules.get(position);
-
         switch (vehicule.categorie.toString()) {
             //SAUVETAGE - VERT
-            case "sauvetage":
+            case "SAUVETAGE":
                 holder.nom.setTextColor(Color.parseColor("#009D4F"));
                 break;
             //INCENDIE - ROUGE
-            case "incendie":
+            case "INCENDIE":
                 holder.nom.setTextColor(Color.parseColor("#e12b2b"));
                 break;
             //EAU - BLEU
-            case "eau":
+            case "EAU":
                 holder.nom.setTextColor(Color.parseColor("#1343f0"));
                 break;
             //RISQUE_PARTICULIER - JAUNE
-            case "risque_particulier":
+            case "RISQUE_PARTICULIER":
                 holder.nom.setTextColor(Color.parseColor("#cee514"));
                 break;
             //COMMANDEMENT - VIOLET
-            case "commandement":
+            case "COMMANDEMENT":
                 holder.nom.setTextColor(Color.parseColor("#ae07b8"));
                 break;
             //PAR DEFAUT  - NOIR
