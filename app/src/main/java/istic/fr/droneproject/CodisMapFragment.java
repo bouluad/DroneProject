@@ -114,6 +114,7 @@ public class CodisMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         this.googleMap = googleMap;
+        googleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
         googleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
