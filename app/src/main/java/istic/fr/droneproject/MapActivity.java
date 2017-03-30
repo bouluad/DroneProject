@@ -439,9 +439,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     lng = new LatLng(40.76793169992044, -73.98180484771729);}
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
+
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
                         .title("-1"));
+
 
                 // Move the camera instantly to hamburg with a zoom of 15.
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
@@ -609,6 +611,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void reloadVehiculesPoints(){
         mGoogleMap.clear();
+        myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                .position(lng)
+                .title("-1"));
         //ajoits des vehicules
         for (int i = 0; i < vehiculesCarte.size(); i++) {
             ajoutImageFromVehicule(vehiculesCarte.get(i),i);
