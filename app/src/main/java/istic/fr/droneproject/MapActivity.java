@@ -561,9 +561,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
+                pointVehicule=point;
                 if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
                     Double[]list =new Double[2];
-                    pointVehicule=point;
                     list[0] = pointVehicule.latitude;
                     list[1] = pointVehicule.longitude;
                     Log.e("","vehicule.nom"+vehiculeselected.nom);
