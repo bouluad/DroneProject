@@ -482,6 +482,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
+                //TODO Salma <1000 SP
                 else{
                     //TODO faire l'ajout depuis le menu vers la base
                     //TODO parcourir la liste des vehicules pour afficher les vehicules
@@ -576,7 +577,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Methode pour ajouter sur la map un point
      */
     private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
-
+    //TODO Salma ajouter tout les pointscarte sur la map
 
     }
 
@@ -615,6 +616,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         for (int i = 0; i < vehiculesCarte.size(); i++) {
             ajoutImageFromVehicule(vehiculesCarte.get(i),i);
         }
+        //TODO Salma inserer les points dans la carte avec 1000+i
     }
 
     /**
