@@ -233,11 +233,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("MapActivity", t.toString());
                     }
                 });
-                chargerIntervention();
+                SynchroniserIntervention();
             }
         };
 
-        chargerIntervention();
+        SynchroniserIntervention();
 
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
@@ -326,6 +326,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
+                //rechargement des 2 listes de vehicules & points
+                vehiculesCarte.clear();
+                vehiculesCarte = intervention.vehicules;
+                pointsCarte.clear();
+                pointsCarte = intervention.points;
+                //remplissage du tableau des vehicules placeable sur la carte
                 Collections.reverse(response.body().vehicules);
                 vehicules.clear();
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
@@ -339,10 +345,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 }
                 vehiculesAdapter.notifyDataSetChanged();
 
-                vehiculesCarte.clear();
-                vehiculesCarte = intervention.vehicules;
-                pointsCarte.clear();
-                pointsCarte = intervention.points;
                 reloadVehiculesPoints();
             }
 
@@ -414,7 +416,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                chargerIntervention();
+                                SynchroniserIntervention();
                             }
 
                             @Override
@@ -600,7 +602,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void SynchroniserIntervention(){
         //TODO avec idIntervention
-        if(!synchronisationBloquer){
+        if(!synchronisationBloquer && mGoogleMap != null){
             chargerIntervention();
         }
     }
