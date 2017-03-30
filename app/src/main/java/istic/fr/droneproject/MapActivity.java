@@ -85,6 +85,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
+    Boolean clicked;
     Vehicule vehiculeselected;
     private List<Vehicule> vehicules;
 
@@ -666,7 +667,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         if ((intervention.vehicules.get(i).position !=null && vehiculeselected.position !=null)
                                 &&(intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString() ) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()) )
                                 && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
-
+                             intervention.vehicules.get(i).setEtat(EtatVehicule.ENGAGE);
                             intervention.vehicules.get(i).setPosition(list);
                             InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                                 @Override
