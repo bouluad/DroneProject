@@ -4,44 +4,43 @@
     android:id="@+id/user_interventions"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="istic.fr.droneproject.UserInterventionsActivity"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:context="istic.fr.droneproject.UserInterventionsActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:id="@+id/ui_list_interventions"
-        android:layout_weight="1">
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent">
 
     </android.support.v7.widget.RecyclerView>
 
     <LinearLayout
-        android:orientation="vertical"
+        android:id="@+id/ui_layout_details"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/ui_layout_details"
-        android:layout_weight="1">
+        android:layout_weight="1"
+        android:orientation="vertical">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="15sp">
+            android:layout_marginBottom="15sp"
+            android:orientation="horizontal">
 
             <TextView
-                android:text="Détails de l'intervention"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="24sp"
+                android:layout_weight="1"
+                android:text="Détails de l'intervention"
                 android:textAlignment="center"
-                android:layout_weight="1" />
+                android:textSize="24sp" />
 
             <Button
-                android:text="Sélectionner"
+                android:id="@+id/ui_btn_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/ui_btn_select"
-                android:layout_weight="0" />
+                android:layout_weight="0"
+                android:text="Sélectionner" />
         </LinearLayout>
 
         <GridLayout
@@ -50,84 +49,84 @@
             android:columnCount="2">
 
             <TextView
-                android:text="Libellé"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="15sp" />
+                android:layout_marginBottom="15sp"
+                android:text="Libellé" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
                 android:id="@+id/ui_text_libelle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginBottom="15sp" />
-
-            <TextView
-                android:text="Adresse"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15sp" />
+                android:layout_marginStart="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:text="Adresse" />
+
+            <TextView
                 android:id="@+id/ui_text_adresse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginBottom="15sp"  />
-
-            <TextView
-                android:text="Position"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15sp" />
+                android:layout_marginStart="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:text="Position" />
+
+            <TextView
                 android:id="@+id/ui_text_position"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginBottom="15sp"  />
-
-            <TextView
-                android:text="Date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15sp" />
+                android:layout_marginStart="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:text="Date" />
+
+            <TextView
                 android:id="@+id/ui_text_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginBottom="15sp" />
-
-            <TextView
-                android:text="Code sinistre"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15sp" />
+                android:layout_marginStart="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
+                android:text="Code sinistre" />
+
+            <TextView
                 android:id="@+id/ui_text_code"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp"
-                android:layout_marginBottom="15sp"  />
+                android:layout_marginStart="20sp" />
 
             <TextView
-                android:text="Moyens"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:text="Moyens" />
 
             <android.support.v7.widget.RecyclerView
+                android:id="@+id/ui_list_vehicules"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/ui_list_vehicules" />
+                android:layout_height="match_parent" />
 
 
         </GridLayout>
