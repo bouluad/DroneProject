@@ -47,8 +47,10 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.ByteArrayOutputStream;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -84,7 +86,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Intervention intervention;
     Vehicule vehicule;
     Vehicule vehiculeselected;
-    boolean clicked;
     private List<Vehicule> vehicules;
 
     //liste de points et vehicules synchroniser a afficher sur la carte
@@ -344,7 +345,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Double[] list = new Double[2];
                 list[0] = pointVehicule.latitude;
                 list[1] = pointVehicule.longitude;
-                Log.e("", "vehicule.nom" + vehiculeselected.nom);
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if (intervention.vehicules.get(i).position != null) {
                         Double k1 = intervention.vehicules.get(i).position[0];
@@ -352,8 +352,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     }
                     Double s1 = vehiculeselected.position[0];
                     Double s2 = vehiculeselected.position[1];
-                    String nom1 = intervention.vehicules.get(i).nom;
-                    String nom2 = vehiculeselected.nom;
 
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
@@ -375,36 +373,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         });
                         SynchroniserIntervention();
                     }
-                    // int k= intervention.vehicules.indexOf(vehiculeselected);
-                } // Log.e("",": "+k);
-
-
-                // animateMarker(myMarker,pointVehicule,false);
+                }
 
 
             }
         });
 
-        confirmer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        liberer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
-
-        parking.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+       
     }
 
     private void chargerIntervention() {
