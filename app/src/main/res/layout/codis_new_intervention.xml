@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/codis_new_frame_fragment">
+
+    </FrameLayout>
+
     <EditText
         android:id="@+id/libelle"
         android:layout_width="fill_parent"
@@ -12,43 +19,53 @@
         android:gravity="center"
         android:hint="@string/libelle" />
 
-    <EditText
-        android:id="@+id/adresse"
-        android:layout_width="fill_parent"
+    <Button
+        android:text="Choisir l'adresse"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
-        android:hint="@string/adresse" />
+        android:id="@+id/codis_new_btn_adresse" />
 
 
     <RadioGroup
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checkedButton="@+id/code_radio_inc"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_marginBottom="15dp"
+        android:layout_marginTop="15dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Code" />
+            android:text="Code"
+            android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/code_radio_inc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/code_inc" />
+            android:text="@string/code_inc"
+            android:textSize="20sp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginStart="15dp" />
 
         <RadioButton
             android:id="@+id/code_radio_sap"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/code_sap" />
+            android:text="@string/code_sap"
+            android:textSize="20sp" />
 
     </RadioGroup>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Moyens 1er depart"/>
+        android:text="Moyens 1er depart"
+        android:textSize="20sp"
+        android:layout_marginBottom="10dp" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/listMoyens"

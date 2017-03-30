@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPostalAddress"
+            android:id="@+id/codis_map_adresse"
+            android:hint="Adresse"
+            android:layout_weight="1" />
+
+        <Button
+            android:text="Chercher"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/codis_map_btn_chercher"
+            android:layout_weight="0" />
+    </LinearLayout>
+
+    <fragment
+        android:id="@+id/codis_map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".CodisMapFragment"
+        android:layout_weight="1" />
+
+    <Button
+        android:text="Valider la position"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/codis_map_btn_valider"
+        android:layout_weight="0"
+        android:enabled="false" />
+
+</LinearLayout>
