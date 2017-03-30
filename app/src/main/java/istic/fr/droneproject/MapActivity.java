@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
@@ -74,8 +75,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment map;
     GoogleMap mGoogleMap;
-    Marker myMarker;
-    Marker markerChanged;
+    Marker myMarker;    //marker de position de l'intervention
+    Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng;
     ViewGroup view;
     RecyclerView recyclerViewVehicules;
@@ -94,8 +95,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     boolean synchronisationBloquer = false;
     boolean synchronisationNeedUpdate = false;
     boolean secondClickSurMap = false;
+    boolean reloadingIntervention = false;
     //Service de convertion en image et couler
-    TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
+    TransformImageToStringEtVs titsev;
 
     RecyclerView recyclerViewPoints;
     MapPointsRecyclerAdapter pointsAdapter;
@@ -121,6 +123,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        titsev = new TransformImageToStringEtVs(getContext());
         if (getArguments() != null) {
             idIntervention = getArguments().getString(ARG_ID);
 
@@ -190,7 +193,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                         markerChanged.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),titsev.FindImageIdByVehicule(vehicule))));
                                         markerChanged.setTitle(vehicule.nom);
                                         markerChanged.setSnippet(""+intervention.vehicules.indexOf(vehicule));*/
-                        Toast.makeText(getContext(), "L'intervention a été Modifié", Toast.LENGTH_SHORT);
+
+                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        SynchroniserIntervention();
+                        changerMenu(ListeMenu.aucun);
 
                     }
 
@@ -428,6 +434,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehiculesAdapter.notifyDataSetChanged();
 
                 reloadVehiculesPoints();
+                changerMenu(ListeMenu.aucun);
+                reloadingIntervention = false;
             }
 
             @Override
@@ -499,11 +507,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
                                 SynchroniserIntervention();
+                                changerMenu(ListeMenu.aucun);
                             }
 
                             @Override
                             public void onFailure(Call<Void> call, Throwable t) {
-
                             }
 
                         });
@@ -539,6 +547,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
                 SynchroniserIntervention();
+                changerMenu(ListeMenu.aucun);
             }
 
             @Override
@@ -574,15 +583,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
                 //TODO Salma <1000 SP
-                else {
-                    //TODO faire l'ajout depuis le menu vers la base
-                    //TODO parcourir la liste des vehicules pour afficher les vehicules
-                    changerMenu(ListeMenu.aucun);
-                    Vehicule vTest = new Vehicule();
-                    vTest.nom = "Batmobile" + vehicules.size();
-                    vehiculesCarte.add(vTest);
-                    ajoutImageFromVehicule(vTest, vehiculesCarte.size() - 1);
 
+                else{
+                    SynchroniserIntervention();
+                    changerMenu(ListeMenu.aucun);
 
                 }
                 return false;
@@ -594,8 +598,17 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
-                clicked = true;
-                m_menu_Actionvehicule.setVisibility(View.GONE);
+
+
+                if(secondClickSurMap == true){
+                    changerMenu(ListeMenu.aucun);
+                    secondClickSurMap = false;
+                    markerChanged.remove();
+                }
+                else{
+
+
+
                /* myMarker.remove();*/
                 pointVehicule = point;
                 if (markerChanged != null)
@@ -607,6 +620,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
+                secondClickSurMap = true;
+
+                }
             }
         });
 
@@ -639,16 +655,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         // paint defines the text color, stroke width and size
         Paint color = new Paint();
-        color.setTextSize(40);
+
+        color.setTextSize(25);
         color.setColor(titsev.FindColorByVehicule(vehicule.categorie));
-        TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
         //TODO choisir la bonne couleur
-// modify canvas
+        // modify canvas
+
         //TODO utiliser le service de yousra pour charger la bonne image
         titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
         canvas1.drawBitmap(
                 titsev.transformStringToImage(titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule)))
-                , null, new RectF(0, 0, iconSizeX, iconSizeY), color); ///taille de l'image a coordinée avec la taille de bmp
+
+                , null, new RectF(0, 0, iconSizeX, iconSizeY), new Paint(Color.GREEN)); ///taille de l'image a coordinée avec la taille de bmp
+
         canvas1.drawText(vehicule.nom, iconSizeX / 20, iconSizeY / 5 * 3, color);
 
         // add marker to
@@ -687,7 +706,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void SynchroniserIntervention() {
         //TODO avec idIntervention
-        if (!synchronisationBloquer && mGoogleMap != null) {
+
+        if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention){
+            reloadingIntervention = true;
+
             chargerIntervention();
         }
     }
@@ -742,6 +764,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
                 break;
             case aucun:
+                secondClickSurMap = false;
+                if(markerChanged != null)
+                    markerChanged.remove();
                 break;
         }
     }
