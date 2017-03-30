@@ -338,6 +338,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
          @Override
          public void onClick(View v) {
              clicked = true;
+             Toast.makeText(getContext(), "clicker sur la carte sur la nouvelle position du vehicule", Toast.LENGTH_SHORT).show();
          }
      });
 
