@@ -387,7 +387,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     Vehicule vehiculeCourant = response.body().vehicules.get(i);
                     if (
                             (vehiculeCourant.etat == EtatVehicule.PARKING || vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
-                                    && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                                    && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
                         ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
                     }
