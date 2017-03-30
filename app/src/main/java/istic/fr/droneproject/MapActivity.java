@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.RectF;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
@@ -61,7 +62,9 @@ import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.BaseSPService;
 import istic.fr.droneproject.service.TransformImageToStringEtVs;
+import istic.fr.droneproject.service.impl.BaseSPServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -69,6 +72,7 @@ import retrofit2.Response;
 
 public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
+
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     Marker myMarker;    //marker de position de l'intervention
@@ -109,6 +113,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     public enum ListeMenu {
         m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, aucun
     }
+
     private String idIntervention;
 
     //taille des icones sur la carte en X et en Y
@@ -160,10 +165,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
-        Button deplacer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_deplacer);
-        Button confirmer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
-        Button liberer=(Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
-        Button parking=(Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
+        Button deplacer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_deplacer);
+        Button confirmer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
+        Button liberer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
+        Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -172,25 +177,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         MapVehiculesRecyclerAdapter.VehiculeClickListener interventionClickListener = new MapVehiculesRecyclerAdapter.VehiculeClickListener() {
             @Override
             public void clickVehicule(final Vehicule vehicule) {
-                Log.e("Vehicule cliqué","Vehicule cliqué 1 =========>");
+                Log.e("Vehicule cliqué", "Vehicule cliqué 1 =========>");
                 //vehicule
-                int k =intervention.vehicules.indexOf(vehicule);
+                int k = intervention.vehicules.indexOf(vehicule);
                 intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
                 m_listPositionVehicule = new Double[2];
-                m_listPositionVehicule[0]=pointVehicule.latitude;
-                m_listPositionVehicule[1]=pointVehicule.longitude;
+                m_listPositionVehicule[0] = pointVehicule.latitude;
+                m_listPositionVehicule[1] = pointVehicule.longitude;
                 intervention.vehicules.get(k).setPosition(m_listPositionVehicule);
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Vehicule cliqué","=========>Vehicule cliqué ");
+                        Log.e("Vehicule cliqué", "=========>Vehicule cliqué ");
                                       /* TransformImageToStringEtVs titsev = new TransformImageToStringEtVs(getContext());
                                         markerChanged.setIcon(BitmapDescriptorFactory.fromBitmap(BitmapFactory.decodeResource(getResources(),titsev.FindImageIdByVehicule(vehicule))));
                                         markerChanged.setTitle(vehicule.nom);
                                         markerChanged.setSnippet(""+intervention.vehicules.indexOf(vehicule));*/
+
                         Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
                         SynchroniserIntervention();
                         changerMenu(ListeMenu.aucun);
+
                     }
 
                     @Override
@@ -201,7 +208,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 });
             }
         };
-        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(),interventionClickListener);
+        vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(), interventionClickListener);
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
         MapPointsRecyclerAdapter.PointClickListener pointsClickListener = new MapPointsRecyclerAdapter.PointClickListener() {
@@ -209,13 +216,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void clickPoint(final Pair<String, String> image) {
 
                 //point
-                final PointInteret pointInteret=new PointInteret();
+                final PointInteret pointInteret = new PointInteret();
                 pointInteret.setCode_image(image.first);
                 m_listPositionPoint = new Double[2];
-                m_listPositionPoint[0]=pointVehicule.latitude;
-                m_listPositionPoint[1]=pointVehicule.longitude;
+                m_listPositionPoint[0] = pointVehicule.latitude;
+                m_listPositionPoint[1] = pointVehicule.longitude;
                 pointInteret.setPosition(m_listPositionPoint);
-                if(intervention.points == null){
+                if (intervention.points == null) {
                     intervention.points = new ArrayList<>();
                 }
                 intervention.points.add(pointInteret);
@@ -224,16 +231,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
 
-                        Toast.makeText(getContext(),"L'intervention a été modifiée",Toast.LENGTH_SHORT).show();
-                        Log.e("Point cliqué","=========>Point cliqué ");
+                        Toast.makeText(getContext(), "L'intervention a été modifiée", Toast.LENGTH_SHORT).show();
+                        Log.e("Point cliqué", "=========>Point cliqué ");
                         Log.e("Point cliqué", m_listPositionPoint.toString());
-                        Log.e("Point cliqué", ""+pointInteret.getCode_image());
+                        Log.e("Point cliqué", "" + pointInteret.getCode_image());
 
                         String mDrawableName = pointInteret.getCode_image();
-                        int resID = getResources().getIdentifier(mDrawableName , "drawable", getContext().getPackageName());
-                        
-                        
-
+                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());
 
 
                         mGoogleMap.addMarker(new MarkerOptions()
@@ -258,7 +262,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
         recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
-        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item,pointsClickListener);
+        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item, pointsClickListener);
         recyclerViewPoints.setAdapter(pointsAdapter);
 
         Bitmap largeIconeau = BitmapFactory.decodeResource(this.getResources(),
@@ -373,6 +377,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehiculesCarte.clear();
                 vehiculesCarte = intervention.vehicules;
                 pointsCarte.clear();
+                System.out.println("je suis laaaa");
+              /*  recupererBaseSP();*/
                 pointsCarte = intervention.points;
                 //remplissage du tableau des vehicules placeable sur la carte
                 Collections.reverse(response.body().vehicules);
@@ -487,11 +493,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
 
-                if(intervention.position!=null && intervention.position[0] != null && intervention.position[1] != null) {
+                if (intervention.position != null && intervention.position[0] != null && intervention.position[1] != null) {
                     lng = new LatLng(intervention.position[0], intervention.position[1]);
+                } else {
+                    lng = new LatLng(40.76793169992044, -73.98180484771729);
                 }
-                else{
-                    lng = new LatLng(40.76793169992044, -73.98180484771729);}
+                /*recupererBaseSP();*/
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
@@ -512,7 +519,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
 
-
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -521,27 +527,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if(markerChanged != null)
                     markerChanged.remove();
                 //les vehicules on un ii entre 0 et 999
-                if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000 ){
+                if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
 
-                    vehiculeselected=vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
+                    vehiculeselected = vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
                     Log.e("MapMarkerClick", "title: " + marker.getTitle());
                     Log.e("MapMarkerClick", "marker: " + marker.getSnippet());
                     try {
                         Log.e("MapMarkerClick", "in liste[" + marker.getTitle() + "]: " + vehiculesCarte.get(Integer.parseInt(marker.getTitle())));
-                    }catch (Exception exception){}
+                    } catch (Exception exception) {
+                    }
                 }
                 //les points on un id entre 1000 et beaucoups
-                else if(Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 ) {
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000) {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
                 }
                 //TODO Salma <1000 SP
+
                 else{
                     SynchroniserIntervention();
                     changerMenu(ListeMenu.aucun);
+
                 }
                 return false;
             }
@@ -604,6 +613,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 else{
 
 
+
                /* myMarker.remove();*/
                 if (markerChanged != null)
                     markerChanged.remove();
@@ -621,6 +631,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
     }
+
     public static MapActivity newInstance(String idIntervention) {
         MapActivity fragment = new MapActivity();
         Bundle args = new Bundle();
@@ -648,15 +659,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         // paint defines the text color, stroke width and size
         Paint color = new Paint();
+
         color.setTextSize(25);
         color.setColor(titsev.FindColorByVehicule(vehicule.categorie));
         //TODO choisir la bonne couleur
         // modify canvas
+
         //TODO utiliser le service de yousra pour charger la bonne image
         titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
         canvas1.drawBitmap(
                 titsev.transformStringToImage(titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule)))
+
                 , null, new RectF(0, 0, iconSizeX, iconSizeY), new Paint(Color.GREEN)); ///taille de l'image a coordinée avec la taille de bmp
+
         canvas1.drawText(vehicule.nom, iconSizeX / 20, iconSizeY / 5 * 3, color);
 
         // add marker to
@@ -677,27 +692,28 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Methode pour ajouter sur la map un point
      */
     private void ajoutImageFromPoint(PointInteret point, int positionDansListePoints) {
-    //TODO Salma ajouter tout les pointscarte sur la map
+        //TODO Salma ajouter tout les pointscarte sur la map
 
     }
 
     /**
      * Methode qui converti un nom d'image en image
      */
-    private Bitmap convertionDrawableToImageString(String drawableName){
+    private Bitmap convertionDrawableToImageString(String drawableName) {
         //TODO faire une vrai convertion
         return BitmapFactory.decodeResource(getResources(),
                 R.drawable.ve_hu);
     }
 
     /**
-     *
      * Méthode qui synchronise l'intervention et appel le rechargement des vehicules et points si l'utilisateur n'effectue pas d'intéraction.
      */
-    private void SynchroniserIntervention(){
+    private void SynchroniserIntervention() {
         //TODO avec idIntervention
+
         if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention){
             reloadingIntervention = true;
+
             chargerIntervention();
         }
     }
@@ -706,18 +722,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * Méthode qui parcourt la liste d'intervention et recupère la liste des véhicules et la liste des points, et la liste des points SP,
      * puis ajoute tout les points sur la map.
      */
-    private void reloadVehiculesPoints(){
+    private void reloadVehiculesPoints() {
         mGoogleMap.clear();
+        recupererBaseSP();
         myMarker = mGoogleMap.addMarker(new MarkerOptions()
                 .position(lng)
                 .title("-1"));
         //ajoits des vehicules
         for (int i = 0; i < vehiculesCarte.size(); i++) {
             Vehicule vehiculeCourant = vehiculesCarte.get(i);
-            if(
-                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat  == EtatVehicule.ARRIVE)
-                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null))
-            {
+            if (
+                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
+                            && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
                 ajoutImageFromVehicule(vehiculesCarte.get(i), i);
             }
         }
@@ -725,10 +741,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     }
 
     /**
-     *
      * Methode pour afficher un seul menu a la foit
      */
-    public void changerMenu(ListeMenu menu){
+    public void changerMenu(ListeMenu menu) {
 
         m_menu_vehicules.setVisibility(View.GONE);
         m_menu_points.setVisibility(View.GONE);
@@ -736,7 +751,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actionpoint.setVisibility(View.GONE);
         m_menu_Actionvehicule.setVisibility(View.GONE);
 
-        switch (menu){
+        switch (menu) {
             case m_menu_vehicules:
                 m_menu_vehicules.setVisibility(View.VISIBLE);
                 break;
@@ -760,40 +775,66 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         }
     }
 
-    public void animateMarker(final Marker marker, final LatLng toPosition,
-                              final boolean hideMarker) {
-        final Handler handler = new Handler();
-        final long start = SystemClock.uptimeMillis();
-        Projection proj = mGoogleMap.getProjection();
-        Point startPoint = proj.toScreenLocation(marker.getPosition());
-        final LatLng startLatLng = proj.fromScreenLocation(startPoint);
-        final long duration = 500;
 
-        final Interpolator interpolator = new LinearInterpolator();
+    private void recupererBaseSP() {
+        int height = 100;
+        int width = 100;
 
-        handler.post(new Runnable() {
+        BaseSPService baseSP = new BaseSPServiceImpl();
+        baseSP.getBaseSP(new Callback<List<PointInteret>>() {
             @Override
-            public void run() {
-                long elapsed = SystemClock.uptimeMillis() - start;
-                float t = interpolator.getInterpolation((float) elapsed
-                        / duration);
-                double lng = t * toPosition.longitude + (1 - t)
-                        * startLatLng.longitude;
-                double lat = t * toPosition.latitude + (1 - t)
-                        * startLatLng.latitude;
-                marker.setPosition(new LatLng(lat, lng));
+            public void onResponse(Call<List<PointInteret>> call, Response<List<PointInteret>> response) {
 
-                if (t < 1.0) {
-                    // Post again 16ms later.
-                    handler.postDelayed(this, 16);
-                } else {
-                    if (hideMarker) {
-                        marker.setVisible(false);
-                    } else {
-                        marker.setVisible(true);
+                System.out.println("je suis dans sp");
+                for (PointInteret pointInteret : response.body()) {
+                    if (pointInteret.getCode_image() != null) {
+                        System.out.println(pointInteret.getCode_image());
+
+
+                        int height = 50;
+                        int width = 50;
+                        String mDrawableName = pointInteret.getCode_image().toLowerCase();
+                        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName()));
+                        Bitmap b = bitmapdraw.getBitmap();
+                        Bitmap smallMarker = Bitmap.createScaledBitmap(b, width, height, false);
+
+
+
+                       /* String mDrawableName = pointInteret.getCode_image().toLowerCase();
+                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());*/
+
+
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
+
+                               /* .icon(BitmapDescriptorFactory.fromResource(resID))*/
+                                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                                .title(mDrawableName));
                     }
                 }
+                /*for (PointInteret pointInteret : intervention.points){
+
+                    String mDrawableName = pointInteret.getCode_image();
+                    int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());
+
+
+                    mGoogleMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
+
+                            .icon(BitmapDescriptorFactory.fromResource(resID))
+                            .title("TEST"));
+                }*/
+
+
             }
+
+            @Override
+            public void onFailure(Call<List<PointInteret>> call, Throwable t) {
+                //DO NOTHING
+                Log.e("UserInterventionsActivi", t.toString());
+            }
+
         });
     }
 }
+
