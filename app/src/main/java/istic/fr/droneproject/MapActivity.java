@@ -408,6 +408,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
+        SynchroniserIntervention();
         // Add a marker in Sydney and move the camera
         this.mGoogleMap = googleMap;
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
@@ -516,8 +517,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO afficher un marker custom
         if(markerChanged == null)
             markerChanged = myMarker;
-
-        LatLng SYDNEY = markerChanged.getPosition();
+        }
+        //LatLng SYDNEY = markerChanged.getPosition();
 
         Bitmap.Config conf = Bitmap.Config.ARGB_8888;
         Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
@@ -538,7 +539,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         canvas1.drawText(vehicule.nom, iconSizeX/20, iconSizeY/5*3, color);
 
 // add marker to Map
-        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(SYDNEY)
+        LatLng posVehicule = new LatLng(vehicule.position[0],vehicule.position[1]);
+        Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(posVehicule)
                 .icon(BitmapDescriptorFactory.fromBitmap(bmp))
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
