@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/user_interventions"
     android:layout_width="match_parent"
@@ -33,14 +34,23 @@
                 android:layout_weight="1"
                 android:text="Détails de l'intervention"
                 android:textAlignment="center"
-                android:textSize="24sp" />
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="28sp" />
 
-            <Button
+
+            <android.support.design.widget.FloatingActionButton
                 android:id="@+id/ui_btn_select"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_gravity="bottom|right"
                 android:layout_weight="0"
-                android:text="Sélectionner" />
+                android:clickable="true"
+                android:src="@drawable/ic_information_variant"
+                app:fabSize="normal" />
+
         </LinearLayout>
 
         <GridLayout
@@ -52,7 +62,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
-                android:text="Libellé" />
+                android:layout_marginLeft="20sp"
+                android:text="Libellé"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/ui_text_libelle"
@@ -60,13 +73,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp" />
+                android:layout_marginStart="20sp"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
-                android:text="Adresse" />
+                android:layout_marginLeft="20sp"
+                android:text="Adresse"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/ui_text_adresse"
@@ -74,13 +91,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp" />
+                android:layout_marginStart="20sp"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
-                android:text="Position" />
+                android:layout_marginLeft="20sp"
+                android:text="Position"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/ui_text_position"
@@ -88,13 +109,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp" />
+                android:layout_marginStart="20sp"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
-                android:text="Date" />
+                android:layout_marginLeft="20sp"
+                android:text="Date"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/ui_text_date"
@@ -102,13 +127,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp" />
+                android:layout_marginStart="20sp"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
-                android:text="Code sinistre" />
+                android:layout_marginLeft="20sp"
+                android:text="Code sinistre"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <TextView
                 android:id="@+id/ui_text_code"
@@ -116,17 +145,23 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15sp"
                 android:layout_marginLeft="20sp"
-                android:layout_marginStart="20sp" />
+                android:layout_marginStart="20sp"
+                android:textSize="20dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Moyens" />
+                android:layout_marginLeft="20sp"
+                android:text="Moyens"
+                android:textColor="@color/fbutton_color_green_sea"
+                android:textSize="20dp" />
 
             <android.support.v7.widget.RecyclerView
                 android:id="@+id/ui_list_vehicules"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20sp"
+                android:layout_marginTop="10sp" />
 
 
         </GridLayout>
