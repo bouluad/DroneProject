@@ -640,7 +640,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 myMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
-                        .title("-1"));
+                        .title("Intervention")
+                        .snippet(intervention.libelle));
 
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
@@ -661,10 +662,17 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
                 // marker.showInfoWindow();
                 changerMenu(ListeMenu.m_menu_choix);
-                if(markerChanged != null)
+                if(markerChanged != null) {
                     markerChanged.remove();
+                    Log.e("MapActivity","markerChanged.remove(); line 667");
+                }
                 //les vehicules on un ii entre 0 et 999
-                if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
+                if(marker.getTitle() == null ||marker.getTitle().equals("Intervention")){
+                    //do nothing but catch not a number marker
+//                    SynchroniserIntervention();
+//                    changerMenu(ListeMenu.aucun);
+                }
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
                     System.out.println("veh" +marker.getTitle());
                     vehiculeselected = vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
@@ -692,8 +700,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
                     //TODO Salma <1000 SP
                     changerMenu(ListeMenu.aucun);
-                    if(markerChanged != null)
+                    if(markerChanged != null) {
                         markerChanged.remove();
+                        Log.e("MapActivity", "markerChanged.remove(); line 705");
+                    }
                 }
                 else{
                     SynchroniserIntervention();
@@ -785,18 +795,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     changerMenu(ListeMenu.aucun);
                     secondClickSurMap = false;
                     markerChanged.remove();
+                    Log.e("MapActivity","markerChanged.remove(); line 797");
                 }
                 else{
 
 
 
                /* myMarker.remove();*/
-                if (markerChanged != null)
+                if (markerChanged != null) {
                     markerChanged.remove();
+                    Log.e("MapActivity","markerChanged.remove(); line 807");
+                }
                 markerChanged = mGoogleMap.addMarker(new MarkerOptions()
                         .position(point)
                         .icon(BitmapDescriptorFactory.fromResource(R.drawable.start_blue))
-                        .title("-1"));
+                        );
 
                 Log.e("Position Marker", point.toString());
                 changerMenu(ListeMenu.m_menu_choix);
@@ -926,7 +939,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             mGoogleMap.clear();
             myMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(lng)
-                    .title("-1"));
+                    .title("Intervention")
+            .snippet(intervention.libelle));
             //ajouts des vehicules
             for (int i = 0; i < vehiculesCarte.size(); i++) {
                 Vehicule vehiculeCourant = vehiculesCarte.get(i);
@@ -984,8 +998,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 break;
             case aucun:
                 secondClickSurMap = false;
-                if(markerChanged != null)
+                if(markerChanged != null) {
                     markerChanged.remove();
+                    Log.e("MapActivity", "markerChanged.remove(); line 996");
+
+                    myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                            .position(lng)
+                            .title("Intervention")
+                            .snippet(intervention.libelle));
+
+                }
                 break;
         }
     }
