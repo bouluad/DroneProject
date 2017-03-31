@@ -431,6 +431,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
 
                 clickedPoint = true;
+                Toast.makeText(getContext(), "clicker sur la carte sur la nouvelle position du point", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -663,7 +664,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
-                                Log.e("point suppprimé", "=========>point supprimé ");
+                                Log.e("point updated", "=========>point updated ");
 
                             }
 
