@@ -353,7 +353,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                String heureArrivee = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.FRANCE).format(new Date());
+                String heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
@@ -387,7 +387,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                String heureLiberation =new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.FRANCE).format(new Date());
+                String heureLiberation =new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
