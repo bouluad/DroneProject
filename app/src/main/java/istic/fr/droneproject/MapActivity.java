@@ -534,7 +534,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         vehicule.etat = EtatVehicule.DEMANDE;
                         vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-
+                        vehicule.position = new Double[2];
+                        vehicule.position[0] = markerChanged.getPosition().latitude;
+                        vehicule.position[1] = markerChanged.getPosition().longitude;
 //                        vehicules.add(vehicule);
                         intervention.vehicules.add(vehicule);
 
