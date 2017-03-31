@@ -75,7 +75,6 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
                 drawable = R.drawable.vh_eau;
         }
         Picasso.with(context).load(drawable).resize(200,150).into(holder.image);
-
     }
 
     @Override
