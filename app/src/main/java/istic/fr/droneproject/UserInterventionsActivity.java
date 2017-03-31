@@ -2,19 +2,16 @@ package istic.fr.droneproject;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
@@ -35,7 +32,7 @@ public class UserInterventionsActivity extends AppCompatActivity {
 
         final RecyclerView interventionsRecycler = (RecyclerView) findViewById(R.id.ui_list_interventions);
         final View layoutDetails = findViewById(R.id.ui_layout_details);
-        final Button btnSelect = (Button) findViewById(R.id.ui_btn_select);
+        final FloatingActionButton btnSelect = (FloatingActionButton) findViewById(R.id.ui_btn_select);
         final TextView textAdresse = (TextView) findViewById(R.id.ui_text_adresse);
         final TextView textLibelle = (TextView) findViewById(R.id.ui_text_libelle);
         final TextView textPosition = (TextView) findViewById(R.id.ui_text_position);
