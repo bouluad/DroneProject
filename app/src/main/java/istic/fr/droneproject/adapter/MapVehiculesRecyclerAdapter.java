@@ -41,7 +41,7 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         final Vehicule vehicule = vehicules.get(position);
 
         holder.nom.setText(vehicule.nom);
-        holder.nom.setOnClickListener(new View.OnClickListener() {
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.clickVehicule(vehicule);
@@ -82,17 +82,19 @@ public class MapVehiculesRecyclerAdapter extends RecyclerView.Adapter<MapVehicul
         return vehicules.size();
     }
 
-    public class VehiculeViewHolder extends RecyclerView.ViewHolder {
+    class VehiculeViewHolder extends RecyclerView.ViewHolder {
 
         TextView nom;
         TextView type;
         ImageView image;
+        View view;
 
-        public VehiculeViewHolder(final View itemView) {
+        VehiculeViewHolder(final View itemView) {
             super(itemView);
             nom = (TextView) itemView.findViewById(R.id.m_vehicules_info_nom);
             type = (TextView) itemView.findViewById(R.id.m_vehicules_info_type);
             image = (ImageView) itemView.findViewById(R.id.m_vehicules_image);
+            view = itemView.findViewById(R.id.m_vehicules_frame);
         }
     }
 
