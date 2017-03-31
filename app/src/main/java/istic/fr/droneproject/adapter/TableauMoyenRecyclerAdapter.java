@@ -68,18 +68,23 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
         }
 
         holder.nom.setText(vehicule.nom);
-        holder.heure1.setText(vehicule.heureDemande);
+
         if (vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()) {
             holder.heure1.setBackgroundColor(Color.GRAY);
             holder.heure1.setText("----");
+        }else {
+            holder.heure1.setText(vehicule.heureDemande);
+            holder.heure4.setBackgroundColor(Color.TRANSPARENT);
         }
         if (!EtatVehicule.ANNULE.equals(vehicule.etat)) {
-            holder.heure2.setText(vehicule.heureEngagement);
             if (vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()) {
                 holder.heure2.setBackgroundColor(Color.GRAY);
                 holder.heure2.setText("----");
+            }else {
+                holder.heure2.setText(vehicule.heureDemande);
+                holder.heure2.setBackgroundColor(Color.TRANSPARENT);
             }
-            holder.heure3.setText(vehicule.heureArrivee);
+
             if (vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()) {
                 holder.heure3.setBackgroundColor(Color.GRAY);
                 holder.heure3.setText("----");
@@ -92,9 +97,10 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 });
 
             } else {
+                holder.heure3.setText(vehicule.heureArrivee);
+                holder.heure3.setBackgroundColor(Color.TRANSPARENT);
                 holder.btnConfirmer.setVisibility(View.INVISIBLE);
             }
-            holder.heure4.setText(vehicule.heureLiberation);
             if (vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()) {
                 holder.heure4.setBackgroundColor(Color.GRAY);
                 holder.heure4.setText("----");
@@ -106,6 +112,8 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                     }
                 });
             } else {
+                holder.heure4.setText(vehicule.heureLiberation);
+                holder.heure4.setBackgroundColor(Color.TRANSPARENT);
                 holder.btnLiberer.setVisibility(View.INVISIBLE);
                 holder.btnConfirmer.setVisibility(View.INVISIBLE);
             }
