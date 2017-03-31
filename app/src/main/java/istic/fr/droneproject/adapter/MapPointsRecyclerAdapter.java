@@ -1,44 +1,38 @@
 package istic.fr.droneproject.adapter;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.support.v4.util.Pair;
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.TypePoint;
 
 public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecyclerAdapter.PointViewHolder> {
 
-
-    private final List<Pair<String, String>> listeImages;
+    private final List<TypePoint> listeImages;
     private final int layout;
     private PointClickListener listener;
+    private Context context;
 
-    public MapPointsRecyclerAdapter(List<Pair<String, String>> images, int layout, PointClickListener listener) {
+    /**
+     *
+     * @param images Liste de paires (nom, drawable)
+     * @param layout
+     * @param context
+     * @param listener
+     */
+    public MapPointsRecyclerAdapter(List<TypePoint> images, int layout, Context context, PointClickListener listener) {
         this.listeImages = images;
-//        this.listeImages.add("eau.png");
-//        this.listeImages.add("eau_np.png");
-//        this.listeImages.add("ps_eau.png");
-//        this.listeImages.add("ps_hu.png");
-//        this.listeImages.add("ps_in.png");
-//        this.listeImages.add("ps_rp.png");
-//        this.listeImages.add("sd_eau.png");
-//        this.listeImages.add("sd_hu.png");
-//        this.listeImages.add("sd_in.png");
-//        this.listeImages.add("sd_rp.png");
-//        this.listeImages.add("ve_eau.png");
-//        this.listeImages.add("ve_hu.png");
-//        this.listeImages.add("ve_in.png");
-//        this.listeImages.add("ve_rp.png");
         this.layout = layout;
         this.listener = listener;
+        this.context = context;
     }
 
     @Override
@@ -49,18 +43,16 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
 
     @Override
     public void onBindViewHolder(PointViewHolder holder, int position) {
-        final Pair<String, String> imageCourante = listeImages.get(position);
-        byte[] encodeByte = Base64.decode(imageCourante.second, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-        holder.image.setImageBitmap(bitmap);
+        final TypePoint imageCourante = listeImages.get(position);
+
+        Picasso.with(context).load(imageCourante.getDrawable()).into(holder.image);
+
         holder.image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.clickPoint(imageCourante);
+                listener.clickPoint(imageCourante.getName());
             }
         });
-
-
     }
 
     @Override
@@ -69,17 +61,15 @@ public class MapPointsRecyclerAdapter extends RecyclerView.Adapter<MapPointsRecy
     }
 
     public interface PointClickListener {
-        void clickPoint(Pair<String, String> image);
+        void clickPoint(String nomImage);
     }
 
-    public class PointViewHolder extends RecyclerView.ViewHolder {
+    class PointViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
 
-        public PointViewHolder(final View itemView) {
+        PointViewHolder(final View itemView) {
             super(itemView);
             image = (ImageView) itemView.findViewById(R.id.m_points_image);
-
-
         }
     }
 }
