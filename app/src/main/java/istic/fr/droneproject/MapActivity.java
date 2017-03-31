@@ -74,7 +74,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Intervention intervention;
     Vehicule vehicule;
     Boolean clicked = false;
+    Boolean clickedPoint = false;
     Vehicule vehiculeselected;
+  /*  PointInteret pointSelected;*/
+    int pointSelected;
     private List<Vehicule> vehicules;
 
     //liste de points et vehicules synchroniser a afficher sur la carte
@@ -160,6 +163,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button confirmer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
         Button liberer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
+
+        //bouton suppression point
+        Button m_menu_Actionpoint_supprimer= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
+        Button m_menu_Actionpoint_deplacer= (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -278,30 +285,41 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                String heureArrivee = new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.FRANCE).format(new Date());
+                String heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
+                    //oN CHERCHE LE VÉHICULE SÉLECTIONNER
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
                             && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
 
-                        intervention.vehicules.get(i).setEtat(EtatVehicule.ARRIVE);
-                        if(intervention.vehicules.get(i).heureArrivee==null)
-                            intervention.vehicules.get(i).setHeureArrivee(heureArrivee);
-                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                Log.e("Vehicule confirmé", "=========>Vehicule confirmé ");
+                        if ((EtatVehicule.ENGAGE.equals(intervention.vehicules.get(i).etat) && (intervention.vehicules.get(i).heureEngagement != null) ) || (EtatVehicule.PARKING.equals(intervention.vehicules.get(i).etat)) ) {
 
-                            }
 
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                                //DO NOTHING
-                                Log.e("MapActivity", t.toString());
-                            }
-                        });
-                        changerMenu(ListeMenu.aucun);
-                        SynchroniserIntervention();
+                            intervention.vehicules.get(i).setEtat(EtatVehicule.ARRIVE);
+                            if (intervention.vehicules.get(i).heureArrivee == null)
+                                intervention.vehicules.get(i).setHeureArrivee(heureArrivee);
+                            InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    Log.e("Vehicule confirmé", "=========>Vehicule confirmé ");
+
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    //DO NOTHING
+                                    Log.e("MapActivity", t.toString());
+                                }
+                            });
+                            changerMenu(ListeMenu.aucun);
+                            SynchroniserIntervention();
+
+
+                        }
+                    }else {
+
+                        Toast.makeText(getActivity(),
+                                "Veuillez attendre la validation par le CODIS avant de confirmer", Toast.LENGTH_LONG).show();
                     }
                 }
 
@@ -312,7 +330,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                String heureLiberation =new SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.FRANCE).format(new Date());
+                String heureLiberation =new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
@@ -373,6 +391,48 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        m_menu_Actionpoint_supprimer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                        try {
+
+
+                        intervention.points.remove(pointSelected);
+
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Log.e("point suppprimé", "=========>point supprimé ");
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //DO NOTHING
+
+                            }
+                        });
+                        changerMenu(ListeMenu.aucun);
+                        SynchroniserIntervention();
+
+
+                        }
+                        catch (Exception e){
+
+                        }
+
+            }
+        });
+
+        m_menu_Actionpoint_deplacer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                clickedPoint = true;
+
+            }
+        });
     }
 
     private void chargerIntervention() {
@@ -393,7 +453,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
                     Vehicule vehiculeCourant = response.body().vehicules.get(i);
                     if (
-                            (vehiculeCourant.etat == EtatVehicule.PARKING || vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
+                            (vehiculeCourant.etat == EtatVehicule.PARKING)  || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
                                     && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
                         ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
@@ -467,7 +527,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         vehicule.etat = EtatVehicule.DEMANDE;
                         vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-
+                        vehicule.position = new Double[2];
+                        vehicule.position[0] = markerChanged.getPosition().latitude;
+                        vehicule.position[1] = markerChanged.getPosition().longitude;
 //                        vehicules.add(vehicule);
                         intervention.vehicules.add(vehicule);
 
@@ -537,7 +599,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //les vehicules on un ii entre 0 et 999
                 if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
-
+                    System.out.println("veh" +marker.getTitle());
                     vehiculeselected = vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
@@ -552,6 +614,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 && Integer.parseInt(marker.getTitle()) < 2000) {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
+                    System.out.println("heeeeeeeeeereeeeee");
+                    String title = marker.getTitle();
+
+
+                    pointSelected = Integer.parseInt(title.substring(title.length() - 1));
+                    System.out.println("point selected "+pointSelected);
                 }
                 // les points SP
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
@@ -575,7 +643,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
                 pointVehicule=point;
-                if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
+                if(clickedPoint) {
+                    try {
+                        Double nPos[] = new Double[2];
+                        nPos[0] = point.latitude;
+                        nPos[1] = point.longitude;
+                        intervention.points.get(pointSelected).setPosition(nPos);
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Log.e("point suppprimé", "=========>point supprimé ");
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //DO NOTHING
+
+                            }
+                        });
+                        changerMenu(ListeMenu.aucun);
+                        SynchroniserIntervention();
+
+
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+                else if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
                     Double[]list =new Double[2];
                     list[0] = pointVehicule.latitude;
                     list[1] = pointVehicule.longitude;
@@ -746,30 +842,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * puis ajoute tout les points sur la map.
      */
     private void reloadVehiculesPoints() {
-        mGoogleMap.clear();
-        myMarker = mGoogleMap.addMarker(new MarkerOptions()
-                .position(lng)
-                .title("-1"));
-        //ajouts des vehicules
-        for (int i = 0; i < vehiculesCarte.size(); i++) {
-            Vehicule vehiculeCourant = vehiculesCarte.get(i);
-            if (
-                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
-                            && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
-                ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+        try {
+
+            mGoogleMap.clear();
+            myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(lng)
+                    .title("-1"));
+            //ajouts des vehicules
+            for (int i = 0; i < vehiculesCarte.size(); i++) {
+                Vehicule vehiculeCourant = vehiculesCarte.get(i);
+                if (
+                        (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
+                                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                    ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+                }
+            }
+            //ajouts des points
+            for (int i = 0; i < pointsCarte.size(); i++) {
+                PointInteret pointCourant = pointsCarte.get(i);
+                ajoutImageFromPoint(pointCourant, 1000 + i);
+
+            }
+
+            //ajouts des points SP
+            for (int i = 0; i < pointsSPCarte.size(); i++) {
+                PointInteret pointCourant = pointsSPCarte.get(i);
+                ajoutImageFromPoint(pointCourant, 2000 + i);
+
             }
         }
-        //ajouts des points
-        for (int i = 0; i < pointsCarte.size(); i++) {
-            PointInteret pointCourant = pointsCarte.get(i);
-            ajoutImageFromPoint(pointCourant, 1000+i);
-
-        }
-
-        //ajouts des points SP
-        for (int i = 0; i < pointsSPCarte.size(); i++) {
-            PointInteret pointCourant = pointsSPCarte.get(i);
-            ajoutImageFromPoint(pointCourant, 2000+i);
+        catch (Exception e){
 
         }
     }
