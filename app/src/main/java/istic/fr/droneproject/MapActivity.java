@@ -316,10 +316,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                         }
-                    }else {
+                        else {
 
-                        Toast.makeText(getActivity(),
-                                "Veuillez attendre la validation par le CODIS avant de confirmer", Toast.LENGTH_LONG).show();
+                            Toast.makeText(getActivity(),
+                                    "Veuillez attendre la validation par le CODIS avant de confirmer", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
 
