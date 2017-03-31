@@ -857,24 +857,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                 }
             }
-            //ajouts des points
-            for (int i = 0; i < pointsCarte.size(); i++) {
-                PointInteret pointCourant = pointsCarte.get(i);
-                ajoutImageFromPoint(pointCourant, 1000 + i);
 
+            //ajouts des points
+            if (pointsCarte != null) {
+                for (int i = 0; i < pointsCarte.size(); i++) {
+                    PointInteret pointCourant = pointsCarte.get(i);
+                    ajoutImageFromPoint(pointCourant, 1000 + i);
+                }
             }
 
             //ajouts des points SP
-            for (int i = 0; i < pointsSPCarte.size(); i++) {
-                PointInteret pointCourant = pointsSPCarte.get(i);
-                ajoutImageFromPoint(pointCourant, 2000 + i);
+            if (pointsSPCarte != null) {
+                for (int i = 0; i < pointsSPCarte.size(); i++) {
+                    PointInteret pointCourant = pointsSPCarte.get(i);
+                    ajoutImageFromPoint(pointCourant, 2000 + i);
+
+                }
+            }
+        }
+            catch(Exception e){
 
             }
         }
-        catch (Exception e){
 
-        }
-    }
+
 
     /**
      * Methode pour afficher un seul menu a la foit
