@@ -2,11 +2,9 @@ package istic.fr.droneproject;
 
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -14,11 +12,9 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,7 +36,6 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -54,6 +49,7 @@ import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
+import istic.fr.droneproject.model.TypePoint;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.BaseSPService;
@@ -214,12 +210,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         recyclerViewVehicules.setAdapter(vehiculesAdapter);
 
         MapPointsRecyclerAdapter.PointClickListener pointsClickListener = new MapPointsRecyclerAdapter.PointClickListener() {
-            @Override
-            public void clickPoint(final Pair<String, String> image) {
 
+            @Override
+            public void clickPoint(String nomImage) {
                 //point
                 final PointInteret pointInteret = new PointInteret();
-                pointInteret.setCode_image(image.first);
+                pointInteret.setCode_image(nomImage);
                 m_listPositionPoint = new Double[2];
                 m_listPositionPoint[0] = pointVehicule.latitude;
                 m_listPositionPoint[1] = pointVehicule.longitude;
@@ -232,21 +228,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
-
                         Toast.makeText(getContext(), "L'intervention a été modifiée", Toast.LENGTH_SHORT).show();
-                        Log.e("Point cliqué", "=========>Point cliqué ");
-                        Log.e("Point cliqué", m_listPositionPoint.toString());
-                        Log.e("Point cliqué", "" + pointInteret.getCode_image());
-
-                        String mDrawableName = pointInteret.getCode_image();
-                        int resID = getResources().getIdentifier(mDrawableName, "drawable", getContext().getPackageName());
-
-
-                        mGoogleMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(pointInteret.getPosition()[0], pointInteret.getPosition()[1]))
-
-                                .icon(BitmapDescriptorFactory.fromResource(resID))
-                                .title("TEST"));
                     }
 
                     @Override
@@ -261,60 +243,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         SynchroniserIntervention();
 
-        final List<Pair<String, String>> m_images_points = new ArrayList<>();
         recyclerViewPoints = (RecyclerView) view.findViewById(R.id.m_list_points);
         recyclerViewPoints.setLayoutManager(new LinearLayoutManager(getContext()));
-        pointsAdapter = new MapPointsRecyclerAdapter(m_images_points, R.layout.m_points_item, pointsClickListener);
+
+        pointsAdapter = new MapPointsRecyclerAdapter(TypePoint.getAll(), R.layout.m_points_item, getContext(),pointsClickListener);
         recyclerViewPoints.setAdapter(pointsAdapter);
-
-        Bitmap largeIconeau = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.eau);
-        ByteArrayOutputStream streameau = new ByteArrayOutputStream();
-        largeIconeau.compress(Bitmap.CompressFormat.JPEG, 100, streameau);
-        byte[] byteFormateau = streameau.toByteArray();
-        String encodedImageeau = Base64.encodeToString(byteFormateau, Base64.NO_WRAP);
-
-        Bitmap largeIconpseau = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.ps_eau);
-        ByteArrayOutputStream streampseau = new ByteArrayOutputStream();
-        largeIconpseau.compress(Bitmap.CompressFormat.JPEG, 100, streampseau);
-        byte[] byteFormatpseau = streampseau.toByteArray();
-        String encodedImagepseau = Base64.encodeToString(byteFormatpseau, Base64.NO_WRAP);
-
-        Bitmap largeIconps_hu = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.ps_hu);
-        ByteArrayOutputStream streamps_hu = new ByteArrayOutputStream();
-        largeIconps_hu.compress(Bitmap.CompressFormat.JPEG, 100, streamps_hu);
-        byte[] byteFormatps_hu = streamps_hu.toByteArray();
-        String encodedImageps_hu = Base64.encodeToString(byteFormatps_hu, Base64.NO_WRAP);
-
-
-        Bitmap largeIconps_in = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.ps_in);
-        ByteArrayOutputStream streamps_in = new ByteArrayOutputStream();
-        largeIconps_in.compress(Bitmap.CompressFormat.JPEG, 100, streamps_in);
-        byte[] byteFormatps_in = streamps_in.toByteArray();
-        String encodedImageps_in = Base64.encodeToString(byteFormatps_in, Base64.NO_WRAP);
-
-        Bitmap largeIconps_rp = BitmapFactory.decodeResource(this.getResources(),
-                R.drawable.ps_rp);
-        ByteArrayOutputStream streamps_rp = new ByteArrayOutputStream();
-        largeIconps_rp.compress(Bitmap.CompressFormat.JPEG, 100, streamps_rp);
-        byte[] byteFormatps_rp = streamps_rp.toByteArray();
-        String encodedImageps_rp = Base64.encodeToString(byteFormatps_rp, Base64.NO_WRAP);
-        m_images_points.add(new Pair<String, String>("eau", encodedImageeau));
-        m_images_points.add(new Pair<String, String>("ps_eau", encodedImagepseau));
-        m_images_points.add(new Pair<String, String>("ps_hu", encodedImageps_hu));
-        m_images_points.add(new Pair<String, String>("ps_in", encodedImageps_in));
-        m_images_points.add(new Pair<String, String>("ps_rp", encodedImageps_rp));
-      /*  m_images_points.add(new Pair<String,String>("eau",m_transform.transform( R.drawable.eau)));
-        m_images_points.add(new Pair<String,String>("ps_reau",m_transform.transform( R.drawable.ps_eau)));
-      m_images_points.add(new Pair<String,String>("ps_hu",m_transform.transform( R.drawable.ps_hu) ));
-      m_images_points.add(new Pair<String,String>("ps_in",m_transform.transform( R.drawable.ps_in)));
-      m_images_points.add(new Pair<String,String>("ps_rp",m_transform.transform( R.drawable.ps_rp)));*/
-
-        pointsAdapter.notifyDataSetChanged();
-
 
         points.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -780,8 +713,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                     // animateMarker(myMarker,pointVehicule,false);
 
-                }
-                else if(secondClickSurMap == true){
+                } else if (secondClickSurMap) {
                     changerMenu(ListeMenu.aucun);
                     secondClickSurMap = false;
                     markerChanged.remove();
@@ -821,43 +753,43 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      */
     private void ajoutImageFromVehicule(Vehicule vehicule, int positionDansListeVehicules) {
         Log.e("Map ajout vehicule", "Ahout de " + vehicule.nom + " a la position " + positionDansListeVehicules);
-        //TODO afficher un marker custom
-        if (markerChanged == null)
+
+        if (markerChanged == null) {
             markerChanged = myMarker;
+        }
 
-        //LatLng SYDNEY = markerChanged.getPosition();
 
-        //LatLng SYDNEY = markerChanged.getPosition();
+        int drawableRes = titsev.FindImageIdByVehicule(vehicule);
+        BitmapDrawable bmpDraw = (BitmapDrawable) getResources().getDrawable(drawableRes);
+//        BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier(drawableRes, "drawable", getContext().getPackageName()));
+        Bitmap b = bmpDraw.getBitmap();
+        Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX, iconSizeY, false);
+        Canvas canvas1 = new Canvas(smallMarker);
 
-        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
-        Bitmap bmp = Bitmap.createBitmap(iconSizeX, iconSizeY, conf);//taille de l'image a coordonée avec la taille de R.drawText
-        Canvas canvas1 = new Canvas(bmp);
+        // texte vehicule
 
-        // paint defines the text color, stroke width and size
-        Paint color = new Paint();
+        Paint stkPaint = new Paint();
+        stkPaint.setStyle(Paint.Style.STROKE);
+        stkPaint.setTextSize(25);
+        stkPaint.setStrokeWidth(4);
+        stkPaint.setColor(Color.BLACK);
+        canvas1.drawText(vehicule.nom, iconSizeX / 20, iconSizeY / 5 * 3, stkPaint);
 
-        color.setTextSize(25);
-        color.setColor(titsev.FindColorByVehicule(vehicule.categorie));
-        //TODO choisir la bonne couleur
-        // modify canvas
+        Paint fillPaint = new Paint();
+        fillPaint.setTextSize(25);
+        fillPaint.setColor(TransformImageToStringEtVs.FindColorByVehicule(vehicule.categorie));
+        canvas1.drawText(vehicule.nom, iconSizeX / 20, iconSizeY / 5 * 3, fillPaint);
 
-        //TODO utiliser le service de yousra pour charger la bonne image
-        titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule));
-        canvas1.drawBitmap(
-                titsev.transformStringToImage(titsev.transformImageToString(titsev.FindImageIdByVehicule(vehicule)))
-
-                , null, new RectF(0, 0, iconSizeX, iconSizeY), new Paint(Color.GREEN)); ///taille de l'image a coordinée avec la taille de bmp
-
-        canvas1.drawText(vehicule.nom, iconSizeX / 20, iconSizeY / 5 * 3, color);
-
-        // add marker to
+        // add marker
         LatLng posVehicule;
-        if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null)
+        if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null) {
             posVehicule = markerChanged.getPosition();
-        else
+        } else {
             posVehicule = new LatLng(vehicule.position[0], vehicule.position[1]);
+        }
+
         Marker newMarker = mGoogleMap.addMarker(new MarkerOptions().position(posVehicule)
-                .icon(BitmapDescriptorFactory.fromBitmap(bmp))
+                .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                 // Specifies the anchor to be at a particular point in the marker image.
                 .anchor(0.5f, 1));
         newMarker.setTitle("" + positionDansListeVehicules);
@@ -890,17 +822,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .title(""+positionDansListePoints)
                         .snippet(""+mDrawableName));
             }
-    }
-
-
-
-    /**
-     * Methode qui converti un nom d'image en image
-     */
-    private Bitmap convertionDrawableToImageString(String drawableName) {
-        //TODO faire une vrai convertion
-        return BitmapFactory.decodeResource(getResources(),
-                R.drawable.ve_hu);
     }
 
     /**

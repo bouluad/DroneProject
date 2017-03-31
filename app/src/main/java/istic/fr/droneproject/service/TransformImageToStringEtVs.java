@@ -25,20 +25,17 @@ public class TransformImageToStringEtVs{
         this.context = context;
     }
 
-    public  String transformImageToString(int RdotIDDotDrawablename){
+    public String transformImageToString(int RdotIDDotDrawablename){
         Bitmap largeIcone= BitmapFactory.decodeResource(context.getResources(),RdotIDDotDrawablename);
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         largeIcone.compress(Bitmap.CompressFormat.JPEG, 100, stream);
         byte[] byteFormat = stream.toByteArray();
-       String encodedImage = Base64.encodeToString(byteFormat, Base64.NO_WRAP);
-        return encodedImage;
-
+        return Base64.encodeToString(byteFormat, Base64.NO_WRAP);
     }
 
      public Bitmap transformStringToImage(String image) {
          byte[] encodeByte = Base64.decode(image, Base64.DEFAULT);
-         Bitmap bitmap = BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
-         return  bitmap;
+         return BitmapFactory.decodeByteArray(encodeByte, 0, encodeByte.length);
      }
 
      public int FindImageIdByVehicule(Vehicule vehicule){
@@ -89,9 +86,10 @@ public class TransformImageToStringEtVs{
      }
 
     public static int FindColorByVehicule(Categorie categorie){
-        int color;
-        if(categorie == null)
+        if(categorie == null) {
             return Color.BLACK;
+        }
+        int color;
         switch (categorie) {
             case COMMANDEMENT:
                 color = Color.rgb(164,87,142);
@@ -110,7 +108,7 @@ public class TransformImageToStringEtVs{
                 break;
 
             case EAU:
-                color = Color.rgb(130,140,174);
+                color = Color.rgb(85,116,221);
                 break;
 
             default:
