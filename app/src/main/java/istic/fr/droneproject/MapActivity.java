@@ -78,6 +78,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Intervention intervention;
     Vehicule vehicule;
     Boolean clicked = false;
+    Boolean clickedPoint = false;
     Vehicule vehiculeselected;
   /*  PointInteret pointSelected;*/
     int pointSelected;
@@ -168,7 +169,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
 
         //bouton suppression point
-        Button btn_sup_point= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
+        Button m_menu_Actionpoint_supprimer= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
+        Button m_menu_Actionpoint_deplacer= (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -456,11 +458,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        btn_sup_point.setOnClickListener(new View.OnClickListener() {
+        m_menu_Actionpoint_supprimer.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-
+                        try {
 
 
                         intervention.points.remove(pointSelected);
@@ -482,10 +484,22 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         SynchroniserIntervention();
 
 
+                        }
+                        catch (Exception e){
+
+                        }
 
             }
         });
 
+        m_menu_Actionpoint_deplacer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                clickedPoint = true;
+
+            }
+        });
     }
 
     private void chargerIntervention() {
@@ -696,7 +710,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onMapClick(LatLng point) {
                 Log.e("Map", "Map clicked");
                 pointVehicule=point;
-                if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
+                if(clickedPoint) {
+                    try {
+                        Double nPos[] = new Double[2];
+                        nPos[0] = point.latitude;
+                        nPos[1] = point.longitude;
+                        intervention.points.get(pointSelected).setPosition(nPos);
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Log.e("point suppprimé", "=========>point supprimé ");
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //DO NOTHING
+
+                            }
+                        });
+                        changerMenu(ListeMenu.aucun);
+                        SynchroniserIntervention();
+
+
+                    }
+                    catch (Exception e){
+
+                    }
+                }
+                else if(clicked){//on a cliquer sur un vehile et sur déplacer juste avant
                     Double[]list =new Double[2];
                     list[0] = pointVehicule.latitude;
                     list[1] = pointVehicule.longitude;
@@ -879,30 +921,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
      * puis ajoute tout les points sur la map.
      */
     private void reloadVehiculesPoints() {
-        mGoogleMap.clear();
-        myMarker = mGoogleMap.addMarker(new MarkerOptions()
-                .position(lng)
-                .title("-1"));
-        //ajouts des vehicules
-        for (int i = 0; i < vehiculesCarte.size(); i++) {
-            Vehicule vehiculeCourant = vehiculesCarte.get(i);
-            if (
-                    (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
-                            && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
-                ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+        try {
+
+            mGoogleMap.clear();
+            myMarker = mGoogleMap.addMarker(new MarkerOptions()
+                    .position(lng)
+                    .title("-1"));
+            //ajouts des vehicules
+            for (int i = 0; i < vehiculesCarte.size(); i++) {
+                Vehicule vehiculeCourant = vehiculesCarte.get(i);
+                if (
+                        (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
+                                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                    ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+                }
+            }
+            //ajouts des points
+            for (int i = 0; i < pointsCarte.size(); i++) {
+                PointInteret pointCourant = pointsCarte.get(i);
+                ajoutImageFromPoint(pointCourant, 1000 + i);
+
+            }
+
+            //ajouts des points SP
+            for (int i = 0; i < pointsSPCarte.size(); i++) {
+                PointInteret pointCourant = pointsSPCarte.get(i);
+                ajoutImageFromPoint(pointCourant, 2000 + i);
+
             }
         }
-        //ajouts des points
-        for (int i = 0; i < pointsCarte.size(); i++) {
-            PointInteret pointCourant = pointsCarte.get(i);
-            ajoutImageFromPoint(pointCourant, 1000+i);
-
-        }
-
-        //ajouts des points SP
-        for (int i = 0; i < pointsSPCarte.size(); i++) {
-            PointInteret pointCourant = pointsSPCarte.get(i);
-            ajoutImageFromPoint(pointCourant, 2000+i);
+        catch (Exception e){
 
         }
     }
