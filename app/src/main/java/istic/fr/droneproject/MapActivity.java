@@ -79,6 +79,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Vehicule vehicule;
     Boolean clicked = false;
     Vehicule vehiculeselected;
+  /*  PointInteret pointSelected;*/
+    int pointSelected;
     private List<Vehicule> vehicules;
 
     //liste de points et vehicules synchroniser a afficher sur la carte
@@ -164,6 +166,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button confirmer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
         Button liberer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
+
+        //bouton suppression point
+        Button btn_sup_point= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -451,6 +456,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        btn_sup_point.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+
+
+                        intervention.points.remove(pointSelected);
+
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Log.e("point suppprimé", "=========>point supprimé ");
+
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                //DO NOTHING
+
+                            }
+                        });
+                        changerMenu(ListeMenu.aucun);
+                        SynchroniserIntervention();
+
+
+
+            }
+        });
+
     }
 
     private void chargerIntervention() {
@@ -617,7 +652,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //les vehicules on un ii entre 0 et 999
                 if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
-
+                    System.out.println("veh" +marker.getTitle());
                     vehiculeselected = vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
                     //TODO on clique sur une icone d'un vehicule
                     Log.e("MapMarkerClick", "marker: " + marker);
@@ -632,6 +667,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 1000 && Integer.parseInt(marker.getTitle()) < 2000) {
                     //TODO
                     changerMenu(ListeMenu.m_menu_Actionpoint);
+                    System.out.println("heeeeeeeeeereeeeee");
+                    String title = marker.getTitle();
+
+
+                    pointSelected = Integer.parseInt(title.substring(title.length() - 1));
+                    System.out.println("point selected "+pointSelected);
                 }
                 // les points SP
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
