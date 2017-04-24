@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -47,6 +48,9 @@ import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
+import istic.fr.droneproject.model.Drone;
+import istic.fr.droneproject.model.DronePhotos;
+import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
@@ -77,6 +81,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Boolean clicked = false;
     Boolean clickedPoint = false;
     Vehicule vehiculeselected;
+    Marker droneMarker;
+    Drone drone;
+    DronePosition dronePosition;
+    DronePhotos dronePhotos;
+
   /*  PointInteret pointSelected;*/
     int pointSelected;
     private List<Vehicule> vehicules;
@@ -436,6 +445,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
             }
         });
+
+
+        //Appel périodique de reloadDrone
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after ###ms
+                Log.e("MapActivityHandler","Ploop");
+                reloadDrone();
+                handler.postDelayed(this, 2000);
+            }
+        }, 2000);
+
+
     }
 
     private void chargerIntervention() {
@@ -960,6 +984,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
 
         });
+    }
+
+    private void reloadDrone(){
+        //TODO: get la nouvelle position dans @dronePosition
+        if(droneMarker == null){
+            if(dronePosition != null && dronePosition.getPostion() != null && dronePosition.getPostion()[0] != null && dronePosition.getPostion()[1] != null){
+                droneMarker = mGoogleMap.addMarker(new MarkerOptions()
+                        .position(lng)
+                        .title("SuperDrone le sauveur des Petits chats")
+                        .snippet("["+dronePosition.getPostion()[0]+","+dronePosition.getPostion()[1]+"]"));
+            }
+            else{
+                Log.e("MapActivity","Pas de dronePosition");
+            }
+        }
+        else{
+            droneMarker.setPosition(new LatLng(dronePosition.getPostion()[0],dronePosition.getPostion()[1]));
+        }
+
     }
 }
 
