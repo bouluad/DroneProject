@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import java.util.ArrayList;
 import java.util.List;
 
+import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.AlbumPhotoAdapter;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Photo;

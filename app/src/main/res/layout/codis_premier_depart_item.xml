@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    tools:context="istic.fr.droneproject.UserInterventionsActivity"
+    tools:context="istic.fr.droneproject.activities.UserInterventionsActivity"
     android:background="@color/colorAccent">
 
     <TextView

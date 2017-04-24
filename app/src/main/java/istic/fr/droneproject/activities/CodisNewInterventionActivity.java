@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 
 import android.content.DialogInterface;
@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
+import istic.fr.droneproject.fragment.CodisMapFragment;
+import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.CodisPremierDepartAdapter;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.CodeSinistre;
@@ -45,7 +47,7 @@ import retrofit2.Response;
  * Created by salma on 21/03/17.
  */
 
-public class CodisNewInterventionActivity extends AppCompatActivity implements CodisMapFragment.ValiderPositionListener{
+public class CodisNewInterventionActivity extends AppCompatActivity implements CodisMapFragment.ValiderPositionListener {
     Intervention intervention;
     RecyclerView moyensRecyclerView;
     CodisPremierDepartAdapter moyensAdapter;

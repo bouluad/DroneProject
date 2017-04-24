@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,6 +8,9 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+
+import istic.fr.droneproject.R;
+import istic.fr.droneproject.fragment.TabsPagerAdapter;
 
 /**
  * Created by bouluad on 22/03/17.

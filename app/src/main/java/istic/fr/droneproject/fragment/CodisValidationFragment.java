@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.fragment;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.ValidationRecyclerAdapter;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;

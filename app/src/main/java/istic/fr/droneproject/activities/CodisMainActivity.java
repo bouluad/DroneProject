@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -7,6 +7,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+
+import istic.fr.droneproject.fragment.CodisInterventionsFragment;
+import istic.fr.droneproject.fragment.CodisValidationFragment;
+import istic.fr.droneproject.R;
 
 /**
  * Created by nirina on 27/03/17.

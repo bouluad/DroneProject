@@ -27,17 +27,17 @@
             android:value="@integer/google_play_services_version" />
 
 
-        <activity android:name=".LoginActivity">
+        <activity android:name=".activities.LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CodisNewInterventionActivity" />
-        <activity android:name=".UserInterventionsActivity"/>
-        <activity android:name=".UserMainActivity" android:configChanges="keyboardHidden|orientation|screenSize" />
-        <activity android:name=".CodisMainActivity"/>
+        <activity android:name=".activities.CodisNewInterventionActivity" />
+        <activity android:name=".activities.UserInterventionsActivity"/>
+        <activity android:name=".activities.UserMainActivity" android:configChanges="keyboardHidden|orientation|screenSize" />
+        <activity android:name=".activities.CodisMainActivity"/>
     </application>
 
 </manifest>
