@@ -10,41 +10,46 @@ import java.util.Map;
 
 public class Drone {
 
-    private String id;
-    private List<Double> position;
-    private String dated;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+    private String idIntervention;
 
-    public String getId() {
-        return id;
+    private EtatDrone etat;
+
+    private Zone zone;
+
+    private Segment segment;
+
+
+    public Segment getSegment() {
+        return segment;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setSegment(Segment segment) {
+        this.segment = segment;
     }
 
-    public List<Double> getPosition() {
-        return position;
+    public Zone getZone() {
+        return zone;
     }
 
-    public void setPosition(List<Double> position) {
-        this.position = position;
+    public void setZone(Zone zone) {
+        this.zone = zone;
     }
 
-    public String getDated() {
-        return dated;
+    public EtatDrone getEtat() {
+        return etat;
     }
 
-    public void setDated(String dated) {
-        this.dated = dated;
+    public void setEtat(EtatDrone etat) {
+        this.etat = etat;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
+    public String getIdIntervention() {
+        return idIntervention;
     }
 
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
+    public void setIdIntervention(String idIntervention) {
+        this.idIntervention = idIntervention;
     }
-
 }
+
+
