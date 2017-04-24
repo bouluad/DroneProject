@@ -19,8 +19,8 @@ import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_UR
 
 public class DronePositionServiceImpl implements DroneService {
 
-    //GET drone position
-    public void getDrone(Callback<Drone> callback) {
+    //GET drone
+    public void getDroneById(String id,Callback<Drone> callback) {
 
         /*
         Création de l'objet Retrofit
@@ -33,7 +33,7 @@ public class DronePositionServiceImpl implements DroneService {
         /*
         Appel de la méthode pour l'API REST
          */
-        Call<Drone> call = droneRestAPI.getDrone();
+        Call<Drone> call = droneRestAPI.getDroneById(id);
 
         /*
         On lance l'appel et le callback recevra la réponse

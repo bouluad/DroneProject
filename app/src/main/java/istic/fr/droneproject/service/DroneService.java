@@ -17,12 +17,12 @@ public interface DroneService {
      * @param callback Callback pour récupérer la réponse
      */
 
-    void getDrone(Callback<Drone> callback);
+    void getDroneById(String id, Callback<Drone> callback);
 
 
     /**
-     * Envoyer une position au drone
-     * @param drone position
+     * Envoyer le drone
+     * @param drone drone
      * @param callback Callback pour récupérer la réponse
      */
     void setDrone(Drone drone, Callback<Void> callback);
