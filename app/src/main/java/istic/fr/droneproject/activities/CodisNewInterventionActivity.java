@@ -60,8 +60,6 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
 
         intervention = new Intervention();
         intervention.vehicules = new ArrayList<>();
-        intervention.zones = new ArrayList<>();
-        intervention.segments = new ArrayList<>();
         intervention.points = new ArrayList<>();
 
         moyensRecyclerView = (RecyclerView) findViewById(R.id.listMoyens);

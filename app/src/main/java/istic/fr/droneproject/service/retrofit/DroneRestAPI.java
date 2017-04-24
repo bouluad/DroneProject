@@ -15,14 +15,14 @@ import retrofit2.http.Path;
 
 
 public interface DroneRestAPI {
-    public static final String ENDPOINT = "http://148.60.11.238:8080";
+     String ENDPOINT = "http://148.60.11.238:8080/";
 
     @Headers({ "Accept: application/json" })
     @GET("/drone/{id}")
     Call<Drone> getDroneById(@Path("id") String id);
 
 
-    @POST("/drone")
+    @POST("/drones")
     Call<Void> setDrone(@Body Drone drone );
 
 

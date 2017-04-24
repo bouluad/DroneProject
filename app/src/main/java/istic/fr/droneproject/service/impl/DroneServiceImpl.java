@@ -17,7 +17,13 @@ import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_UR
  * Created by yousra on 22/03/17.
  */
 
-public class DronePositionServiceImpl implements DroneService {
+public class DroneServiceImpl implements DroneService {
+
+    public static DroneServiceImpl droneInstance=new DroneServiceImpl();
+
+    public static DroneServiceImpl getInstance(){
+        return droneInstance;
+    }
 
     //GET drone
     public void getDroneById(String id,Callback<Drone> callback) {
