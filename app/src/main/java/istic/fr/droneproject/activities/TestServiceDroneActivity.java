@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.service.DroneService;

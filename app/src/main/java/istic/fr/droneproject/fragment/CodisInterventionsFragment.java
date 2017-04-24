@@ -1,6 +1,5 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.fragment;
 
-import android.app.Fragment;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,25 +11,16 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
-import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
+import istic.fr.droneproject.R;
+import istic.fr.droneproject.activities.CodisNewInterventionActivity;
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
-import istic.fr.droneproject.model.Categorie;
-import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.TypeVehicule;
-import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;

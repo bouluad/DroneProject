@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.fragment;
 
 import android.content.Context;
 import android.location.Address;
@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Intervention;
 
 public class CodisMapFragment extends Fragment implements OnMapReadyCallback {

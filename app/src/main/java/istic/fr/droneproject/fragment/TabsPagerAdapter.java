@@ -1,8 +1,13 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.fragment;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+
+import istic.fr.droneproject.activities.AlbumActivity;
+import istic.fr.droneproject.activities.MapActivity;
+import istic.fr.droneproject.activities.MoyensActivity;
+import istic.fr.droneproject.activities.VideosActivity;
 
 /**
  * Created by bouluad on 22/03/17.

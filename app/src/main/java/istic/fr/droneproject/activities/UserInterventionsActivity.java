@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import istic.fr.droneproject.R;
+import istic.fr.droneproject.activities.UserMainActivity;
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;

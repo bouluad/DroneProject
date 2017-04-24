@@ -1,4 +1,4 @@
-package istic.fr.droneproject;
+package istic.fr.droneproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,6 +10,9 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
+import istic.fr.droneproject.R;
+import istic.fr.droneproject.activities.CodisMainActivity;
+import istic.fr.droneproject.activities.UserInterventionsActivity;
 import istic.fr.droneproject.model.User;
 import istic.fr.droneproject.service.UserService;
 import istic.fr.droneproject.service.impl.UserServiceImpl;
