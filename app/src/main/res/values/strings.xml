@@ -47,7 +47,7 @@
     <string name="parking">Parking</string>
     <string name="supprimer">Supprimer</string>
     <!--drone-->
-    <string name="drone_segment">photos sur points</string>
+    <string name="drone_segment">photos le long d\'un segment</string>
     <string name="drone_zone">photos de zone</string>
     <string name="drone_stop">STOP</string>
     <string name="drone_annule">annuler</string>
