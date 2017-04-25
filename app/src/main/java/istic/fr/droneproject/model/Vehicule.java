@@ -19,6 +19,9 @@ public class Vehicule {
         this.etat = etat;
     }
 
+
+
+
     public Double[] getPosition() {
         return position;
     }
@@ -81,4 +84,42 @@ public class Vehicule {
     }
 
     public Double[] position;
+
+
+    public boolean verifierArrive(){
+
+        if ( EtatVehicule.ENGAGE.equals(this.etat) && this.position != null && this.heureEngagement != null ){
+            return  true;
+        }
+        return false;
+
+    }
+
+
+
+    public boolean verifierEngage(){
+        if ((EtatVehicule.DEMANDE.equals(this.etat) && this.position != null && this.heureDemande != null)
+                || (EtatVehicule.PARKING.equals(this.etat)) ) {
+            return  true;
+        }
+
+
+        return false;
+
+    }
+
+    public boolean verifierParking(){
+        if ((EtatVehicule.DEMANDE.equals(this.etat))
+                || (EtatVehicule.ARRIVE.equals(this.etat) || (EtatVehicule.ENGAGE.equals(this.etat)))  ) {
+            return  true;
+        }
+
+
+        return false;
+
+    }
+
+
+
+
 }
