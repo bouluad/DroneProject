@@ -34,7 +34,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return MoyensActivity.newInstance(idIntervention);
             case 2:
                 // Album fragment activity
-                return AlbumActivity.newInstance(idIntervention);
+                return new AlbumActivity();//.newInstance(idIntervention);
             case 3:
                 // Videos fragment activity
                 return new VideosActivity();
