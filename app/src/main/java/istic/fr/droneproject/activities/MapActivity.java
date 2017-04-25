@@ -72,7 +72,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
-    LatLng lng;
+    LatLng lng; //la position de l'intervention ?
     Marker markerd;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
@@ -723,6 +723,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 } else {
                     lng = new LatLng(40.76793169992044, -73.98180484771729);
                 }
+
+                //TODO: Remove fake drone position
+                dronePosition = new DronePosition();
+                Double dd[] = new Double[2];
+                dd[0]=lng.latitude;
+                dd[1]=lng.longitude+0.0005;
+                dronePosition.setPostion(dd);
+
                 /*recupererBaseSP();*/
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
@@ -1125,8 +1133,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_Actiondrone_zone.setVisibility(View.VISIBLE);
                 break;
             case aucun:
-                //TODO: remove after test
-                m_menu_Actiondrone.setVisibility(View.VISIBLE);
                 secondClickSurMap = false;
                 if(markerChanged != null) {
                     markerChanged.remove();
@@ -1165,20 +1171,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void reloadDrone(){
         //TODO: get la nouvelle position dans @dronePosition
         if(droneMarker == null){
+
             if(dronePosition != null && dronePosition.getPostion() != null && dronePosition.getPostion()[0] != null && dronePosition.getPostion()[1] != null){
+                Log.e("MapActivity","création du drone"+lng);
+                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
+                Bitmap b = bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX/2, iconSizeX/2, false);
+
+
+
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
                         .title("SuperDrone le sauveur des Petits chats")
-                        .snippet(""+2000));
+                        .snippet(""+2000)
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                        );
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
             }
         }
         else{
+            Log.e("MapActivity","move drone to position "+dronePosition.getPostion()[0]+"  "+dronePosition.getPostion()[1]);
             droneMarker.setPosition(new LatLng(dronePosition.getPostion()[0],dronePosition.getPostion()[1]));
         }
-
     }
 }
 
