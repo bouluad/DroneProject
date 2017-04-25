@@ -490,16 +490,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
         //Appel périodique de reloadDrone
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Do something after ###ms
-                Log.e("MapActivityHandler","Ploop");
-                reloadDrone();
-                handler.postDelayed(this, 2000);
-            }
-        }, 2000);
+//        final Handler handler = new Handler();
+//        handler.postDelayed(new Runnable() {
+//            @Override
+//            public void run() {
+//                //Do something after ###ms
+//                Log.e("MapActivityHandler","forceRedrawDrone");
+//                reloadDrone();
+//                handler.postDelayed(this, 20000);
+//            }
+//        }, 20000);
 
 
         //#####################  DRONE  MENU ###############################################################
