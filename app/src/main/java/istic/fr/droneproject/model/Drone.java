@@ -14,6 +14,11 @@ public class Drone {
 
     private EtatDrone etat;
 
+    public Drone(String idIntervention, EtatDrone etat) {
+        this.idIntervention = idIntervention;
+        this.etat = etat;
+    }
+
     private Zone zone;
 
     private Segment segment;
