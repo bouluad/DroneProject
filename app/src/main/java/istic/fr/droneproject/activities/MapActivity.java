@@ -1118,6 +1118,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 m_menu_Actiondrone_zone.setVisibility(View.VISIBLE);
                 break;
             case aucun:
+                //TODO: remove after test
+                m_menu_Actiondrone.setVisibility(View.VISIBLE);
                 secondClickSurMap = false;
                 if(markerChanged != null) {
                     markerChanged.remove();
