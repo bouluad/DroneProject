@@ -46,8 +46,16 @@
     <string name="liberer">Liberer</string>
     <string name="parking">Parking</string>
     <string name="supprimer">Supprimer</string>
-    <string name="segment">photos sur points</string>
-    <string name="zone">photos de zone</string>
-    <string name="stop">STOP</string>
+    <!--drone-->
+    <string name="drone_segment">photos sur points</string>
+    <string name="drone_zone">photos de zone</string>
+    <string name="drone_stop">STOP</string>
+    <string name="drone_annule">annuler</string>
+    <string name="drone_fin">valider</string>
+    <string name="drone_supplast">supprimer dernier point</string>
+    <string name="drone_boucle">Boucler</string>
+    <string name="drone_exclusion">Ajout Zone Exclusion</string>
+    <string name="drone_parking">Parking</string>
+
 
 </resources>
