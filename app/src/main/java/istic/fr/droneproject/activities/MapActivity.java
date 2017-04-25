@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -73,6 +75,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng;
+    LatLng ll;
     ViewGroup view;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
@@ -678,6 +681,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onMapClick(LatLng point) {
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(lng,point).width(6).color(Color.RED)
+                        .visible(true));
+
+                      lng=point;
+
                 Log.e("Map", "Map clicked");
                 pointVehicule=point;
                 if(clickedPoint) {
