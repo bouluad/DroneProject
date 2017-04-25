@@ -1,12 +1,9 @@
 package istic.fr.droneproject.service.retrofit;
 
-import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.DronePosition;
 import retrofit2.Call;
-import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.Headers;
-import retrofit2.http.POST;
 import retrofit2.http.Path;
 
 /**
@@ -19,8 +16,5 @@ public interface DronePositionRestAPI {
     @Headers({ "Accept: application/json" })
     @GET("/dronePosition/{id}/intervention")
     Call<DronePosition> getDronePositionByIdIntervention(@Path("id") String id);
-
-
-
 
 }
