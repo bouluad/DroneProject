@@ -50,6 +50,8 @@ import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
+import istic.fr.droneproject.model.Drone;
+import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
@@ -60,6 +62,7 @@ import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.BaseSPService;
 import istic.fr.droneproject.service.TransformImageToStringEtVs;
 import istic.fr.droneproject.service.impl.BaseSPServiceImpl;
+import istic.fr.droneproject.service.impl.DronePositionServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -79,6 +82,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
+    DronePosition droneposition;
+    DronePhotos dronephotos;
+    Drone drone;
     Boolean clicked = false; //pour les moyens
     Boolean clickedPoint = false; //pour les points
     Boolean clickedSegment = false; //pour les zegments du drone
@@ -624,8 +630,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
                     Vehicule vehiculeCourant = response.body().vehicules.get(i);
                     if (
-                            (vehiculeCourant.etat == EtatVehicule.PARKING)  || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
-                                    && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
+                            (vehiculeCourant.etat == EtatVehicule.PARKING)  || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE) && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
                         ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
                     }
@@ -755,6 +760,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .title("Intervention")
                         .snippet(intervention.libelle));
 
+
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
                 SynchroniserIntervention();
@@ -773,15 +779,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-//               markerd=marker;
-//                clickedSegment=true;
-
             if(clickedSegment || clickedZone || clickedZoneExclusion){
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(lng,markerd.getPosition()).width(6).color(Color.RED)
+                        .add(lng,marker.getPosition()).width(6).color(Color.RED)
                         .visible(true));
 
-                lng=markerd.getPosition();
+                lng=marker.getPosition();
                 clickedSegment=false;
                 //TODO: Yousra les traitements pour le drone
             }
@@ -851,16 +854,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onMapClick(LatLng point) {
 
-                    mGoogleMap.addPolyline((new PolylineOptions())
-                            .add(lng,point).width(6).color(Color.RED)
-                            .visible(true));
-
-                    lng=point;
 
 
                 Log.e("Map", "Map clicked");
             if(clickedSegment || clickedZone || clickedZoneExclusion){
-                //TODO: Yousra les traitements pour le drone
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(lng,point).width(6).color(Color.RED)
+                        .visible(true));
+
+                lng=point;
 
             }
             else{
@@ -875,6 +877,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
                                 Log.e("point updated", "=========>point updated ");
+
 
                             }
 
@@ -961,6 +964,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 }
             }
+            }
+        });
+
+        DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
+            @Override
+            public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
+//               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .title("Drone"));
+                droneposition=response.body();
+                reloadDrone();
+
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
+                Log.e("Drone Position is", String.valueOf(response.body().getPostion()));
+            }
+
+            @Override
+            public void onFailure(Call<DronePosition> call, Throwable t) {
+                Log.e("Drone not created", "");
             }
         });
 
@@ -1192,7 +1214,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("MapActivity","création du drone"+lng);
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
                 Bitmap b = bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX/2, iconSizeX/2, false);
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX*2, iconSizeX*2, false);
 
 
 
