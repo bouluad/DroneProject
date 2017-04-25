@@ -1,6 +1,6 @@
 package istic.fr.droneproject.activities;
 
-import android.content.DialogInterface;
+ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -64,6 +64,7 @@ import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
@@ -211,11 +212,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Vehicule cliqué", "Vehicule cliqué 1 =========>");
                 //vehicule
                 int k = intervention.vehicules.indexOf(vehicule);
-                intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+
                 m_listPositionVehicule = new Double[2];
                 m_listPositionVehicule[0] = pointVehicule.latitude;
                 m_listPositionVehicule[1] = pointVehicule.longitude;
                 intervention.vehicules.get(k).setPosition(m_listPositionVehicule);
+                if (intervention.vehicules.get(k).verifierEngage()) {
+                    System.out.println("setEtat(engagé) possible");
+                    intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -225,7 +230,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                         markerChanged.setTitle(vehicule.nom);
                                         markerChanged.setSnippet(""+intervention.vehicules.indexOf(vehicule));*/
 
-                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), "L'intervention a été Modifié", Toast.LENGTH_SHORT);
                         SynchroniserIntervention();
                         changerMenu(ListeMenu.aucun);
 
@@ -237,6 +242,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("MapActivity", t.toString());
                     }
                 });
+            }
             }
         };
         vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(), interventionClickListener);
@@ -325,8 +331,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
                             && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
 
-                        if ((EtatVehicule.ENGAGE.equals(intervention.vehicules.get(i).etat) && (intervention.vehicules.get(i).heureEngagement != null) ) || (EtatVehicule.PARKING.equals(intervention.vehicules.get(i).etat)) ) {
+                        /*if ((EtatVehicule.ENGAGE.equals(intervention.vehicules.get(i).etat) && (intervention.vehicules.get(i).heureEngagement != null) ) || (EtatVehicule.PARKING.equals(intervention.vehicules.get(i).etat)) ) {*/
 
+                        if(intervention.vehicules.get(i).verifierArrive()){
 
                             intervention.vehicules.get(i).setEtat(EtatVehicule.ARRIVE);
                             if (intervention.vehicules.get(i).heureArrivee == null)
@@ -396,12 +403,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         parking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
                             && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
+                        System.out.println("ccc");
+                        System.out.println("etat: "+intervention.vehicules.get(i).getEtat().toString());
 
-                        intervention.vehicules.get(i).setEtat(EtatVehicule.PARKING);
+                        if(intervention.vehicules.get(i).verifierParking()){
+                            System.out.println("parking true");
+
+                            intervention.vehicules.get(i).setPosition(null);
+                            System.out.println("position :"+ intervention.vehicules.get(i).getPosition());
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -417,6 +432,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         });
                         changerMenu(ListeMenu.aucun);
                         SynchroniserIntervention();
+                    }
                     }
                 }
             }
