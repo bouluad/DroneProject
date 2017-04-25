@@ -50,8 +50,6 @@ import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
 import istic.fr.droneproject.adapter.MapVehiculesRecyclerAdapter;
 import istic.fr.droneproject.model.Categorie;
-import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
@@ -75,8 +73,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng;
-    LatLng ll;
-    ViewGroup view;
+    Marker markerd;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
@@ -88,9 +85,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Boolean clickedZoneExclusion = false; //pour les zones d'exclusions du drone
     Vehicule vehiculeselected;
     Marker droneMarker;
-    Drone drone;
     DronePosition dronePosition;
-    DronePhotos dronePhotos;
+
 
   /*  PointInteret pointSelected;*/
     int pointSelected;
@@ -753,7 +749,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
+               markerd=marker;
+                clickedSegment=true;
+
             if(clickedSegment || clickedZone || clickedZoneExclusion){
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(lng,markerd.getPosition()).width(6).color(Color.RED)
+                        .visible(true));
+
+                lng=markerd.getPosition();
+                clickedSegment=false;
                 //TODO: Yousra les traitements pour le drone
             }
             else{
@@ -821,11 +826,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
             @Override
             public void onMapClick(LatLng point) {
-                mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(lng,point).width(6).color(Color.RED)
-                        .visible(true));
 
-                      lng=point;
+                    mGoogleMap.addPolyline((new PolylineOptions())
+                            .add(lng,point).width(6).color(Color.RED)
+                            .visible(true));
+
+                    lng=point;
+
 
                 Log.e("Map", "Map clicked");
             if(clickedSegment || clickedZone || clickedZoneExclusion){
