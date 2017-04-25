@@ -2,11 +2,22 @@ package istic.fr.droneproject.activities;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,29 +34,25 @@ import retrofit2.Response;
 /**
  * Created by bouluad on 22/03/17.
  */
-public class AlbumActivity extends android.support.v4.app.Fragment {
-
+public class AlbumActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
-    private String idIntervention;
 
-    public AlbumActivity() {
-        //Required empty constructor
-    }
-
-    public static AlbumActivity newInstance(String idIntervention) {
-        AlbumActivity fragment = new AlbumActivity();
-        Bundle args = new Bundle();
-        args.putString(ARG_ID, idIntervention);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    private GoogleMap mMap;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            idIntervention = getArguments().getString(ARG_ID);
-        }
+    }
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        // Add a marker in Sydney and move the camera
+        LatLng sydney = new LatLng(-34, 151);
+        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
     }
 
     @Override
@@ -54,30 +61,29 @@ public class AlbumActivity extends android.support.v4.app.Fragment {
     }
 
     @Override
-    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onPause() {
+        Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.photo_map));
+        FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+        ft.remove(fragment);
+        ft.commit();
+        super.onPause();
+    }
 
-        RecyclerView recyclerViewPhotos = (RecyclerView) view.findViewById(R.id.album_liste);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        final FragmentManager fragManager = this.getFragmentManager();
+        final Fragment fragment = fragManager.findFragmentById(R.id.photo_map);
+        if (fragment != null) {
+            fragManager.beginTransaction().remove(fragment).commit();
+        }
+    }
 
-        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getContext()));
-        final List<Photo> photos = new ArrayList<>();
-        final AlbumPhotoAdapter adapter = new AlbumPhotoAdapter(photos, R.layout.album_photo_item, getContext());
-        recyclerViewPhotos.setAdapter(adapter);
-
-        InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
-            @Override
-            public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                photos.clear();
-                if(response.body().photos != null){
-                    photos.addAll(response.body().photos);
-                }
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailure(Call<Intervention> call, Throwable t) {
-
-            }
-        });
+    public static AlbumActivity newInstance(String idIntervention) {
+        AlbumActivity fragment = new AlbumActivity();
+        Bundle args = new Bundle();
+        args.putString(ARG_ID, idIntervention);
+        fragment.setArguments(args);
+        return fragment;
     }
 }
