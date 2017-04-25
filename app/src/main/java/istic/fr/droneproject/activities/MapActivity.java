@@ -113,9 +113,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Double[] m_listPositionVehicule;
     View m_menu_Actionvehicule;
     View m_menu_Actionpoint;
-
+    View m_menu_Actiondrone;
     public enum ListeMenu {
-        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, aucun
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, m_menu_Actiondrone, aucun
     }
 
     private String idIntervention;
@@ -166,6 +166,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
         m_menu_Actionvehicule = (LinearLayout) view.findViewById(R.id.m_menu_Actionvehicule);
         m_menu_Actionpoint = (LinearLayout) view.findViewById(R.id.m_menu_Actionpoint);
+        m_menu_Actiondrone = (LinearLayout) view.findViewById(R.id.m_menu_Actiondrone);
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
@@ -175,8 +176,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
 
         //bouton suppression point
-        Button m_menu_Actionpoint_supprimer= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
-        Button m_menu_Actionpoint_deplacer= (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
+        Button m_menu_Actiondrone_segment= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment);
+        Button m_menu_Actiondrone_zone= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone);
+        Button m_menu_Actiondrone_stop= (Button) view.findViewById(R.id.m_menu_Actiondrone_stop);
+
+        //bouton drone
+        Button m_menu_Actionpoint_supprimer = (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
+        Button m_menu_Actionpoint_deplacer = (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -373,8 +379,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         parking.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
                 for (int i = 0; i < intervention.vehicules.size(); i++) {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
@@ -398,7 +402,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         SynchroniserIntervention();
                     }
                 }
-
             }
         });
 
@@ -458,6 +461,26 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 handler.postDelayed(this, 2000);
             }
         }, 2000);
+
+        m_menu_Actiondrone_stop.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: action stop sur le drone (changer drone.tat vers STOP)
+            }
+        });
+
+        m_menu_Actiondrone_segment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: déclancher le placement de point pour un segments
+            }
+        });
+
+        m_menu_Actiondrone_zone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
 
 
     }
@@ -656,9 +679,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     pointSelected = Integer.parseInt(title.substring(title.length() - 1));
                     System.out.println("point selected "+pointSelected);
                 }
+                // les drones
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000 && Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 3000) {
+                    changerMenu(ListeMenu.m_menu_Actiondrone);
+                }
                 // les points SP
-                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
-                    //TODO Salma <1000 SP
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 3000){
                     changerMenu(ListeMenu.aucun);
                     if(markerChanged != null) {
                         markerChanged.remove();
@@ -911,7 +937,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             if (pointsSPCarte != null) {
                 for (int i = 0; i < pointsSPCarte.size(); i++) {
                     PointInteret pointCourant = pointsSPCarte.get(i);
-                    ajoutImageFromPoint(pointCourant, 2000 + i);
+                    ajoutImageFromPoint(pointCourant, 3000 + i);
 
                 }
             }
@@ -933,6 +959,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_choix.setVisibility(View.GONE);
         m_menu_Actionpoint.setVisibility(View.GONE);
         m_menu_Actionvehicule.setVisibility(View.GONE);
+        m_menu_Actiondrone.setVisibility(View.GONE);
 
         switch (menu) {
             case m_menu_vehicules:
@@ -949,6 +976,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 break;
             case m_menu_Actionpoint:
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                break;
+            case m_menu_Actiondrone:
+                m_menu_Actiondrone.setVisibility(View.VISIBLE);
                 break;
             case aucun:
                 secondClickSurMap = false;
@@ -993,7 +1023,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
                         .title("SuperDrone le sauveur des Petits chats")
-                        .snippet("["+dronePosition.getPostion()[0]+","+dronePosition.getPostion()[1]+"]"));
+                        .snippet(""+2000));
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
