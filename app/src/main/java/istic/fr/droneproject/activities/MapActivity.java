@@ -507,14 +507,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
 //               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .position(new LatLng(response.body().position[0],response.body().position[1]))
 //                        .title("Drone"));
 
                         droneposition=response.body();
                         reloadDrone();
 
-                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                        Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().position[0],response.body().position[1]), 18));
+                        Log.e("OnMapReady", "Drone Position is "+response.body().position[0]+" "+response.body().position[1]);
                     }
 
                     @Override
@@ -838,9 +838,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
            /* if(clickedSegment || clickedZone || clickedZoneExclusion){*/
                    else if(clickedSegment || clickedZoneExclusion){
 
-                LatLng ll= new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+                LatLng ll= new LatLng(droneposition.position[0],droneposition.position[1]);
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),marker.getPosition()).width(6).color(Color.RED)
+                        .add(new LatLng(droneposition.position[0],droneposition.position[1]),marker.getPosition()).width(6).color(Color.RED)
                         .visible(true));
 
                ll=marker.getPosition();
@@ -950,10 +950,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                else if(clickedSegment ||  clickedZoneExclusion){
 
 
-                LatLng ll=new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+                LatLng ll=new LatLng(droneposition.position[0],droneposition.position[1]);
 
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),point).width(6).color(Color.RED)
+                        .add(new LatLng(droneposition.position[0],droneposition.position[1]),point).width(6).color(Color.RED)
                         .visible(true));
 
               ll=point;
@@ -1067,14 +1067,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
 //               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .position(new LatLng(response.body().position[0],response.body().position[1]))
 //                        .title("Drone"));
 
                 droneposition=response.body();
                 reloadDrone();
 
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().position[0],response.body().position[1]), 18));
+                Log.e("OnMapReady", "Drone Position is "+response.body().position[0]+" "+response.body().position[1]);
             }
 
             @Override
@@ -1308,7 +1308,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO: get la nouvelle position dans @dronePosition
 //        if(droneMarker == null){
 
-            if(droneposition != null && droneposition.getPostion() != null && droneposition.getPostion()[0] != null && droneposition.getPostion()[1] != null){
+            if(droneposition != null && droneposition.position != null && droneposition.position[0] != null && droneposition.position[1] != null){
                 Log.e("MapActivity","création du drone"+droneposition);
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
                 Bitmap b = bitmapdraw.getBitmap();
@@ -1317,7 +1317,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]))
+                        .position(new LatLng(droneposition.position[0],droneposition.position[1]))
                         .title(""+2000)
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
@@ -1328,8 +1328,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
 //        }
 //        else{
-//            Log.e("MapActivity","move drone to position "+droneposition.getPostion()[0]+"  "+droneposition.getPostion()[1]);
-//            droneMarker.setPosition(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]));
+//            Log.e("MapActivity","move drone to position "+droneposition.position[0]+"  "+droneposition.position[1]);
+//            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
 //        }
     }
 }
