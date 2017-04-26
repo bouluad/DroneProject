@@ -13,7 +13,6 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import istic.fr.droneproject.R;
-import istic.fr.droneproject.model.Photo;
 
 public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.PhotoViewHolder> {
 

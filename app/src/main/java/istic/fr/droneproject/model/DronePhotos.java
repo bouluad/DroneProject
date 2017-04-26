@@ -11,31 +11,12 @@ import java.util.List;
 
 public class DronePhotos {
 
-    private String idIntervention;
-    private List<Photo> photos;
-    private String video;
+    public String _id;
+    public String nom;
+    public String path;
+    public Double[] position;
+    public String date_heure;
+    public Double[] positionPTS;
+    public String idIntervention;
 
-    public String getIdIntervention() {
-        return idIntervention;
-    }
-
-    public void setIdIntervention(String idIntervention) {
-        this.idIntervention = idIntervention;
-    }
-
-    public List<Photo> getPhotos() {
-        return photos;
-    }
-
-    public void setPhotos(List<Photo> photos) {
-        this.photos = photos;
-    }
-
-    public String getVideo() {
-        return video;
-    }
-
-    public void setVideo(String video) {
-        this.video = video;
-    }
 }

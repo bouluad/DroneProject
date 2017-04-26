@@ -26,7 +26,6 @@ import com.squareup.picasso.Target;
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Photo;
 import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
