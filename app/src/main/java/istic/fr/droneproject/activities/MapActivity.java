@@ -544,7 +544,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
-                //TODO: déclancher le changement d'etat du drone au parking
+                //TODO: déclancher le changement d'etat du drone au parking // RTB
             }
         });
 
