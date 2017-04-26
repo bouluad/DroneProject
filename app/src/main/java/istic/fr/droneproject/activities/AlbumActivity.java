@@ -68,9 +68,9 @@ public class AlbumActivity extends android.support.v4.app.Fragment {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 photos.clear();
-                if(response.body().photos != null){
-                    photos.addAll(response.body().photos);
-                }
+//                if(response.body().photos != null){
+//                    photos.addAll(response.body().photos);
+//                }
                 adapter.notifyDataSetChanged();
             }
 
