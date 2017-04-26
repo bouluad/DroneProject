@@ -1,13 +1,13 @@
 package istic.fr.droneproject.activities;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -20,22 +20,15 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-//import org.alfonz.utility.VersionUtility;
-
-import java.util.Collections;
-
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.DronePhotos;
-import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Vehicule;
-import istic.fr.droneproject.service.UserService;
 import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
-import istic.fr.droneproject.service.impl.UserServiceImpl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 /**
  * Created by bouluad on 22/03/17.
@@ -160,7 +153,7 @@ public class AlbumActivity extends Fragment
                 dronePhotos = response.body();
 
 
-                System.out.println("DRONE PHOTO NAME "+dronePhotos.getVideo());
+                System.out.println("DRONE PHOTO NAME "+dronePhotos.getPhotos().get(0).path);
             }
 
             @Override
@@ -222,11 +215,13 @@ public class AlbumActivity extends Fragment
 
 
                     BitmapDescriptor marker4 = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
+                    Bitmap marker5 = BitmapFactory.decodeResource(getContext().getResources(),R.drawable.drone);
+                    Bitmap scaled = Bitmap.createScaledBitmap(marker5, 300,300,false);
 
                     map.addMarker(new MarkerOptions()
                             .position(new LatLng(intervention.position[0] , intervention.position[1]))
                             .title("Example ")
-                            .icon(marker4)
+                            .icon(BitmapDescriptorFactory.fromBitmap((scaled)))
                     );
                     System.out.println("ID INTERVENTION "+intervention._id);
                 }
