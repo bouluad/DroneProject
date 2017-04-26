@@ -1,6 +1,9 @@
 package istic.fr.droneproject.service;
 
+import java.util.List;
+
 import istic.fr.droneproject.model.DronePhotos;
+import istic.fr.droneproject.model.Intervention;
 import retrofit2.Callback;
 
 
@@ -12,7 +15,7 @@ public interface DronePhotosService {
      * @param callback Callback pour récupérer la réponse
      */
 
-    void getDronePhotosbyIdIntervention(String id, Callback<DronePhotos> callback);
+    void getDronePhotosbyIdIntervention(String id, Callback<List<DronePhotos>> callback);
 
 
 }

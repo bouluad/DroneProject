@@ -1,5 +1,7 @@
 package istic.fr.droneproject.service.retrofit;
 
+import java.util.List;
+
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.DronePhotos;
 import retrofit2.Call;
@@ -19,6 +21,6 @@ public interface DronePhotosRestAPI {
 
     @Headers({ "Accept: application/json" })
     @GET("/photosdrone/{id}/intervention")
-    Call<DronePhotos> getDronePhotosbyIdIntervention(@Path("id") String id);
+    Call<List<DronePhotos>> getDronePhotosbyIdIntervention(@Path("id") String id);
 
 }
