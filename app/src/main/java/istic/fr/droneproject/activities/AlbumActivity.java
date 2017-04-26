@@ -72,7 +72,6 @@ public class AlbumActivity extends Fragment
             idIntervention = getArguments().getString(ARG_ID);
 
         }
-        setupMap();
         bindPictures();
 
     }
@@ -129,53 +128,6 @@ public class AlbumActivity extends Fragment
         if(mMapView != null) mMapView.onSaveInstanceState(outState);
     }
 
-
-    private void bindData()
-    {
-        map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
-
-        // content
-        if(map != null)
-        {
-            BitmapDescriptor marker1 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN);
-            BitmapDescriptor marker2 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW);
-            BitmapDescriptor marker3 = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED);
-            BitmapDescriptor marker4 = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
-            BitmapDescriptor[] markers = {marker1, marker2, marker3, marker4};
-
-            for(int i = 0; i < 16; i++)
-            {
-                map.addMarker(new MarkerOptions()
-                        .position(new LatLng(31.791702 + 0.001 * Math.sin(i * Math.PI / 8), -7.09262 + 0.001 * Math.cos(i * Math.PI / 8)))
-                        .title("Example " + i)
-                        .icon(markers[i % 4])
-                );
-            }
-        }
-
-
-        DronePhotosServiceImpl service = new DronePhotosServiceImpl();
-        service.getDronePhotosbyIdIntervention(idIntervention, new Callback<List<DronePhotos>>() {
-            @Override
-            public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
-                dronePhotos = response.body();
-
-
-                System.out.println("DRONE PHOTO NAME "+dronePhotos.get(0).path);
-            }
-
-            @Override
-            public void onFailure(Call<List<DronePhotos>> call, Throwable t) {
-                //DO NOTHING
-                Log.e("AlbumActivity", t.toString());
-            }
-        });
-
-
-
-    }
-
-
     private void bindPictures(){
 
         System.out.println("BIND PICTURES");
@@ -185,7 +137,19 @@ public class AlbumActivity extends Fragment
         if(map != null)
         {
 
+            InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+                @Override
+                public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                    intervention = response.body();
 
+                }
+
+                @Override
+                public void onFailure(Call<Intervention> call, Throwable t) {
+                    //DO NOTHING
+                    Log.e("AlbumActivity", t.toString());
+                }
+            });
 
 
 
@@ -212,14 +176,16 @@ public class AlbumActivity extends Fragment
                             .tilt(30)
                             .build();
                     map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
+                    MarkerOptions markerOne;
                     for (DronePhotos p : dronePhotos) {
 
-                        MarkerOptions markerOne = new MarkerOptions().position(new LatLng(p.position[0], p.position[1])).title(p.nom);
-
+                        markerOne = new MarkerOptions()
+                                .position(new LatLng(p.position[0], p.position[1]))
+                                .title(p.nom);
+                        System.out.println("IMAGE : "+p.path);
                         PicassoMarker  target = new PicassoMarker(map.addMarker(markerOne));
                         Picasso.with(getContext())
-                                .load(p.path)
+                                .load("http://icons.iconarchive.com/icons/yellowicon/game-stars/256/Mario-icon.png")
                                 .resize(300,300)
                                 .into(target);
                     }
@@ -251,61 +217,6 @@ public class AlbumActivity extends Fragment
         }
     }
 
-
-    private void setupMap()
-    {
-        // reference
-        map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
-
-        // settings
-        if(map != null)
-        {
-
-
-            InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
-                @Override
-                public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                    intervention = response.body();
-
-                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                    map.setMyLocationEnabled(true);
-
-                    UiSettings settings = map.getUiSettings();
-                    settings.setAllGesturesEnabled(true);
-                    settings.setMyLocationButtonEnabled(true);
-                    settings.setZoomControlsEnabled(true);
-
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(new LatLng(intervention.position[0], intervention.position[1]))
-                            .zoom(18)
-                            .bearing(0)
-                            .tilt(30)
-                            .build();
-                    map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-
-
-                    BitmapDescriptor marker4 = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
-                    Bitmap marker5 = BitmapFactory.decodeResource(getContext().getResources(),R.drawable.drone);
-                    Bitmap scaled = Bitmap.createScaledBitmap(marker5, 300,300,false);
-
-                    map.addMarker(new MarkerOptions()
-                            .position(new LatLng(intervention.position[0] , intervention.position[1]))
-                            .title("Example ")
-                            .icon(BitmapDescriptorFactory.fromBitmap((scaled)))
-                    );
-                    System.out.println("ID INTERVENTION "+intervention._id);
-                }
-
-                @Override
-                public void onFailure(Call<Intervention> call, Throwable t) {
-                    //DO NOTHING
-                    Log.e("AlbumActivity", t.toString());
-                }
-            });
-
-        }
-    }
-
     public static AlbumActivity newInstance(String idIntervention) {
         AlbumActivity fragment = new AlbumActivity();
         Bundle args = new Bundle();
@@ -313,5 +224,4 @@ public class AlbumActivity extends Fragment
         fragment.setArguments(args);
         return fragment;
     }
-
 }
