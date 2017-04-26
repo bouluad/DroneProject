@@ -969,7 +969,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 reloadDrone();
 
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                Log.e("OnMapReady", "Drone Position is"+String.valueOf(response.body().getPostion()));
+                Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
             }
 
             @Override
