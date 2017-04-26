@@ -25,10 +25,14 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.Collections;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.UserService;
+import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
+import istic.fr.droneproject.service.impl.UserServiceImpl;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,6 +49,7 @@ public class AlbumActivity extends Fragment
     private String idIntervention;
     private Intervention intervention;
     private GoogleMap map;
+    private DronePhotos dronePhotos;
 
 
     @Override
@@ -68,7 +73,7 @@ public class AlbumActivity extends Fragment
         }
         setupMap();
         bindData();
-        System.out.println("ID INTERVENTION : "+idIntervention);
+
     }
 
 
@@ -126,8 +131,7 @@ public class AlbumActivity extends Fragment
 
     private void bindData()
     {
-        // reference
-        GoogleMap map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
+        map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
 
         // content
         if(map != null)
@@ -141,21 +145,38 @@ public class AlbumActivity extends Fragment
             for(int i = 0; i < 16; i++)
             {
                 map.addMarker(new MarkerOptions()
-                        .position(new LatLng(49.194696 + 0.1 * Math.sin(i * Math.PI / 8), 16.608595 + 0.1 * Math.cos(i * Math.PI / 8)))
+                        .position(new LatLng(31.791702 + 0.001 * Math.sin(i * Math.PI / 8), -7.09262 + 0.001 * Math.cos(i * Math.PI / 8)))
                         .title("Example " + i)
                         .icon(markers[i % 4])
                 );
             }
         }
+
+
+        DronePhotosServiceImpl service = new DronePhotosServiceImpl();
+        service.getDronePhotosbyIdIntervention(idIntervention, new Callback<DronePhotos>() {
+            @Override
+            public void onResponse(Call<DronePhotos> call, Response<DronePhotos> response) {
+                dronePhotos = response.body();
+
+
+                System.out.println("DRONE PHOTO NAME "+dronePhotos.getVideo());
+            }
+
+            @Override
+            public void onFailure(Call<DronePhotos> call, Throwable t) {
+                //DO NOTHING
+                Log.e("AlbumActivity", t.toString());
+            }
+        });
+
+
+
     }
 
 
     private void initMap()
     {
-//        if(!VersionUtility.isSupportedOpenGlEs2(getActivity()))
-//        {
-//            Toast.makeText(getActivity(), R.string.global_map_fail_toast, Toast.LENGTH_LONG).show();
-//        }
 
         try
         {
@@ -199,8 +220,15 @@ public class AlbumActivity extends Fragment
                             .build();
                     map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
-                    System.out.println("POSITION INTERVENTION : "+intervention.position[0]+" ; "+intervention.position[1]);
 
+                    BitmapDescriptor marker4 = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
+
+                    map.addMarker(new MarkerOptions()
+                            .position(new LatLng(intervention.position[0] , intervention.position[1]))
+                            .title("Example ")
+                            .icon(marker4)
+                    );
+                    System.out.println("ID INTERVENTION "+intervention._id);
                 }
 
                 @Override

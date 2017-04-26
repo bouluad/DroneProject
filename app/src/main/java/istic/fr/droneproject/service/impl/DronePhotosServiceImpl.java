@@ -14,9 +14,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_URL;
 
-/**
- * Created by yousra on 25/04/17.
- */
 
 public class DronePhotosServiceImpl implements DronePhotosService{
 
@@ -41,14 +38,4 @@ public class DronePhotosServiceImpl implements DronePhotosService{
         call.enqueue(callback);
     }
 
-    @Override
-    public void addDronePhotos(DronePhotos dronephotos, Callback<Void> callback) {
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-        final DronePhotosRestAPI dronePhotosRestAPI = retrofit.create(DronePhotosRestAPI.class);
-
-        Call<Void> call = dronePhotosRestAPI.addDronePhotos(dronephotos);
-        call.enqueue(callback);
-
-    }
 }

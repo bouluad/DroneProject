@@ -3,10 +3,14 @@ package istic.fr.droneproject.model;
 import java.util.List;
 
 /**
- * Created by yousra on 24/04/17.
+ * Modèle des photos prise par le drone
+ * idIntervention c'est l'ID d'intervention de travail
+ * photos la liste des photos proche de cette intervention
+ * video lien vers video streaming
  */
 
 public class DronePhotos {
+
     private String idIntervention;
     private List<Photo> photos;
     private String video;

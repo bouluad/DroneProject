@@ -18,10 +18,7 @@ public interface DronePhotosRestAPI {
     String ENDPOINT = "http://148.60.11.238:8080/";
 
     @Headers({ "Accept: application/json" })
-    @GET("/drones/photos/{id}/intervention")
+    @GET("/photosdrone/{id}/intervention")
     Call<DronePhotos> getDronePhotosbyIdIntervention(@Path("id") String id);
 
-
-    @POST("/drones/photos")
-    Call<Void> addDronePhotos(@Body DronePhotos drone );
 }
