@@ -490,7 +490,35 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
 
+        //Appel périodique de reloadDrone
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something after ###ms
+                Log.e("MapActivityHandler","forceRedrawDrone");
+                DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
+                    @Override
+                    public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
+//               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .title("Drone"));
 
+                        droneposition=response.body();
+                        reloadDrone();
+
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
+                        Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
+                    }
+
+                    @Override
+                    public void onFailure(Call<DronePosition> call, Throwable t) {
+                        Log.e("OnMapReady","Drone not created");
+                    }
+                });
+                handler.postDelayed(this, 20000);
+            }
+        }, 2000);
 
 
         //#####################  DRONE  MENU ###############################################################
@@ -1201,10 +1229,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     private void reloadDrone(){
         //TODO: get la nouvelle position dans @dronePosition
-        if(droneMarker == null){
+//        if(droneMarker == null){
 
             if(droneposition != null && droneposition.getPostion() != null && droneposition.getPostion()[0] != null && droneposition.getPostion()[1] != null){
-                Log.e("MapActivity","création du drone"+lng);
+                Log.e("MapActivity","création du drone"+droneposition);
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
                 Bitmap b = bitmapdraw.getBitmap();
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX*2, iconSizeX*2, false);
@@ -1221,11 +1249,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             else{
                 Log.e("MapActivity","Pas de dronePosition");
             }
-        }
-        else{
-            Log.e("MapActivity","move drone to position "+droneposition.getPostion()[0]+"  "+droneposition.getPostion()[1]);
-            droneMarker.setPosition(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]));
-        }
+//        }
+//        else{
+//            Log.e("MapActivity","move drone to position "+droneposition.getPostion()[0]+"  "+droneposition.getPostion()[1]);
+//            droneMarker.setPosition(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]));
+//        }
     }
 }
 
