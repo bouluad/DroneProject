@@ -957,6 +957,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        Log.e("OnMapReady"," calling async REST get dronePosition");
         DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
             @Override
             public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
@@ -968,12 +969,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 reloadDrone();
 
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                Log.e("Drone Position is", String.valueOf(response.body().getPostion()));
+                Log.e("OnMapReady", "Drone Position is"+String.valueOf(response.body().getPostion()));
             }
 
             @Override
             public void onFailure(Call<DronePosition> call, Throwable t) {
-                Log.e("Drone not created", "");
+                Log.e("OnMapReady","Drone not created");
             }
         });
 
@@ -1211,7 +1212,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(lng)
+                        .position(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]))
                         .title(""+2000)
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
