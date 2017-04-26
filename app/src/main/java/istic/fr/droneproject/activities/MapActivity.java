@@ -95,6 +95,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     DronePosition dronePosition;
 
 
+    ArrayList<LatLng> markerPoints; //liste de points pr dessiner une zone
+
+
   /*  PointInteret pointSelected;*/
     int pointSelected;
     private List<Vehicule> vehicules;
@@ -207,6 +210,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button m_menu_Actiondrone_zone_annule = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_annule);
         Button m_menu_Actiondrone_zone_fin = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_fin);
         Button m_menu_Actiondrone_zone_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_supplast);
+
+        markerPoints = new ArrayList<>();
+
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -523,6 +529,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("afficher zone");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
                 clickedZone = true;
                 //TODO: déclancher le placement de point pour une zone
@@ -597,7 +604,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("fermer zone");
                 changerMenu(ListeMenu.aucun);
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(markerPoints.get(markerPoints.size()-1), markerPoints.get(0)).width(6).color(Color.BLUE)
+                        .visible(true));
+                clickedZone=false;
                 //TODO: valider la zone et l'envoyer au service REST
             }
         });
@@ -779,7 +791,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public boolean onMarkerClick(Marker marker) {
 
-            if(clickedSegment || clickedZone || clickedZoneExclusion){
+
+                if (clickedZone){
+                    System.out.println("dessiner une zone2");
+
+                    markerPoints.add(marker.getPosition());
+
+                    if(markerPoints.size()==1){
+
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(marker.getPosition())
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                                .title("start shape"));
+
+                    }
+                    if (markerPoints.size() > 1) {
+                        System.out.println("dessiner une zone");
+                        int i = markerPoints.size()-2;
+
+
+                        mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
+                                .visible(true));
+
+
+
+
+                    }
+                }
+           /* if(clickedSegment || clickedZone || clickedZoneExclusion){*/
+                   else if(clickedSegment || clickedZoneExclusion){
                 mGoogleMap.addPolyline((new PolylineOptions())
                         .add(lng,marker.getPosition()).width(6).color(Color.RED)
                         .visible(true));
@@ -857,7 +898,38 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 Log.e("Map", "Map clicked");
-            if(clickedSegment || clickedZone || clickedZoneExclusion){
+
+
+                if (clickedZone) {
+
+
+                    markerPoints.add(point);
+
+                    if(markerPoints.size()==1){
+
+                        mGoogleMap.addMarker(new MarkerOptions()
+                                .position(point)
+                                .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
+                                .title("start shape"));
+
+                    }
+                    if (markerPoints.size() > 1) {
+                        System.out.println("dessiner une zone");
+                        int i = markerPoints.size()-2;
+
+
+                        mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
+                                .visible(true));
+
+
+
+
+                    }
+                }
+            /*if(clickedSegment || clickedZone || clickedZoneExclusion){*/
+               else if(clickedSegment ||  clickedZoneExclusion){
+
                 mGoogleMap.addPolyline((new PolylineOptions())
                         .add(lng,point).width(6).color(Color.RED)
                         .visible(true));
