@@ -1,6 +1,6 @@
 package istic.fr.droneproject.activities;
 
- import android.content.DialogInterface;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
