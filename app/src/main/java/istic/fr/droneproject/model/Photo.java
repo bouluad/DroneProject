@@ -10,4 +10,5 @@ public class Photo {
     public String path;
     public Double[] position;
     public String date_heure;
+    public Double[] positionPTS;
 }
