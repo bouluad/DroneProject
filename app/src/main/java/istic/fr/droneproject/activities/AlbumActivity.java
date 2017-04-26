@@ -2,6 +2,7 @@ package istic.fr.droneproject.activities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -19,10 +20,13 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.Photo;
 import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -66,6 +70,7 @@ public class AlbumActivity extends Fragment
         }
         setupMap();
         bindData();
+        bindPictures();
 
     }
 
@@ -167,6 +172,91 @@ public class AlbumActivity extends Fragment
 
     }
 
+
+    private void bindPictures(){
+
+        map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
+
+        // content
+        if(map != null)
+        {
+
+            DronePhotosServiceImpl service = new DronePhotosServiceImpl();
+            service.getDronePhotosbyIdIntervention(idIntervention, new Callback<DronePhotos>() {
+                @Override
+                public void onResponse(Call<DronePhotos> call, Response<DronePhotos> response) {
+                    dronePhotos = response.body();
+
+
+
+                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    map.setMyLocationEnabled(true);
+
+                    UiSettings settings = map.getUiSettings();
+                    settings.setAllGesturesEnabled(true);
+                    settings.setMyLocationButtonEnabled(true);
+                    settings.setZoomControlsEnabled(true);
+
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(new LatLng(intervention.position[0], intervention.position[1]))
+                            .zoom(18)
+                            .bearing(0)
+                            .tilt(30)
+                            .build();
+                    map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
+
+
+                    for (Photo p : dronePhotos.getPhotos()) {
+
+                        final Bitmap[] scaled = new Bitmap[1];
+
+                      Target mTarget = new Target() {
+                            @Override
+                            public void onBitmapLoaded (final Bitmap bitmap, Picasso.LoadedFrom from){
+                                //Do something
+
+                                scaled[0] = Bitmap.createScaledBitmap(bitmap, 300, 300, false);
+
+
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+                            }
+                        };
+
+                        Picasso.with(getContext())
+                                .load(p.path)
+                                .into(mTarget);
+
+                        map.addMarker(new MarkerOptions()
+                                .position(new LatLng(p.position[0], p.position[1]))
+                                .title(p.nom)
+                                .icon(BitmapDescriptorFactory.fromBitmap((scaled[0])))
+                        );
+                    }
+
+
+                }
+
+                @Override
+                public void onFailure(Call<DronePhotos> call, Throwable t) {
+                    //DO NOTHING
+                    Log.e("AlbumActivity", t.toString());
+                }
+            });
+
+        }
+
+
+    }
 
     private void initMap()
     {
