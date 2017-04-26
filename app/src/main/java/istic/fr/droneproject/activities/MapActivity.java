@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
  import com.google.android.gms.maps.model.Polygon;
  import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
@@ -99,6 +100,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     ArrayList<LatLng> markerPoints; //liste de points pr dessiner une zone
     Marker markerStart; // marker start zone
+    List<Polyline> polylinesZone;  //liste de segments pr une zone
 
 
   /*  PointInteret pointSelected;*/
@@ -553,6 +555,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 System.out.println("afficher zone");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
                 markerPoints = new ArrayList<>();
+                polylinesZone = new ArrayList<Polyline>();
+
 
                 clickedZone = true;
                 //TODO: déclancher le placement de point pour une zone
@@ -661,6 +665,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //TODO: supprimer le dernier point de la zone ajouter, le supprimer de la carte, redessiner le polygone
+                System.out.println("supprimer dernier");
+                polylinesZone.get(polylinesZone.size()-1).remove();
+                markerPoints.remove(markerPoints.size()-1);
             }
         });
 
@@ -853,9 +860,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         int i = markerPoints.size()-2;
 
 
-                        mGoogleMap.addPolyline((new PolylineOptions())
+                        Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
                                 .visible(true));
+
+                        polylinesZone.add(polyline);
 
 
 
@@ -964,9 +973,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         int i = markerPoints.size()-2;
 
 
-                        mGoogleMap.addPolyline((new PolylineOptions())
+                       Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
                                 .visible(true));
+
+                        polylinesZone.add(polyline);
 
 
 
