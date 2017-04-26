@@ -56,7 +56,8 @@ import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
-import istic.fr.droneproject.model.TypePoint;
+ import istic.fr.droneproject.model.Segment;
+ import istic.fr.droneproject.model.TypePoint;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.BaseSPService;
@@ -78,6 +79,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng; //la position de l'intervention ?
     Marker markerd;
+    LatLng ll;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
@@ -92,7 +94,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Boolean clickedZoneExclusion = false; //pour les zones d'exclusions du drone
     Vehicule vehiculeselected;
     Marker droneMarker;
-
+    Segment segment;
 
 
 
@@ -789,18 +791,41 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        Log.e("OnMapReady"," calling async REST get dronePosition");
+        DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
+            @Override
+            public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
+//               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .title("Drone"));
+
+                droneposition=response.body();
+                ll=new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+                Log.e("OnMapReady", "Drone Position is"+String.valueOf(response.body().getPostion()));
+                reloadDrone();
+
+
+
+            }
+
+            @Override
+            public void onFailure(Call<DronePosition> call, Throwable t) {
+                Log.e("OnMapReady","Drone not created");
+            }
+        });
+
         //#########################    QUAND ON CLICK SUR UN MARQUEUR SUR LA CARTE GOOGLE MAP
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                LatLng ll= new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+
             if(clickedSegment || clickedZone || clickedZoneExclusion){
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),marker.getPosition()).width(6).color(Color.RED)
+                        .add(ll,marker.getPosition()).width(6).color(Color.RED)
                         .visible(true));
 
                ll=marker.getPosition();
-                clickedSegment=false;
+
                 //TODO: Yousra les traitements pour le drone
             }
             else{
@@ -863,6 +888,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
             }
         });
+
         //#########################    QUAND ON CLICK SUR LA CARTE GOOGLE MAP
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
@@ -874,13 +900,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Map", "Map clicked");
 
             if(clickedSegment || clickedZone || clickedZoneExclusion){
-                LatLng ll=new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
-                mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),point).width(6).color(Color.RED)
-                        .visible(true));
+                MarkerOptions markerOptions = new MarkerOptions();
 
-              ll=point;
-                clickedSegment=false;
+                // Setting latitude and longitude of the marker position
+                markerOptions.position(point);
+
+                // Setting titile of the infowindow of the marker
+                markerOptions.title("Position");
+
+                // Setting the content of the infowindow of the marker
+                markerOptions.snippet("Latitude:"+point.latitude+","+"Longitude:"+point.longitude);
+
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(ll,point).width(6).color(Color.RED)
+                        .visible(true));
+                // Adding the marker to the map
+                mGoogleMap.addMarker(markerOptions);
+                /*Double[] tab=new Double[2];
+                tab[0]=point.latitude;
+                tab[1]=point.longitude;
+                segment.getPoints().add(tab);*/
+
+               ll=point;
+
+
 
             }
             else{
@@ -985,26 +1028,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        Log.e("OnMapReady"," calling async REST get dronePosition");
-        DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
-            @Override
-            public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
-//               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
-//                        .title("Drone"));
 
-                droneposition=response.body();
-                reloadDrone();
 
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
-            }
-
-            @Override
-            public void onFailure(Call<DronePosition> call, Throwable t) {
-                Log.e("OnMapReady","Drone not created");
-            }
-        });
 
     }
 
@@ -1245,6 +1270,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                         );
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]), 18));
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
