@@ -1,6 +1,6 @@
 package istic.fr.droneproject.activities;
 
-import android.content.DialogInterface;
+ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,6 +36,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,10 +62,12 @@ import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.BaseSPService;
 import istic.fr.droneproject.service.TransformImageToStringEtVs;
 import istic.fr.droneproject.service.impl.BaseSPServiceImpl;
+import istic.fr.droneproject.service.impl.DronePositionServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
 
 public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
@@ -72,19 +76,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
-    LatLng lng;
-    ViewGroup view;
+    LatLng lng; //la position de l'intervention ?
+    Marker markerd;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
-    Boolean clicked = false;
-    Boolean clickedPoint = false;
+    DronePosition droneposition;
+    DronePhotos dronephotos;
+    Drone drone;
+    Boolean clicked = false; //pour les moyens
+    Boolean clickedPoint = false; //pour les points
+    Boolean clickedSegment = false; //pour les zegments du drone
+    Boolean clickedZone = false; //pour les zone du drones
+    Boolean clickedZoneExclusion = false; //pour les zones d'exclusions du drone
     Vehicule vehiculeselected;
     Marker droneMarker;
-    Drone drone;
-    DronePosition dronePosition;
-    DronePhotos dronePhotos;
+
+
+
 
   /*  PointInteret pointSelected;*/
     int pointSelected;
@@ -113,9 +123,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Double[] m_listPositionVehicule;
     View m_menu_Actionvehicule;
     View m_menu_Actionpoint;
-
+    View m_menu_Actiondrone;
+    View m_menu_Actiondrone_segment;
+    View m_menu_Actiondrone_zone;
     public enum ListeMenu {
-        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, aucun
+        m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, m_menu_Actiondrone, m_menu_Actiondrone_segment, m_menu_Actiondrone_zone, aucun
     }
 
     private String idIntervention;
@@ -166,6 +178,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_vehicules = (LinearLayout) view.findViewById(R.id.m_menu_vehicules);
         m_menu_Actionvehicule = (LinearLayout) view.findViewById(R.id.m_menu_Actionvehicule);
         m_menu_Actionpoint = (LinearLayout) view.findViewById(R.id.m_menu_Actionpoint);
+        m_menu_Actiondrone = (LinearLayout) view.findViewById(R.id.m_menu_Actiondrone);
+        m_menu_Actiondrone_segment = (LinearLayout) view.findViewById(R.id.m_menu_Actiondrone_segment);
+        m_menu_Actiondrone_zone = (LinearLayout) view.findViewById(R.id.m_menu_Actiondrone_zone);
 
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
@@ -175,8 +190,24 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
 
         //bouton suppression point
-        Button m_menu_Actionpoint_supprimer= (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
-        Button m_menu_Actionpoint_deplacer= (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
+        Button m_menu_Actionpoint_supprimer = (Button) view.findViewById(R.id.m_menu_Actionpoint_supprimer);
+        Button m_menu_Actionpoint_deplacer = (Button) view.findViewById(R.id.m_menu_Actionpoint_deplacer);
+
+        //bouton drone
+        Button m_menu_Actiondrone_segment_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_b);
+        Button m_menu_Actiondrone_zone_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_b);
+        Button m_menu_Actiondrone_stop= (Button) view.findViewById(R.id.m_menu_Actiondrone_stop);
+        Button m_menu_Actiondrone_exclusion = (Button) view.findViewById(R.id.m_menu_Actiondrone_exclusion);
+        Button m_menu_Actiondrone_parking = (Button) view.findViewById(R.id.m_menu_Actiondrone_parking);
+
+        Button m_menu_Actiondrone_segment_annuler = (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_annule);
+        Button m_menu_Actiondrone_segment_fin = (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_fin);
+        Button m_menu_Actiondrone_segment_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_supplast);
+        Button m_menu_Actiondrone_segment_boucle = (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_boucle);
+
+        Button m_menu_Actiondrone_zone_annule = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_annule);
+        Button m_menu_Actiondrone_zone_fin = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_fin);
+        Button m_menu_Actiondrone_zone_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_supplast);
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
         pointsCarte = new ArrayList<>();
@@ -188,11 +219,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Log.e("Vehicule cliqué", "Vehicule cliqué 1 =========>");
                 //vehicule
                 int k = intervention.vehicules.indexOf(vehicule);
-                intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+
                 m_listPositionVehicule = new Double[2];
                 m_listPositionVehicule[0] = pointVehicule.latitude;
                 m_listPositionVehicule[1] = pointVehicule.longitude;
                 intervention.vehicules.get(k).setPosition(m_listPositionVehicule);
+                if (intervention.vehicules.get(k).verifierEngage()) {
+                    System.out.println("setEtat(engagé) possible");
+                    intervention.vehicules.get(k).setEtat(EtatVehicule.ENGAGE);
+
                 InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -202,7 +237,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                         markerChanged.setTitle(vehicule.nom);
                                         markerChanged.setSnippet(""+intervention.vehicules.indexOf(vehicule));*/
 
-                        Toast.makeText(getContext(),"L'intervention a été Modifié",Toast.LENGTH_SHORT);
+                        Toast.makeText(getContext(), "L'intervention a été Modifié", Toast.LENGTH_SHORT);
                         SynchroniserIntervention();
                         changerMenu(ListeMenu.aucun);
 
@@ -214,6 +249,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("MapActivity", t.toString());
                     }
                 });
+            }
             }
         };
         vehiculesAdapter = new MapVehiculesRecyclerAdapter(vehicules, R.layout.m_vehicules_carte_item, getContext(), interventionClickListener);
@@ -302,8 +338,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
                             && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
 
-                        if ((EtatVehicule.ENGAGE.equals(intervention.vehicules.get(i).etat) && (intervention.vehicules.get(i).heureEngagement != null) ) || (EtatVehicule.PARKING.equals(intervention.vehicules.get(i).etat)) ) {
+                        /*if ((EtatVehicule.ENGAGE.equals(intervention.vehicules.get(i).etat) && (intervention.vehicules.get(i).heureEngagement != null) ) || (EtatVehicule.PARKING.equals(intervention.vehicules.get(i).etat)) ) {*/
 
+                        if(intervention.vehicules.get(i).verifierArrive()){
 
                             intervention.vehicules.get(i).setEtat(EtatVehicule.ARRIVE);
                             if (intervention.vehicules.get(i).heureArrivee == null)
@@ -379,8 +416,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     if ((intervention.vehicules.get(i).position != null && vehiculeselected.position != null)
                             && (intervention.vehicules.get(i).position[0].toString().equals(vehiculeselected.position[0].toString()) && intervention.vehicules.get(i).position[1].toString().equals(vehiculeselected.position[1].toString()))
                             && (intervention.vehicules.get(i).nom.equals(vehiculeselected.nom))) {
+                        System.out.println("ccc");
+                        System.out.println("etat: "+intervention.vehicules.get(i).getEtat().toString());
 
-                        intervention.vehicules.get(i).setEtat(EtatVehicule.PARKING);
+                        if(intervention.vehicules.get(i).verifierParking()){
+                            System.out.println("parking true");
+
+                            intervention.vehicules.get(i).setPosition(null);
+                            System.out.println("position :"+ intervention.vehicules.get(i).getPosition());
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -397,8 +440,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         changerMenu(ListeMenu.aucun);
                         SynchroniserIntervention();
                     }
+                    }
                 }
-
             }
         });
 
@@ -447,19 +490,117 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
 
-        //Appel périodique de reloadDrone
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+
+
+
+        //#####################  DRONE  MENU ###############################################################
+        m_menu_Actiondrone_stop.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void run() {
-                //Do something after ###ms
-                Log.e("MapActivityHandler","Ploop");
-                reloadDrone();
-                handler.postDelayed(this, 2000);
+            public void onClick(View v) {
+                changerMenu(ListeMenu.aucun);
+                //TODO: action stop sur le drone (changer drone.tat vers STOP)
             }
-        }, 2000);
+        });
 
+        m_menu_Actiondrone_segment_b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changerMenu(ListeMenu.m_menu_Actiondrone_segment);
+                clickedSegment = true;
+                //TODO: déclancher le placement de point pour un segments
+            }
+        });
 
+        m_menu_Actiondrone_zone_b.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changerMenu(ListeMenu.m_menu_Actiondrone_zone);
+                clickedZone = true;
+                //TODO: déclancher le placement de point pour une zone
+            }
+        });
+
+        m_menu_Actiondrone_exclusion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // pareil que zone mais crée une zone d'exclusion
+                changerMenu(ListeMenu.m_menu_Actiondrone_zone);
+                clickedZone = true;
+                clickedZoneExclusion = true;
+                //TODO: déclancher le placement de point pour une zone d'exclusion
+            }
+        });
+
+        m_menu_Actiondrone_parking.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changerMenu(ListeMenu.aucun);
+                //TODO: déclancher le changement d'etat du drone au parking // RTB
+            }
+        });
+
+        //#####################  DRONE SEGMENT MENU ###############################################################
+
+        m_menu_Actiondrone_segment_annuler.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changerMenu(ListeMenu.aucun);
+                clickedSegment = false;
+                //reset la sélection du drone
+                //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
+            }
+        });
+
+        m_menu_Actiondrone_segment_fin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changerMenu(ListeMenu.aucun);
+                //TODO: valider le segment et l'envoyer au service REST
+            }
+        });
+
+        m_menu_Actiondrone_segment_supplast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: supprimer le dernier point du segment ajouter, le supprimer de la carte
+            }
+        });
+
+        m_menu_Actiondrone_segment_boucle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: activer l'option de boucler dans le segment
+            }
+        });
+
+        //#####################  DRONE ZONE MENU ###############################################################
+
+        m_menu_Actiondrone_zone_annule.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changerMenu(ListeMenu.aucun);
+                clickedZone = false;
+                //reset la sélection du drone
+                //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
+            }
+        });
+
+        m_menu_Actiondrone_zone_fin.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changerMenu(ListeMenu.aucun);
+                //TODO: valider la zone et l'envoyer au service REST
+            }
+        });
+
+        m_menu_Actiondrone_zone_supplast.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: supprimer le dernier point de la zone ajouter, le supprimer de la carte, redessiner le polygone
+            }
+        });
+
+        //######################################################################################################
     }
 
     private void chargerIntervention() {
@@ -480,8 +621,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
                     Vehicule vehiculeCourant = response.body().vehicules.get(i);
                     if (
-                            (vehiculeCourant.etat == EtatVehicule.PARKING)  || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE)
-                                    && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
+                            (vehiculeCourant.etat == EtatVehicule.PARKING)  || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE) && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
                         ajoutImageFromVehicule(vehiculesCarte.get(i), i);
                         vehicules.add(response.body().vehicules.get(i));
                     }
@@ -595,6 +735,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 } else {
                     lng = new LatLng(40.76793169992044, -73.98180484771729);
                 }
+
+
+
+
                 /*recupererBaseSP();*/
                 mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
@@ -602,6 +746,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .position(lng)
                         .title("Intervention")
                         .snippet(intervention.libelle));
+
 
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lng, 18));
 
@@ -616,22 +761,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
+        //#########################    QUAND ON CLICK SUR UN MARQUEUR SUR LA CARTE GOOGLE MAP
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                // marker.showInfoWindow();
+                LatLng ll= new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+            if(clickedSegment || clickedZone || clickedZoneExclusion){
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),marker.getPosition()).width(6).color(Color.RED)
+                        .visible(true));
+
+               ll=marker.getPosition();
+                clickedSegment=false;
+                //TODO: Yousra les traitements pour le drone
+            }
+            else{
+                //on click sur la carte dans le vide
                 changerMenu(ListeMenu.m_menu_choix);
                 if(markerChanged != null) {
                     markerChanged.remove();
                     Log.e("MapActivity","markerChanged.remove(); line 667");
                 }
-                //les vehicules on un ii entre 0 et 999
+                //on click sur le marqueur d'intervention
                 if(marker.getTitle() == null ||marker.getTitle().equals("Intervention")){
                     //do nothing but catch not a number marker
 //                    SynchroniserIntervention();
 //                    changerMenu(ListeMenu.aucun);
                 }
+                //les vehicules on un ii entre 0 et 999
                 else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 1000) {
                     changerMenu(ListeMenu.m_menu_Actionvehicule);
                     System.out.println("veh" +marker.getTitle());
@@ -656,9 +813,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     pointSelected = Integer.parseInt(title.substring(title.length() - 1));
                     System.out.println("point selected "+pointSelected);
                 }
+                // les drones
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000 && Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) < 3000) {
+                    changerMenu(ListeMenu.m_menu_Actiondrone);
+                }
                 // les points SP
-                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 2000) {
-                    //TODO Salma <1000 SP
+                else if (Integer.parseInt(marker.getTitle()) != -1 && Integer.parseInt(marker.getTitle()) >= 3000){
                     changerMenu(ListeMenu.aucun);
                     if(markerChanged != null) {
                         markerChanged.remove();
@@ -670,15 +830,32 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     changerMenu(ListeMenu.aucun);
 
                 }
-                return false;
+            }
+            return false;
+
             }
         });
-
+        //#########################    QUAND ON CLICK SUR LA CARTE GOOGLE MAP
         mGoogleMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
 
             @Override
             public void onMapClick(LatLng point) {
+
+
+
                 Log.e("Map", "Map clicked");
+
+            if(clickedSegment || clickedZone || clickedZoneExclusion){
+                LatLng ll=new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
+                mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]),point).width(6).color(Color.RED)
+                        .visible(true));
+
+              ll=point;
+                clickedSegment=false;
+
+            }
+            else{
                 pointVehicule=point;
                 if(clickedPoint) {
                     try {
@@ -690,6 +867,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             @Override
                             public void onResponse(Call<Void> call, Response<Void> response) {
                                 Log.e("point updated", "=========>point updated ");
+
 
                             }
 
@@ -776,6 +954,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 }
             }
+            }
+        });
+
+        DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
+            @Override
+            public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
+//               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .title("Drone"));
+
+                droneposition=response.body();
+                reloadDrone();
+
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
+                Log.e("Drone Position is", String.valueOf(response.body().getPostion()));
+            }
+
+            @Override
+            public void onFailure(Call<DronePosition> call, Throwable t) {
+                Log.e("Drone not created", "");
+            }
         });
 
     }
@@ -824,6 +1023,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LatLng posVehicule;
         if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null) {
             posVehicule = markerChanged.getPosition();
+
         } else {
             posVehicule = new LatLng(vehicule.position[0], vehicule.position[1]);
         }
@@ -911,7 +1111,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             if (pointsSPCarte != null) {
                 for (int i = 0; i < pointsSPCarte.size(); i++) {
                     PointInteret pointCourant = pointsSPCarte.get(i);
-                    ajoutImageFromPoint(pointCourant, 2000 + i);
+                    ajoutImageFromPoint(pointCourant, 3000 + i);
 
                 }
             }
@@ -933,6 +1133,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_choix.setVisibility(View.GONE);
         m_menu_Actionpoint.setVisibility(View.GONE);
         m_menu_Actionvehicule.setVisibility(View.GONE);
+        m_menu_Actiondrone.setVisibility(View.GONE);
+        m_menu_Actiondrone_zone.setVisibility(View.GONE);
+        m_menu_Actiondrone_segment.setVisibility(View.GONE);
 
         switch (menu) {
             case m_menu_vehicules:
@@ -949,6 +1152,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 break;
             case m_menu_Actionpoint:
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
+                break;
+            case m_menu_Actiondrone:
+                m_menu_Actiondrone.setVisibility(View.VISIBLE);
+                break;
+            case m_menu_Actiondrone_segment:
+                m_menu_Actiondrone_segment.setVisibility(View.VISIBLE);
+                break;
+            case m_menu_Actiondrone_zone:
+                m_menu_Actiondrone_zone.setVisibility(View.VISIBLE);
                 break;
             case aucun:
                 secondClickSurMap = false;
@@ -989,20 +1201,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void reloadDrone(){
         //TODO: get la nouvelle position dans @dronePosition
         if(droneMarker == null){
-            if(dronePosition != null && dronePosition.getPostion() != null && dronePosition.getPostion()[0] != null && dronePosition.getPostion()[1] != null){
+
+            if(droneposition != null && droneposition.getPostion() != null && droneposition.getPostion()[0] != null && droneposition.getPostion()[1] != null){
+                Log.e("MapActivity","création du drone"+lng);
+                BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
+                Bitmap b = bitmapdraw.getBitmap();
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX*2, iconSizeX*2, false);
+
+
+
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(lng)
-                        .title("SuperDrone le sauveur des Petits chats")
-                        .snippet("["+dronePosition.getPostion()[0]+","+dronePosition.getPostion()[1]+"]"));
+                        .title(""+2000)
+                        .snippet("SuperDrone le sauveur des Petits chats")
+                        .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                        );
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
             }
         }
         else{
-            droneMarker.setPosition(new LatLng(dronePosition.getPostion()[0],dronePosition.getPostion()[1]));
+            Log.e("MapActivity","move drone to position "+droneposition.getPostion()[0]+"  "+droneposition.getPostion()[1]);
+            droneMarker.setPosition(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]));
         }
-
     }
 }
 

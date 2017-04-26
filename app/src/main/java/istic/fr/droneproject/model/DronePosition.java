@@ -7,7 +7,7 @@ package istic.fr.droneproject.model;
 public class DronePosition {
 
     String idIntervention;
-    Double[] postion;
+    Double[] position;
 
     public String getIdIntervention() {
         return idIntervention;
@@ -18,10 +18,10 @@ public class DronePosition {
     }
 
     public Double[] getPostion() {
-        return postion;
+        return position;
     }
 
     public void setPostion(Double[] postion) {
-        this.postion = postion;
+        this.position = postion;
     }
 }
