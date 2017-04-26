@@ -8,10 +8,8 @@ import java.util.List;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Drone;
-import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.model.EtatDrone;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.service.impl.DronePositionServiceImpl;
 import istic.fr.droneproject.service.impl.DroneServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -24,7 +22,7 @@ public class TestServiceDroneActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_service_drone);
-        testrecupDronePosition();
+        testrecupDrone();
         /*InterventionServiceCentral.getInstance().getInterventionById("58d1327e9bce7c234254cf28", new Callback<Intervention>() {
 
             @Override
@@ -139,25 +137,9 @@ public class TestServiceDroneActivity extends AppCompatActivity {
 
     }
 
-    public void testrecupDronePosition(){
 
-        DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention("58d1327e9bce7c234254cf28",new Callback<DronePosition>() {
-            @Override
-            public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
-                Log.e("Drone Position is", String.valueOf(response.body().getPostion()));
-            }
 
-            @Override
-            public void onFailure(Call<DronePosition> call, Throwable t) {
-                Log.e("Drone not created", "");
-            }
-        });
+
 
     }
-
-
-
-
-
-}
 
