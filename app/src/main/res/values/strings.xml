@@ -5,7 +5,7 @@
     <string name="prompt_login">Identifier</string>
     <string name="prompt_password">Mot de passe</string>
     <string name="action_sign_in">Se connecter</string>
-    <string name="role_user">USER</string>
+    <string name="role_user">COS</string>
     <string name="role_codis">CODIS</string>
 
     <!-- Strings related to new intervention -->
