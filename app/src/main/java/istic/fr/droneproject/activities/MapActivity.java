@@ -555,10 +555,22 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 changerMenu(ListeMenu.m_menu_Actiondrone_segment);
                 System.out.println("dessiner segment");
-
-
                 clickedSegment = true;
-                //TODO: déclancher le placement de point pour un segments
+                drone.segment=segment;
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
+
+
+
             }
         });
 
@@ -602,7 +614,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 //changerMenu(ListeMenu.aucun);
                 clickedSegment = false;
-                //reset la sélection du drone
                 drone.segment.setBoucleFermee(false);
                drone.segment.getPoints().clear();
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
@@ -624,9 +635,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
-              for(int i=0;i<pointsSegment.size();i++){
-                  drone.segment.getPoints().add(pointsSegment.get(i));
-              }
+            //  for(int i=0;i<pointsSegment.size();i++){
+                  //drone.segment.getPoints().add(pointsSegment.get(i));
+                  drone.segment.setPoints(pointsSegment);
+            //  }
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -655,21 +667,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 markers.get(markers.size()-1).remove();
                 markers.remove(markers.size()-1);}
                 suppLast=true;
-               /* drone.segment.getPoints().remove(drone.segment.getPoints().size()-1);
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                    }
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });*/
-
-
-               //SynchroniserIntervention();
 
             }
         });
@@ -919,6 +917,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
         pointsSegment =new ArrayList<>();
+        segment=new Segment();
 
         recupererBaseSP();
         this.mGoogleMap = googleMap;
@@ -1056,6 +1055,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                        markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
                        // Adding the marker to the map
                        Marker markerS = mGoogleMap.addMarker(markerOptions);
+                       if(!markers.isEmpty()){
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
@@ -1069,7 +1069,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                        pointsSegment.add(tab);
                       // drone.getSegment().getPoints().add(tab);
-                   }
+                   }}
 
                    else {
                        MarkerOptions markerOptions = new MarkerOptions();
