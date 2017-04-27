@@ -99,6 +99,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Vehicule vehiculeselected;
     Marker droneMarker;
     Segment segment;
+    List<Marker> markersMoyens;
 
 
 
@@ -619,10 +620,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 System.out.println("supprimer derniere ligne");
+                if(!p.isEmpty()){
                 p.get(p.size()-1).remove();
                 p.remove(p.size()-1);
+                }
+
+                if(!markers.isEmpty()){
                 markers.get(markers.size()-1).remove();
-                markers.remove(markers.size()-1);
+                markers.remove(markers.size()-1);}
                 suppLast=true;
                //SynchroniserIntervention();
 
@@ -834,6 +839,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     public void onMapReady(final GoogleMap googleMap) {
         p=new ArrayList<>();
         markers=new ArrayList<>();
+        markersMoyens=new ArrayList<>();
         pointsSegment =new ArrayList<Double[]>();
 
         recupererBaseSP();
@@ -961,10 +967,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                    {
                        Log.e("====>","suupLast True");
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                               .add(markers.get(markers.size()).getPosition(),marker.getPosition()).width(6).color(Color.RED)
+                               .add(markersMoyens.get(markersMoyens.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
                        p.add(poly);
-
+                        markersMoyens.add(marker) ;
                        ll=marker.getPosition();
                        suppLast=false;
                        Double[] tab=new Double[2];
@@ -983,7 +989,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                .visible(true));
                        p.add(poly);
 
-
+                       markersMoyens.add(marker);
 
                        ll = marker.getPosition();
                        Double[] tab = new Double[2];
@@ -1115,7 +1121,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         // Adding the marker to the map
                         Marker marker = mGoogleMap.addMarker(markerOptions);
                         Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                .add(markers.get(markers.size()).getPosition(),marker.getPosition()).width(6).color(Color.RED)
+                                .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                 .visible(true));
                         p.add(poly);
                         markers.add(marker);
@@ -1498,6 +1504,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(droneposition.position[0],droneposition.position[1]))
+
                         .title(""+2000)
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
