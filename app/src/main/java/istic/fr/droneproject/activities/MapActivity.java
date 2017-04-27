@@ -616,8 +616,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("Drone not updated", "");
                     }
                 });
-
-               // SynchroniserIntervention();
+                SynchroniserIntervention();
             }
         });
 
@@ -655,6 +654,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if(!markers.isEmpty()){
                 markers.get(markers.size()-1).remove();
                 markers.remove(markers.size()-1);}
+                suppLast=true;
                /* drone.segment.getPoints().remove(drone.segment.getPoints().size()-1);
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
@@ -668,7 +668,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     }
                 });*/
 
-                suppLast=true;
+
                //SynchroniserIntervention();
 
             }
@@ -1198,13 +1198,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         markerOptions.snippet("Latitude:" + point.latitude + "," + "Longitude:" + point.longitude);
                         // Adding the marker to the map
                         Marker marker = mGoogleMap.addMarker(markerOptions);
+                        if(!markers.isEmpty()){
                         Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                 .visible(true));
                         p.add(poly);
                         markers.add(marker);
                         ll=marker.getPosition();
-                        suppLast=false;
+                        suppLast=false;}
                         Double[] tab = new Double[2];
                         tab[0] = point.latitude;
                         tab[1] = point.longitude;
