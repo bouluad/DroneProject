@@ -621,8 +621,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_annule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("annuler zone");
                 //changerMenu(ListeMenu.aucun);
+                /*polylinesZone.get(polylinesZone.size()-1).remove();
+                markerPoints.remove(markerPoints.size()-1);*/
+                for(Polyline line : polylinesZone)
+                {
+                    line.remove();
+                }
+
+                polylinesZone.clear();
+
+
+                    markerPoints.clear();
+                markerStart.remove();
+
                 clickedZone = false;
+
                 //reset la sélection du drone
                 //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
             }
