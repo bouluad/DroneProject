@@ -1,7 +1,15 @@
 package istic.fr.droneproject.service.impl;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import istic.fr.droneproject.model.DronePosition;
 import istic.fr.droneproject.service.DronePositionService;
 import istic.fr.droneproject.service.retrofit.DronePositionRestAPI;
@@ -17,6 +25,10 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DronePositionServiceImpl implements DronePositionService{
 
+    private Callback callback;
+    private String interventionId;
+    private Socket socket;
+
     public static DronePositionServiceImpl droneInstance=new DronePositionServiceImpl();
 
     public static DronePositionServiceImpl getInstance(){
@@ -25,7 +37,8 @@ public class DronePositionServiceImpl implements DronePositionService{
 
     //GET drone
     public void getDronePositionByIdIntervention(String id, Callback<DronePosition> callback) {
-
+        this.callback = callback;
+        interventionId = id;
         /*
         Création de l'objet Retrofit
          */
@@ -43,6 +56,34 @@ public class DronePositionServiceImpl implements DronePositionService{
         On lance l'appel et le callback recevra la réponse
          */
         call.enqueue(callback);
+    }
+
+    private DronePositionServiceImpl() {
+
+        try {
+            socket = IO.socket("http://148.60.11.238:8080");
+        } catch (URISyntaxException e) {
+            Log.e("InterventionServiceCent", e.toString());
+        }
+        socket.connect();
+        Log.e("positionupdate", "Socket connectee");
+
+        socket.on("positionUpdate", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.e("positionupdate", "Listener called");
+                if (args.length > 0) {
+                    Log.e("positionupdate", args[0].toString());
+                    String idIntervention = (String) args[0];
+                    if (idIntervention.equals(interventionId) && callback != null) {
+                        //Recuperer que cette intervention
+                        getDronePositionByIdIntervention(idIntervention, callback);
+                    }
+                    // Sinon l'intervention modifiee ne nous interesse pas
+                }
+            }
+        });
+
     }
 
 }
