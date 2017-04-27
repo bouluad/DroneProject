@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/m_menu"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -304,7 +305,7 @@
 
     </LinearLayout>
 
-    <LinearLayout
+    <FrameLayout
         android:id="@+id/m_linearmap"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -321,7 +322,29 @@
             android:layout_weight="0"
             tools:context=".activities.MapActivity" />
 
-    </LinearLayout>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/m_map_reloaddrone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right"
+            android:layout_margin="16dp"
+            app:elevation="4dp"
+            app:layout_anchorGravity="bottom|right|end"
+            android:clickable="true"
+            android:src="@drawable/drone" />
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/m_map_filtre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="top|right|fill_horizontal"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:src="@android:drawable/ic_menu_manage"
+            app:elevation="24dp"
+            app:layout_anchorGravity="bottom|right|end" />
+
+    </FrameLayout>
 
 
 </LinearLayout>
