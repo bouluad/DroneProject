@@ -211,7 +211,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button m_menu_Actiondrone_segment_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_b);
         Button m_menu_Actiondrone_zone_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_b);
         Button m_menu_Actiondrone_stop= (Button) view.findViewById(R.id.m_menu_Actiondrone_stop);
-        Button m_menu_Actiondrone_exclusion = (Button) view.findViewById(R.id.m_menu_Actiondrone_exclusion);
+        final Button m_menu_Actiondrone_exclusion = (Button) view.findViewById(R.id.m_menu_Actiondrone_exclusion);
         Button m_menu_Actiondrone_parking = (Button) view.findViewById(R.id.m_menu_Actiondrone_parking);
 
         Button m_menu_Actiondrone_segment_annuler = (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_annule);
@@ -223,7 +223,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button m_menu_Actiondrone_zone_fin = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_fin);
         Button m_menu_Actiondrone_zone_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_supplast);
 
-
+        //bouton de la carte
+        FloatingActionButton m_map_reloaddrone = (FloatingActionButton) view.findViewById(R.id.m_map_reloaddrone);
+        FloatingActionButton m_map_filtre = (FloatingActionButton) view.findViewById(R.id.m_map_filtre);
 
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
@@ -707,6 +709,32 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 System.out.println("supprimer dernier");
                 polylinesZone.get(polylinesZone.size()-1).remove();
                 markerPoints.remove(markerPoints.size()-1);
+            }
+        });
+
+        //######################################################################################################
+
+        m_map_reloaddrone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: supprimer le dernier point de la zone ajouter, le supprimer de la carte, redessiner le polygone
+                if(droneMarker != null) {
+                    mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0], droneposition.position[1]), 18));
+                    droneMarker.showInfoWindow();
+                    changerMenu(ListeMenu.m_menu_Actiondrone);
+                }
+                else
+                    Toast.makeText(getActivity().getApplicationContext(), "Pas de drone disponible", Toast.LENGTH_SHORT);
+
+            }
+        });
+
+        m_map_filtre.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: fare la tache taiga #141, cf description
+                Toast.makeText(getActivity().getApplicationContext(), "ici prochainement, un menu de filtre", Toast.LENGTH_SHORT);
+
             }
         });
 
