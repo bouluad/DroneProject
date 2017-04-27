@@ -606,7 +606,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //changerMenu(ListeMenu.aucun);
                 clickedSegment = false;
                 //reset la sélection du drone
+                drone.segment.setBoucleFermee(false);
                drone.segment.getPoints().clear();
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
                 SynchroniserIntervention();
             }
         });
@@ -618,6 +630,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
               for(int i=0;i<pointsSegment.size();i++){
                   drone.segment.getPoints().add(pointsSegment.get(i));
               }
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
+
             }
         });
 
@@ -634,6 +658,20 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 markers.get(markers.size()-1).remove();
                 markers.remove(markers.size()-1);}
                 suppLast=true;
+               /* drone.segment.getPoints().remove(drone.segment.getPoints().size()-1);
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });*/
+
+
                //SynchroniserIntervention();
 
             }
@@ -647,6 +685,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .add(markers.get(markers.size()-1).getPosition(), new LatLng(droneposition.position[0],droneposition.position[1])).width(6).color(Color.RED)
                         .visible(true));
                 drone.segment.setBoucleFermee(true);
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
+
             }
         });
 
@@ -907,7 +957,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
          contours = new ArrayList<Double[]>();
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
-        pointsSegment =new ArrayList<Double[]>();
+        pointsSegment =new ArrayList<>();
 
         recupererBaseSP();
         this.mGoogleMap = googleMap;
@@ -1033,11 +1083,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                    if(suppLast)
                    {
                        Log.e("====>","suupLast True");
+                       MarkerOptions markerOptions = new MarkerOptions();
+
+                       // Setting latitude and longitude of the marker position
+                       markerOptions.position(marker.getPosition());
+
+                       // Setting titile of the infowindow of the marker
+                       markerOptions.title("Position");
+
+                       // Setting the content of the infowindow of the marker
+                       markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
+                       // Adding the marker to the map
+                       Marker markerS = mGoogleMap.addMarker(markerOptions);
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                               .add(markersMoyens.get(markersMoyens.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
+                               .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
                        p.add(poly);
-                        markersMoyens.add(marker) ;
+                        markers.add(markerS) ;
                        ll=marker.getPosition();
                        suppLast=false;
                        Double[] tab=new Double[2];
@@ -1049,24 +1111,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                    }
 
                    else {
+                       MarkerOptions markerOptions = new MarkerOptions();
 
+                       // Setting latitude and longitude of the marker position
+                       markerOptions.position(marker.getPosition());
+
+                       // Setting titile of the infowindow of the marker
+                       markerOptions.title("Position");
+
+                       // Setting the content of the infowindow of the marker
+                       markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
+                       // Adding the marker to the map
+                       Marker markerS = mGoogleMap.addMarker(markerOptions);
 
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                .add(ll, marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
                        p.add(poly);
 
-                       markersMoyens.add(marker);
+                       markers.add(markerS);
 
                        ll = marker.getPosition();
                        Double[] tab = new Double[2];
                        tab[0] = marker.getPosition().latitude;
                        tab[1] = marker.getPosition().longitude;
                        pointsSegment.add(tab);
-                       //drone.getSegment().getPoints().add(tab);
+
                    }
 
-                //TODO: Yousra les traitements pour le drone
             }
             else{
                 //on click sur la carte dans le vide
@@ -1187,13 +1259,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         markerOptions.snippet("Latitude:" + point.latitude + "," + "Longitude:" + point.longitude);
                         // Adding the marker to the map
                         Marker marker = mGoogleMap.addMarker(markerOptions);
+                        if(!markers.isEmpty()){
                         Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                 .visible(true));
                         p.add(poly);
                         markers.add(marker);
                         ll=marker.getPosition();
-                        suppLast=false;
+                        suppLast=false;}
                         Double[] tab = new Double[2];
                         tab[0] = point.latitude;
                         tab[1] = point.longitude;

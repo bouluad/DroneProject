@@ -25,7 +25,7 @@ public interface DroneRestAPI {
     @POST("/drones")
     Call<Void> setDrone(@Body Drone drone );
 
-    @POST("/drones/update")
+    @POST("/drones")
     Call<Void> updateDrone(@Body Drone drone );
 
 

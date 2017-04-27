@@ -25,7 +25,7 @@ public class TestServiceDroneActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_service_drone);
-        testrecupDrone();
+        testUpdateDrone();
         /*InterventionServiceCentral.getInstance().getInterventionById("58d1327e9bce7c234254cf28", new Callback<Intervention>() {
 
             @Override
@@ -151,6 +151,32 @@ public class TestServiceDroneActivity extends AppCompatActivity {
     }
 
 
+
+ public void testUpdateDrone(){
+        Segment s=new Segment();
+        Double[] tab=new Double[2];
+        tab[0]=-1.00000544115;
+        tab[1]=48.44444444888;
+        List<Double[]> list=new ArrayList<>();
+        list.add(tab);
+
+        s.setPoints(list);
+        s.getPoints().add(tab);
+        s.setBoucleFermee(true);
+       Drone drone=new Drone("58ddf84c212566155e8e98ec", EtatDrone.SEGMENT,s);
+       DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Log.e("Drone updated", String.valueOf(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Log.e("Drone not updated", "");
+            }
+        });
+
+    }
 
 
 
