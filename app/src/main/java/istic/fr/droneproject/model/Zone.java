@@ -10,4 +10,13 @@ public class Zone {
     List<Double[]> contours;
 
     List<List<Double[]>> exclusion;
+
+    public List<Double[]> getContours() {
+        return contours;
+    }
+
+    public void setContours(List<Double[]> contours) {
+        this.contours = contours;
+    }
 }
+
