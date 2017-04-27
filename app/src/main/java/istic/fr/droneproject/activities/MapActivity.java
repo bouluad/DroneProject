@@ -166,11 +166,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("MAPCycledevie","onCreateView");
         return inflater.inflate(R.layout.activity_map, container, false);
     }
 
     @Override
     public void onPause() {
+        Log.e("MAPCycledevie","onPause");
         Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.m_map));
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.remove(fragment);
@@ -180,6 +182,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onDestroy() {
+        Log.e("MAPCycledevie","onDestroy");
         super.onDestroy();
         final FragmentManager fragManager = this.getFragmentManager();
         final Fragment fragment = fragManager.findFragmentById(R.id.m_map);
@@ -188,6 +191,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    @Override
+    public void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        Log.e("MAPCycledevie","onResume");
+        //mCollectionPagerAdapter.notifyDataSetChanged();
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -558,10 +568,22 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 changerMenu(ListeMenu.m_menu_Actiondrone_segment);
                 System.out.println("dessiner segment");
-
-
                 clickedSegment = true;
-                //TODO: déclancher le placement de point pour un segments
+                drone.segment=segment;
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
+
+
+
             }
         });
 
@@ -605,7 +627,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 //changerMenu(ListeMenu.aucun);
                 clickedSegment = false;
-                //reset la sélection du drone
                 drone.segment.setBoucleFermee(false);
                drone.segment.getPoints().clear();
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
@@ -627,9 +648,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
-              for(int i=0;i<pointsSegment.size();i++){
-                  drone.segment.getPoints().add(pointsSegment.get(i));
-              }
+            //  for(int i=0;i<pointsSegment.size();i++){
+                  //drone.segment.getPoints().add(pointsSegment.get(i));
+                  drone.segment.setPoints(pointsSegment);
+            //  }
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -658,21 +680,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 markers.get(markers.size()-1).remove();
                 markers.remove(markers.size()-1);}
                 suppLast=true;
-               /* drone.segment.getPoints().remove(drone.segment.getPoints().size()-1);
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                    }
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });*/
-
-
-               //SynchroniserIntervention();
 
             }
         });
@@ -806,7 +814,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
         //######################################################################################################
-        
+
         m_map_reloaddrone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -840,9 +848,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
                 //rechargement des 2 listes de vehicules & points
-                vehiculesCarte.clear();
+                if(vehiculesCarte != null)
+                    vehiculesCarte.clear();
                 vehiculesCarte = intervention.vehicules;
-                pointsCarte.clear();
+                if(pointsCarte != null)
+                    pointsCarte.clear();
                 System.out.println("je suis laaaa");
               /*  recupererBaseSP();*/
                 pointsCarte = intervention.points;
@@ -958,6 +968,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
         pointsSegment =new ArrayList<>();
+        segment=new Segment();
 
         recupererBaseSP();
         this.mGoogleMap = googleMap;
@@ -1095,6 +1106,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                        markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
                        // Adding the marker to the map
                        Marker markerS = mGoogleMap.addMarker(markerOptions);
+                       if(!markers.isEmpty()){
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
@@ -1108,7 +1120,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                        pointsSegment.add(tab);
                       // drone.getSegment().getPoints().add(tab);
-                   }
+                   }}
 
                    else {
                        MarkerOptions markerOptions = new MarkerOptions();
@@ -1499,7 +1511,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Méthode qui synchronise l'intervention et appel le rechargement des vehicules et points si l'utilisateur n'effectue pas d'intéraction.
      */
-    private void SynchroniserIntervention() {
+    public void SynchroniserIntervention() {
         //TODO avec idIntervention
 
         if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention){
@@ -1664,5 +1676,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 //            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
 //        }
     }
+
 }
 

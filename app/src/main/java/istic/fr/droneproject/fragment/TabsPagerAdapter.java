@@ -20,24 +20,31 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         super(fm);
         this.idIntervention = idIntervention;
     }
-
+    MapActivity mapActivity = null;
+    MoyensActivity moyensActivity = null;
+    AlbumActivity albumActivity = null;
+    VideosActivity videosActivity = null;
     @Override
     public Fragment getItem(int index) {
 
         switch (index) {
             case 0:
                 // Carte fragment activity
-                return MapActivity.newInstance(idIntervention);
+                mapActivity = MapActivity.newInstance(idIntervention);
+                return mapActivity;
             case 1:
 
                 // Moyens fragment activity
-                return MoyensActivity.newInstance(idIntervention);
+                moyensActivity = MoyensActivity.newInstance(idIntervention);
+            return moyensActivity;
             case 2:
                 // Album fragment activity
-                return AlbumActivity.newInstance(idIntervention);
+                albumActivity = AlbumActivity.newInstance(idIntervention);
+            return albumActivity;
             case 3:
                 // Videos fragment activity
-                return new VideosActivity();
+                videosActivity = new VideosActivity();
+            return videosActivity;
         }
 
         return null;
@@ -64,4 +71,18 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
         return null;
     }
 
+    public void refreshTab(int position) {
+        switch (position) {
+            case 0:
+                mapActivity.SynchroniserIntervention();
+                break;
+            case 1:
+                moyensActivity.chargerIntervention();
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+        }
+    }
 }
