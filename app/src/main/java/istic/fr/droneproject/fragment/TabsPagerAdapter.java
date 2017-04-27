@@ -56,9 +56,8 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
                 return "Carte";
             case 1:
                 return "Moyens";
-
             case 2:
-                return "Point d'intérêt";
+                return "Points d'intérêt";
             case 3:
                 return "Vidéos";
         }
