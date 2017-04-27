@@ -26,7 +26,7 @@ public class DroneServiceImpl implements DroneService {
     }
 
     //GET drone
-    public void getDroneById(String id,Callback<Drone> callback) {
+    public void getDroneByIdIntervention(String id,Callback<Drone> callback) {
 
         /*
         Création de l'objet Retrofit
@@ -39,7 +39,7 @@ public class DroneServiceImpl implements DroneService {
         /*
         Appel de la méthode pour l'API REST
          */
-        Call<Drone> call = droneRestAPI.getDroneById(id);
+        Call<Drone> call = droneRestAPI.getDroneByIdIntervention(id);
 
         /*
         On lance l'appel et le callback recevra la réponse
