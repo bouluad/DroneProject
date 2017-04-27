@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import istic.fr.droneproject.R;
@@ -51,6 +52,7 @@ public class AlbumActivity extends Fragment
     private Intervention intervention;
     private GoogleMap map;
     private List<DronePhotos> dronePhotos;
+    List<PicassoMarker> picassoMarkers = new ArrayList<PicassoMarker>();
 
 
     @Override
@@ -130,36 +132,24 @@ public class AlbumActivity extends Fragment
 
     private void bindPictures(){
 
-        System.out.println("BIND PICTURES");
         map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
 
         // content
         if(map != null)
         {
 
-            InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
-                @Override
-                public void onResponse(Call<Intervention> call, Response<Intervention> response) {
-                    intervention = response.body();
-
-                }
-
-                @Override
-                public void onFailure(Call<Intervention> call, Throwable t) {
-                    //DO NOTHING
-                    Log.e("AlbumActivity", t.toString());
-                }
-            });
 
 
-
-            DronePhotosServiceImpl service = new DronePhotosServiceImpl();
-            service.getDronePhotosbyIdIntervention(idIntervention, new Callback<List<DronePhotos>>() {
+            final Callback<List<DronePhotos>> callback = new Callback<List<DronePhotos>>() {
                 @Override
                 public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
-                    dronePhotos = response.body();
 
-                    System.out.println("BIND PICTURES size : "+dronePhotos.size());
+//                    try {
+//                        Thread.sleep(800);
+//                    } catch (InterruptedException e) {
+//                        e.printStackTrace();
+//                    }
+                    dronePhotos = response.body();
 
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
                     map.setMyLocationEnabled(true);
@@ -176,17 +166,21 @@ public class AlbumActivity extends Fragment
                             .tilt(30)
                             .build();
                     map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+
                     MarkerOptions markerOne;
+
                     for (DronePhotos p : dronePhotos) {
 
+                        Log.d("Picasso ",p.path);
+
                         markerOne = new MarkerOptions()
-                                .position(new LatLng(p.position[0], p.position[1]))
+                                .position(new LatLng(p.positionPTS[0], p.positionPTS[1]))
                                 .title(p.nom);
-                        System.out.println("IMAGE : "+p.path);
                         PicassoMarker  target = new PicassoMarker(map.addMarker(markerOne));
+                        picassoMarkers.add(target);
                         Picasso.with(getContext())
-                                .load("http://icons.iconarchive.com/icons/yellowicon/game-stars/256/Mario-icon.png")
-                                .resize(300,300)
+                                .load(p.path)
+                                .resize(200,200)
                                 .into(target);
                     }
 
@@ -197,7 +191,24 @@ public class AlbumActivity extends Fragment
                     //DO NOTHING
                     Log.e("AlbumActivity", t.toString());
                 }
+            };
+
+            InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
+                @Override
+                public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                    intervention = response.body();
+
+                    DronePhotosServiceImpl service = new DronePhotosServiceImpl();
+                    service.getDronePhotosbyIdIntervention(idIntervention,callback);
+                }
+
+                @Override
+                public void onFailure(Call<Intervention> call, Throwable t) {
+                    //DO NOTHING
+                    Log.e("AlbumActivity", t.toString());
+                }
             });
+
 
         }
 
