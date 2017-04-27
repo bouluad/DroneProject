@@ -26,6 +26,7 @@ public class UserMainActivity extends AppCompatActivity {
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private TabsPagerAdapter mSectionsPagerAdapter;
+    private static final String ARG_ID = "idIntervention";
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -67,9 +68,21 @@ public class UserMainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
+        String title = (String) item.getTitle();
+        if(title.equals("Rafraiche")){
+
+            Intent refresh= new Intent(this,this.getClass());
+            refresh.putExtra(ARG_ID, this.idIntervention);
+            startActivity(refresh);
+
+
+        }
+
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+
             return true;
         }
 
