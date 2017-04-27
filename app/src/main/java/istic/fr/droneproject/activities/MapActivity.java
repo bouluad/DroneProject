@@ -103,9 +103,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
 
-    ArrayList<LatLng> markerPoints; //liste de points pr dessiner une zone
+    ArrayList<LatLng> markerPoints; //liste de
+
+    // points pr dessiner une zone
     Marker markerStart; // marker start zone
     List<Polyline> polylinesZone;  //liste de segments pr une zone
+    List<Double[]> contours;
 
 
   /*  PointInteret pointSelected;*/
@@ -719,6 +722,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 //reset la sélection du drone
                 //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
+
+
+
+
+
+
+
+
             }
         });
 
@@ -751,7 +762,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                         clickedZone=false;
-                //TODO: valider la zone et l'envoyer au service REST
+                //valider la zone et l'envoyer au service REST
+
+
+                System.out.println("update drone");
+
+                for (LatLng point: markerPoints) {
+                    Double [] tab = new Double[2];
+                    tab[0]=point.latitude;
+                    tab[1]=point.longitude;
+                    drone.zone.getContours().add(tab);
+                }
+
+
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        System.out.println("c bon");
+
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                    }
+
+                });
+
             }
         });
 
@@ -914,6 +952,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         p=new ArrayList<>();
+         contours = new ArrayList<Double[]>();
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
         pointsSegment =new ArrayList<>();
