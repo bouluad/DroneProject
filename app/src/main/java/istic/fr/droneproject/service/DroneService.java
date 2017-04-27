@@ -17,7 +17,7 @@ public interface DroneService {
      * @param callback Callback pour récupérer la réponse
      */
 
-    void getDroneById(String id, Callback<Drone> callback);
+    void getDroneByIdIntervention(String id, Callback<Drone> callback);
 
 
     /**
