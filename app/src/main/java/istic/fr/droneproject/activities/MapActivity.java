@@ -918,7 +918,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         p=new ArrayList<>();
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
-        pointsSegment =new ArrayList<Double[]>();
+        pointsSegment =new ArrayList<>();
 
         recupererBaseSP();
         this.mGoogleMap = googleMap;
@@ -1044,11 +1044,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                    if(suppLast)
                    {
                        Log.e("====>","suupLast True");
+                       MarkerOptions markerOptions = new MarkerOptions();
+
+                       // Setting latitude and longitude of the marker position
+                       markerOptions.position(marker.getPosition());
+
+                       // Setting titile of the infowindow of the marker
+                       markerOptions.title("Position");
+
+                       // Setting the content of the infowindow of the marker
+                       markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
+                       // Adding the marker to the map
+                       Marker markerS = mGoogleMap.addMarker(markerOptions);
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                               .add(markersMoyens.get(markersMoyens.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
+                               .add(markers.get(markers.size()-1).getPosition(),marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
                        p.add(poly);
-                        markersMoyens.add(marker) ;
+                        markers.add(markerS) ;
                        ll=marker.getPosition();
                        suppLast=false;
                        Double[] tab=new Double[2];
@@ -1060,24 +1072,34 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                    }
 
                    else {
+                       MarkerOptions markerOptions = new MarkerOptions();
 
+                       // Setting latitude and longitude of the marker position
+                       markerOptions.position(marker.getPosition());
+
+                       // Setting titile of the infowindow of the marker
+                       markerOptions.title("Position");
+
+                       // Setting the content of the infowindow of the marker
+                       markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
+                       // Adding the marker to the map
+                       Marker markerS = mGoogleMap.addMarker(markerOptions);
 
                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
                                .add(ll, marker.getPosition()).width(6).color(Color.RED)
                                .visible(true));
                        p.add(poly);
 
-                       markersMoyens.add(marker);
+                       markers.add(markerS);
 
                        ll = marker.getPosition();
                        Double[] tab = new Double[2];
                        tab[0] = marker.getPosition().latitude;
                        tab[1] = marker.getPosition().longitude;
                        pointsSegment.add(tab);
-                       //drone.getSegment().getPoints().add(tab);
+
                    }
 
-                //TODO: Yousra les traitements pour le drone
             }
             else{
                 //on click sur la carte dans le vide
