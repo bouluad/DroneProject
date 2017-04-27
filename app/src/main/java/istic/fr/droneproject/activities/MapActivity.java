@@ -1494,7 +1494,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     droneMarker.remove();
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
                 Bitmap b = bitmapdraw.getBitmap();
-                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX*2, iconSizeX*2, false);
+                Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX, iconSizeX, false);
 
 
 
@@ -1504,7 +1504,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                         );
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0],droneposition.position[1]), 18));
+                //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0],droneposition.position[1]), 18));
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
