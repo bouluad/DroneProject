@@ -718,14 +718,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
         //######################################################################################################
-
+        
         m_map_reloaddrone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //TODO: supprimer le dernier point de la zone ajouter, le supprimer de la carte, redessiner le polygone
                 if(droneMarker != null) {
                     mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0], droneposition.position[1]), 18));
-                    droneMarker.showInfoWindow();
+                    reloadDrone();
                     changerMenu(ListeMenu.m_menu_Actiondrone);
                 }
                 else
@@ -1531,7 +1531,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 Bitmap smallMarker = Bitmap.createScaledBitmap(b, iconSizeX, iconSizeX, false);
 
 
-
+                mGoogleMap.stopAnimation();
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                         .position(new LatLng(droneposition.position[0],droneposition.position[1]))
 
@@ -1539,6 +1539,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                         );
+                droneMarker.setVisible(true);
+                droneMarker.showInfoWindow();
                 //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0],droneposition.position[1]), 18));
             }
             else{
