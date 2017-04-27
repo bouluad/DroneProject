@@ -19,11 +19,14 @@ public interface DroneRestAPI {
 
     @Headers({ "Accept: application/json" })
     @GET("/drones/{id}/intervention")
-    Call<Drone> getDroneById(@Path("id") String id);
+    Call<Drone> getDroneByIdIntervention(@Path("id") String id);
 
 
     @POST("/drones")
     Call<Void> setDrone(@Body Drone drone );
+
+    @POST("/drones/update")
+    Call<Void> updateDrone(@Body Drone drone );
 
 
 }
