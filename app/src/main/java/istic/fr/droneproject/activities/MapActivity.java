@@ -1,6 +1,6 @@
 package istic.fr.droneproject.activities;
 
- import android.content.DialogInterface;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -36,9 +36,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PolygonOptions;
- import com.google.android.gms.maps.model.Polyline;
- import com.google.android.gms.maps.model.PolylineOptions;
+ import com.google.android.gms.maps.model.Polygon;
+ import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -102,6 +103,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     ArrayList<LatLng> markerPoints; //liste de points pr dessiner une zone
+    Marker markerStart; // marker start zone
+    List<Polyline> polylinesZone;  //liste de segments pr une zone
 
 
   /*  PointInteret pointSelected;*/
@@ -220,7 +223,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button m_menu_Actiondrone_zone_fin = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_fin);
         Button m_menu_Actiondrone_zone_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_supplast);
 
-        markerPoints = new ArrayList<>();
+
 
         vehicules = new ArrayList<>();
         vehiculesCarte = new ArrayList<>();
@@ -515,14 +518,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
 //               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
-//                        .position(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]))
+//                        .position(new LatLng(response.body().position[0],response.body().position[1]))
 //                        .title("Drone"));
 
                         droneposition=response.body();
                         reloadDrone();
 
-                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().getPostion()[0],response.body().getPostion()[1]), 18));
-                        Log.e("OnMapReady", "Drone Position is "+response.body().getPostion()[0]+" "+response.body().getPostion()[1]);
+                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().position[0],response.body().position[1]), 18));
+                        Log.e("OnMapReady", "Drone Position is "+response.body().position[0]+" "+response.body().position[1]);
                     }
 
                     @Override
@@ -561,6 +564,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 System.out.println("afficher zone");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
+                markerPoints = new ArrayList<>();
+                polylinesZone = new ArrayList<Polyline>();
+
+
                 clickedZone = true;
                 //TODO: déclancher le placement de point pour une zone
             }
@@ -638,8 +645,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_annule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                System.out.println("annuler zone");
                 //changerMenu(ListeMenu.aucun);
+                /*polylinesZone.get(polylinesZone.size()-1).remove();
+                markerPoints.remove(markerPoints.size()-1);*/
+                for(Polyline line : polylinesZone)
+                {
+                    line.remove();
+                }
+
+                polylinesZone.clear();
+
+
+                    markerPoints.clear();
+                markerStart.remove();
+
                 clickedZone = false;
+
                 //reset la sélection du drone
                 //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
             }
@@ -653,7 +675,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 mGoogleMap.addPolyline((new PolylineOptions())
                         .add(markerPoints.get(markerPoints.size()-1), markerPoints.get(0)).width(6).color(Color.BLUE)
                         .visible(true));
-                clickedZone=false;
+
+                System.out.println("dessiner polygon");
+                PolygonOptions zoneOptions = new PolygonOptions();
+                        for (int i=0; i<markerPoints.size();i++) {
+                        zoneOptions.add(markerPoints.get(i));
+                        }
+                        zoneOptions.add(markerPoints.get(0));
+                zoneOptions. strokeColor(R.color.TransparentBlue);
+
+
+                zoneOptions.fillColor(R.color.TransparentBlue);
+
+// Get back the mutable Polygon
+                Polygon polygon = mGoogleMap.addPolygon(zoneOptions);
+                markerStart.remove();
+
+
+
+
+
+                        clickedZone=false;
                 //TODO: valider la zone et l'envoyer au service REST
             }
         });
@@ -662,6 +704,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //TODO: supprimer le dernier point de la zone ajouter, le supprimer de la carte, redessiner le polygone
+                System.out.println("supprimer dernier");
+                polylinesZone.get(polylinesZone.size()-1).remove();
+                markerPoints.remove(markerPoints.size()-1);
             }
         });
 
@@ -885,20 +930,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                     if(markerPoints.size()==1){
 
-                        mGoogleMap.addMarker(new MarkerOptions()
+                         markerStart = mGoogleMap.addMarker(new MarkerOptions()
                                 .position(marker.getPosition())
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
-                                .title("start shape"));
+                                .title("start"));
+
+
+
 
                     }
                     if (markerPoints.size() > 1) {
-                        System.out.println("dessiner une zone");
+
                         int i = markerPoints.size()-2;
 
 
-                        mGoogleMap.addPolyline((new PolylineOptions())
+                        Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
                                 .visible(true));
+
+                        polylinesZone.add(polyline);
 
 
 
@@ -1025,7 +1075,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                     if(markerPoints.size()==1){
 
-                        mGoogleMap.addMarker(new MarkerOptions()
+                        markerStart = mGoogleMap.addMarker(new MarkerOptions()
                                 .position(point)
                                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.markerstart))
                                 .title("start shape"));
@@ -1036,9 +1086,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         int i = markerPoints.size()-2;
 
 
-                        mGoogleMap.addPolyline((new PolylineOptions())
+                       Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
                                 .add(markerPoints.get(i), markerPoints.get(i+1)).width(6).color(Color.BLUE)
                                 .visible(true));
+
+                        polylinesZone.add(polyline);
 
 
 
@@ -1436,7 +1488,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO: get la nouvelle position dans @dronePosition
 //        if(droneMarker == null){
 
-            if(droneposition != null && droneposition.getPostion() != null && droneposition.getPostion()[0] != null && droneposition.getPostion()[1] != null){
+            if(droneposition != null && droneposition.position != null && droneposition.position[0] != null && droneposition.position[1] != null){
                 Log.e("MapActivity","création du drone"+droneposition);
                 BitmapDrawable bitmapdraw = (BitmapDrawable) getResources().getDrawable(getResources().getIdentifier("drone", "drawable", getContext().getPackageName()));
                 Bitmap b = bitmapdraw.getBitmap();
@@ -1445,7 +1497,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneMarker = mGoogleMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]))
+                        .position(new LatLng(droneposition.position[0],droneposition.position[1]))
                         .title(""+2000)
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
@@ -1457,8 +1509,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
 //        }
 //        else{
-//            Log.e("MapActivity","move drone to position "+droneposition.getPostion()[0]+"  "+droneposition.getPostion()[1]);
-//            droneMarker.setPosition(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]));
+//            Log.e("MapActivity","move drone to position "+droneposition.position[0]+"  "+droneposition.position[1]);
+//            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
 //        }
     }
 }

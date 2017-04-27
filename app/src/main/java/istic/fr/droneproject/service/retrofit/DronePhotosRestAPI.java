@@ -1,5 +1,7 @@
 package istic.fr.droneproject.service.retrofit;
 
+import java.util.List;
+
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.DronePhotos;
 import retrofit2.Call;
@@ -18,10 +20,7 @@ public interface DronePhotosRestAPI {
     String ENDPOINT = "http://148.60.11.238:8080/";
 
     @Headers({ "Accept: application/json" })
-    @GET("/drones/photos/{id}/intervention")
-    Call<DronePhotos> getDronePhotosbyIdIntervention(@Path("id") String id);
+    @GET("/photosdrone/{id}/intervention")
+    Call<List<DronePhotos>> getDronePhotosbyIdIntervention(@Path("id") String id);
 
-
-    @POST("/drones/photos")
-    Call<Void> addDronePhotos(@Body DronePhotos drone );
 }

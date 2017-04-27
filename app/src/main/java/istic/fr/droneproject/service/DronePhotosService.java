@@ -1,11 +1,11 @@
 package istic.fr.droneproject.service;
 
+import java.util.List;
+
 import istic.fr.droneproject.model.DronePhotos;
+import istic.fr.droneproject.model.Intervention;
 import retrofit2.Callback;
 
-/**
- * Created by yousra on 25/04/17.
- */
 
 public interface DronePhotosService {
 
@@ -15,14 +15,7 @@ public interface DronePhotosService {
      * @param callback Callback pour récupérer la réponse
      */
 
-    void getDronePhotosbyIdIntervention(String id, Callback<DronePhotos> callback);
-
-    /**
-     * Ajouter de nouvelles photos
-     * @param dronephotos pour ajouter des photos de drone
-     * @param callback Callback pour récupérer la réponse
-     */
-    void addDronePhotos(DronePhotos dronephotos,Callback<Void> callback);
+    void getDronePhotosbyIdIntervention(String id, Callback<List<DronePhotos>> callback);
 
 
 }

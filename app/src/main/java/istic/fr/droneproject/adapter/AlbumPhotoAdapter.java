@@ -13,15 +13,15 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import istic.fr.droneproject.R;
-import istic.fr.droneproject.model.Photo;
+import istic.fr.droneproject.model.DronePhotos;
 
 public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.PhotoViewHolder> {
 
-    private List<Photo> photos;
+    private List<DronePhotos> photos;
     private int layout;
     private Context context;
 
-    public AlbumPhotoAdapter(List<Photo> photos, int layout, Context context) {
+    public AlbumPhotoAdapter(List<DronePhotos> photos, int layout, Context context) {
         this.photos = photos;
         this.layout = layout;
         this.context = context;
@@ -35,7 +35,7 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
 
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
-        Photo photo = photos.get(position);
+        DronePhotos photo = photos.get(position);
         Picasso.with(context).setIndicatorsEnabled(true
         );
         Picasso.with(context).load(photo.path).placeholder(R.drawable.loading).error(R.drawable.image_not_found).into(holder.image);

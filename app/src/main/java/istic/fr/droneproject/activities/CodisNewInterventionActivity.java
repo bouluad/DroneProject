@@ -174,7 +174,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
                 vehicule.heureDemande = currentTime;
                 vehicule.heureEngagement = currentTime;
 
-                vehicule.etat = EtatVehicule.ENGAGE;
+                vehicule.etat = EtatVehicule.PARKING;
 
                 intervention.vehicules.add(vehicule);
                 moyensAdapter.notifyDataSetChanged();
