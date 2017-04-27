@@ -600,7 +600,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //changerMenu(ListeMenu.aucun);
                 clickedSegment = false;
                 //reset la sélection du drone
-               drone.getSegment().getPoints().clear();
+               drone.segment.getPoints().clear();
                 SynchroniserIntervention();
             }
         });
@@ -610,7 +610,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
               for(int i=0;i<pointsSegment.size();i++){
-                  drone.getSegment().getPoints().add(pointsSegment.get(i));
+                  drone.segment.getPoints().add(pointsSegment.get(i));
               }
             }
         });
@@ -634,9 +634,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
 
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(markers.get(markers.size()-1).getPosition(), new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1])).width(6).color(Color.RED)
+                        .add(markers.get(markers.size()-1).getPosition(), new LatLng(droneposition.position[0],droneposition.position[1])).width(6).color(Color.RED)
                         .visible(true));
-                drone.getSegment().setBoucleFermee(true);
+                drone.segment.setBoucleFermee(true);
             }
         });
 
@@ -885,8 +885,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneposition=response.body();
-                ll=new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]);
-                Log.e("OnMapReady", "Drone Position is"+String.valueOf(response.body().getPostion()));
+                ll=new LatLng(droneposition.position[0],droneposition.position[1]);
+                Log.e("OnMapReady", "Drone Position is"+String.valueOf(response.body().position));
                 reloadDrone();
                 DroneServiceImpl.getInstance().getDroneByIdIntervention(idIntervention,new Callback<Drone>() {
                     @Override
@@ -1502,7 +1502,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         .snippet("SuperDrone le sauveur des Petits chats")
                         .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
                         );
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.getPostion()[0],droneposition.getPostion()[1]), 18));
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0],droneposition.position[1]), 18));
             }
             else{
                 Log.e("MapActivity","Pas de dronePosition");
