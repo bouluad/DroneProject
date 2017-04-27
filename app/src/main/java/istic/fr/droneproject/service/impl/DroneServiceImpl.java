@@ -56,4 +56,14 @@ public class DroneServiceImpl implements DroneService {
         Call<Void> call = droneRestAPI.setDrone(drone);
         call.enqueue(callback);
     }
+
+    @Override
+    public void updateDrone(Drone drone, Callback<Void> callback) {
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
+        final DroneRestAPI droneRestAPI = retrofit.create(DroneRestAPI.class);
+
+        Call<Void> call = droneRestAPI.updateDrone(drone);
+        call.enqueue(callback);
+    }
 }
