@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -15,7 +18,7 @@ import istic.fr.droneproject.fragment.TabsPagerAdapter;
 /**
  * Created by bouluad on 22/03/17.
  */
-public class UserMainActivity extends AppCompatActivity {
+public class UserMainActivity extends AppCompatActivity implements ActionBar.TabListener{
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -33,7 +36,6 @@ public class UserMainActivity extends AppCompatActivity {
      */
     private ViewPager mViewPager;
     private String idIntervention;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,6 +54,24 @@ public class UserMainActivity extends AppCompatActivity {
 
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+
+        mViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int position) {
+                //.setSelectedNavigationItem(position);
+                Log.e("UserMainActivity ","position: "+position);
+                mSectionsPagerAdapter.refreshTab(position);
+            }
+
+            @Override
+            public void onPageScrolled(int arg0, float arg1, int arg2) {
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+            }
+        });
 
     }
 
@@ -89,4 +109,21 @@ public class UserMainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Log.e("UserMainActivity","onTabSelected");
+
+    }
+
+    @Override
+    public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Log.e("UserMainActivity","onTabUnselected");
+
+    }
+
+    @Override
+    public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+        Log.e("UserMainActivity","onTabReselected");
+
+    }
 }

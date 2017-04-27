@@ -144,7 +144,7 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         });
         chargerIntervention();
     }
-    private void chargerIntervention(){
+    public void chargerIntervention(){
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {

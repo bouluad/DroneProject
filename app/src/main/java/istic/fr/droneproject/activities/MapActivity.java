@@ -163,11 +163,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        Log.e("MAPCycledevie","onCreateView");
         return inflater.inflate(R.layout.activity_map, container, false);
     }
 
     @Override
     public void onPause() {
+        Log.e("MAPCycledevie","onPause");
         Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.m_map));
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.remove(fragment);
@@ -177,6 +179,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     @Override
     public void onDestroy() {
+        Log.e("MAPCycledevie","onDestroy");
         super.onDestroy();
         final FragmentManager fragManager = this.getFragmentManager();
         final Fragment fragment = fragManager.findFragmentById(R.id.m_map);
@@ -185,6 +188,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    @Override
+    public void onResume() {
+        // TODO Auto-generated method stub
+        super.onResume();
+        Log.e("MAPCycledevie","onResume");
+        //mCollectionPagerAdapter.notifyDataSetChanged();
+    }
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -718,7 +728,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         });
 
         //######################################################################################################
-        
+
         m_map_reloaddrone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -752,9 +762,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 intervention = response.body();
                 //rechargement des 2 listes de vehicules & points
-                vehiculesCarte.clear();
+                if(vehiculesCarte != null)
+                    vehiculesCarte.clear();
                 vehiculesCarte = intervention.vehicules;
-                pointsCarte.clear();
+                if(pointsCarte != null)
+                    pointsCarte.clear();
                 System.out.println("je suis laaaa");
               /*  recupererBaseSP();*/
                 pointsCarte = intervention.points;
@@ -1387,7 +1399,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     /**
      * Méthode qui synchronise l'intervention et appel le rechargement des vehicules et points si l'utilisateur n'effectue pas d'intéraction.
      */
-    private void SynchroniserIntervention() {
+    public void SynchroniserIntervention() {
         //TODO avec idIntervention
 
         if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention){
@@ -1552,5 +1564,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 //            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
 //        }
     }
+
 }
 
