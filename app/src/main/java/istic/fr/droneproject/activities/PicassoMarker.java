@@ -2,6 +2,7 @@ package istic.fr.droneproject.activities;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
@@ -41,10 +42,13 @@ public class PicassoMarker implements Target {
 
     @Override
     public void onBitmapFailed(Drawable errorDrawable) {
+
+        Log.d("Picasso marker","error drawable");
     }
 
     @Override
     public void onPrepareLoad(Drawable placeHolderDrawable) {
-
+        Log.d("Picasso marker","on prepare loader" +
+                "");
     }
 }
