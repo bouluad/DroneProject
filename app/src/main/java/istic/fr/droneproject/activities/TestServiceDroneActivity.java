@@ -108,7 +108,7 @@ public class TestServiceDroneActivity extends AppCompatActivity {
             });
         }
 
-    public void testAjoutDrone(){
+   /* public void testAjoutDrone(){
         Segment s=new Segment();
         Double[] tab=new Double[2];
         tab[0]=-1.158999999544115;
@@ -119,7 +119,7 @@ public class TestServiceDroneActivity extends AppCompatActivity {
         s.setPoints(list);
         s.getPoints().add(tab);
         s.setBoucleFermee(false);
-        Drone drone=new Drone("58ddf84c212566155e8e98ec", EtatDrone.SEGMENT,s);
+       Drone drone=new Drone("58ddf84c212566155e8e98ec", EtatDrone.SEGMENT,s);
        DroneServiceImpl.getInstance().setDrone(drone, new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -132,7 +132,7 @@ public class TestServiceDroneActivity extends AppCompatActivity {
             }
         });
 
-    }
+    }*/
 
     public void testrecupDrone(){
 
