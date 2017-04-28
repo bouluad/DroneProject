@@ -19,6 +19,8 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -140,7 +142,7 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
 
             }
         };
-        vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, currentIntervention,eventsVehiculeClickListener);
+        vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, eventsVehiculeClickListener);
         vehiculesRecycler.setAdapter(vehiculeArrayAdapter);
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,14 +152,32 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         });
         chargerIntervention();
     }
+
     public void chargerIntervention(){
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
                 currentIntervention = response.body();
-                vehicules.clear();
                 if (currentIntervention != null) {
-                    vehicules.addAll(currentIntervention.vehicules);
+                    vehicules.clear();
+
+                    List<Vehicule> triee = new ArrayList<>();
+                    triee.addAll(currentIntervention.vehicules);
+                    Collections.sort(triee, new Comparator<Vehicule>() {
+                        @Override
+                        public int compare(Vehicule o1, Vehicule o2) {
+                            if (o1.etat == EtatVehicule.ANNULE) {
+                                return 1;
+                            } else if (o2.etat == EtatVehicule.ANNULE) {
+                                return -1;
+                            } else {
+                                return o1.heureDemande.compareTo(o2.heureDemande);
+                            }
+                        }
+                    });
+
+                    vehicules.addAll(triee);
+
                 }
                 vehiculeArrayAdapter.notifyDataSetChanged();
             }

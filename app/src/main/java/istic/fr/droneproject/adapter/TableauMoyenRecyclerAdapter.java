@@ -13,21 +13,19 @@ import java.util.List;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.EtatVehicule;
-import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.TransformImageToStringEtVs;
 
 public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoyenRecyclerAdapter.VehiculeViewHolder> {
 
 
     private final List<Vehicule> vehicules;
     private final int layout;
-    private final Intervention intervention;
-    EventsVehiculeClickListener eventsVehiculeClickListener;
+    private EventsVehiculeClickListener eventsVehiculeClickListener;
 
-    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, Intervention intervention, EventsVehiculeClickListener listener) {
+    public TableauMoyenRecyclerAdapter(List<Vehicule> vehicules, int layout, EventsVehiculeClickListener listener) {
         this.vehicules = vehicules;
         this.layout = layout;
-        this.intervention = intervention;
         this.eventsVehiculeClickListener = listener;
     }
 
@@ -38,101 +36,81 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
     }
 
     @Override
-    public void onBindViewHolder(VehiculeViewHolder holder, final int position) {
+    public void onBindViewHolder(final VehiculeViewHolder holder, final int position) {
         Vehicule vehicule = vehicules.get(position);
-        switch (vehicule.categorie.toString()) {
-            //SAUVETAGE - VERT
-            case "SAUVETAGE":
-                holder.nom.setTextColor(Color.parseColor("#009D4F"));
-                break;
-            //INCENDIE - ROUGE
-            case "INCENDIE":
-                holder.nom.setTextColor(Color.parseColor("#e12b2b"));
-                break;
-            //EAU - BLEU
-            case "EAU":
-                holder.nom.setTextColor(Color.parseColor("#1343f0"));
-                break;
-            //RISQUE_PARTICULIER - JAUNE
-            case "RISQUE_PARTICULIER":
-                holder.nom.setTextColor(Color.parseColor("#cee514"));
-                break;
-            //COMMANDEMENT - VIOLET
-            case "COMMANDEMENT":
-                holder.nom.setTextColor(Color.parseColor("#ae07b8"));
-                break;
-            //PAR DEFAUT  - NOIR
-            default:
-                holder.nom.setTextColor(Color.parseColor("#060606"));
-                break;
-        }
 
+        holder.nom.setTextColor(TransformImageToStringEtVs.FindColorByVehicule(vehicule.categorie));
         holder.nom.setText(vehicule.nom);
 
-        if (vehicule.heureDemande == null || vehicule.heureDemande.isEmpty()) {
-            holder.heure1.setBackgroundColor(Color.GRAY);
-            holder.heure1.setText("----");
-        }else {
-            holder.heure1.setText(vehicule.heureDemande);
-            holder.heure4.setBackgroundColor(Color.TRANSPARENT);
-        }
-        if (!EtatVehicule.ANNULE.equals(vehicule.etat)) {
-            if (vehicule.heureEngagement == null || vehicule.heureEngagement.isEmpty()) {
-                holder.heure2.setBackgroundColor(Color.GRAY);
-                holder.heure2.setText("----");
-            }else {
-                holder.heure2.setText(vehicule.heureDemande);
-                holder.heure2.setBackgroundColor(Color.TRANSPARENT);
+        holder.btnConfirmer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventsVehiculeClickListener.clickConfirmer(vehicules.get(holder.getAdapterPosition()));
             }
-            if (vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()) {
-                holder.heure3.setBackgroundColor(Color.GRAY);
-                holder.heure3.setText("----");
-                holder.btnConfirmer.setVisibility(View.VISIBLE);
-                holder.btnConfirmer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        eventsVehiculeClickListener.clickConfirmer(vehicules.get(position));
-                    }
-                });
+        });
 
-            } else {
-                holder.heure3.setText(vehicule.heureArrivee);
-                holder.heure3.setBackgroundColor(Color.TRANSPARENT);
-                holder.btnConfirmer.setVisibility(View.INVISIBLE);
+        holder.btnLiberer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                eventsVehiculeClickListener.clickLiberer(vehicules.get(holder.getAdapterPosition()));
             }
-            if (vehicule.heureLiberation == null || vehicule.heureLiberation.isEmpty()) {
-                holder.heure4.setBackgroundColor(Color.GRAY);
-                holder.heure4.setText("----");
-                holder.btnLiberer.setVisibility(View.VISIBLE);
-                holder.btnLiberer.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        eventsVehiculeClickListener.clickLiberer(vehicules.get(position));
-                    }
-                });
-            } else {
-                holder.heure4.setText(vehicule.heureLiberation);
-                holder.heure4.setBackgroundColor(Color.TRANSPARENT);
-                holder.btnLiberer.setVisibility(View.INVISIBLE);
-                holder.btnConfirmer.setVisibility(View.INVISIBLE);
-            }
-            //bloquer le bouton confirmer si il n'est pas engager avec une position valide
-//            if(EtatVehicule.ENGAGE.equals(vehicule.etat) && vehicule.position != null && vehicule.position[0] != null && vehicule.position[1] != null){
-//                holder.btnConfirmer.setVisibility(View.VISIBLE);
-//            }
-//            else{
-//                holder.btnConfirmer.setVisibility(View.INVISIBLE);
-//            }
+        });
 
+        if (vehicule.peutEtreArrive()) {
+            holder.btnConfirmer.setEnabled(true);
+            holder.btnConfirmer.setVisibility(View.VISIBLE);
         } else {
-            holder.heure2.setPaintFlags(holder.heure2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.heure2.setText("annulé");
-            holder.heure3.setPaintFlags(holder.heure3.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.heure4.setPaintFlags(holder.heure4.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.heure1.setPaintFlags(holder.heure1.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.nom.setPaintFlags(holder.nom.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
-            holder.btnLiberer.setVisibility(View.INVISIBLE);
+            holder.btnConfirmer.setEnabled(false);
             holder.btnConfirmer.setVisibility(View.INVISIBLE);
+        }
+
+        if (vehicule.peutEtreLibere()) {
+            holder.btnLiberer.setEnabled(true);
+            holder.btnLiberer.setVisibility(View.VISIBLE);
+        } else {
+            holder.btnLiberer.setEnabled(false);
+            holder.btnLiberer.setVisibility(View.INVISIBLE);
+        }
+
+        afficherHeure(holder.heure1, vehicule.heureDemande);
+        afficherHeure(holder.heure2, vehicule.heureEngagement);
+        afficherHeure(holder.heure3, vehicule.heureArrivee);
+        afficherHeure(holder.heure4, vehicule.heureLiberation);
+
+        if (vehicule.etat == EtatVehicule.ANNULE) {
+
+            holder.nom.setText(vehicule.nom + "\n" + "(annulé)");
+
+            barrerTexte(true, holder.nom);
+            barrerTexte(true, holder.heure1);
+            barrerTexte(true, holder.heure2);
+            barrerTexte(true, holder.heure3);
+            barrerTexte(true, holder.heure4);
+        } else {
+
+            barrerTexte(false, holder.nom);
+            barrerTexte(false, holder.heure1);
+            barrerTexte(false, holder.heure2);
+            barrerTexte(false, holder.heure3);
+            barrerTexte(false, holder.heure4);
+        }
+    }
+
+    private void barrerTexte(boolean barrer, TextView view) {
+        if (barrer) {
+            view.setPaintFlags(view.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            view.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+        }
+    }
+
+    private void afficherHeure(TextView view, String heure) {
+        if (heure == null || heure.isEmpty()) {
+            view.setBackgroundColor(Color.GRAY);
+            view.setText("----");
+        } else {
+            view.setText(heure);
+            view.setBackgroundColor(Color.TRANSPARENT);
         }
     }
 
