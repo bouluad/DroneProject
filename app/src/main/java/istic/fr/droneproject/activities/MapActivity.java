@@ -859,7 +859,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 //TODO: faire la tache taiga #141, cf description
                 Toast.makeText(getActivity().getApplicationContext(), "ici prochainement, un menu de filtre", Toast.LENGTH_SHORT);
-                
+                popUpFiltreCarte();
             }
         });
 
@@ -914,6 +914,84 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
         helpBuilder.setTitle("Demander un véhicule");
+
+        LayoutInflater inflater = getActivity().getLayoutInflater();
+        final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
+
+
+        final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
+        final Spinner popupSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
+        Categorie[] categories = Categorie.values();
+        ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        popupSpinner.setAdapter(adapter);
+
+
+        final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
+
+
+        helpBuilder.setView(popupLayout);
+
+
+        helpBuilder.setPositiveButton("Ajouter",
+                new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        //add to list vehicule
+                        vehicule = new Vehicule();
+                        vehicule.nom = nom_vehicule.getText().toString();
+
+                        int selectedId = radiogroup.getCheckedRadioButtonId();
+                        switch (selectedId) {
+                            case R.id.type_radio_fpt:
+                                vehicule.type = TypeVehicule.FPT;
+                                break;
+                            case R.id.type_radio_vlcg:
+                                vehicule.type = TypeVehicule.VLCG;
+                                break;
+                            case R.id.type_radio_vsav:
+                                vehicule.type = TypeVehicule.VSAV;
+                                break;
+                        }
+
+                        vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
+
+                        vehicule.etat = EtatVehicule.DEMANDE;
+                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                        vehicule.position = new Double[2];
+                        vehicule.position[0] = markerChanged.getPosition().latitude;
+                        vehicule.position[1] = markerChanged.getPosition().longitude;
+//                        vehicules.add(vehicule);
+                        intervention.vehicules.add(vehicule);
+
+                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                SynchroniserIntervention();
+                                changerMenu(ListeMenu.aucun);
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                            }
+
+                        });
+                    }
+                });
+        helpBuilder.create().show();
+
+
+    }
+
+    /**
+     * Methode pour le filtre des Moyens/Points et drone sur la carte
+     */
+
+    private void popUpFiltreCarte() {
+
+        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
+        helpBuilder.setTitle("paramètres des objets sur la carte");
 
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
