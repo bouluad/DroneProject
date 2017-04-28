@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -509,38 +510,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
-//        //Appel périodique de reloadDrone
-//        final Handler handler = new Handler();
-//        handler.postDelayed(new Runnable() {
-//            @Override
-//            public void run() {
-//                //Do something after ###ms
-//                Log.e("MapActivityHandler","forceRedrawDrone");
-//                DronePositionServiceImpl.getInstance().getDronePositionByIdIntervention(idIntervention,new Callback<DronePosition>() {
-//                    @Override
-//                    public void onResponse(Call<DronePosition> call, Response<DronePosition> response) {
-////               Marker MarkerDrone = mGoogleMap.addMarker(new MarkerOptions()
-////                        .position(new LatLng(response.body().position[0],response.body().position[1]))
-////                        .title("Drone"));
-//
-//                        droneposition=response.body();
-//                        reloadDrone();
-//
-//                        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(response.body().position[0],response.body().position[1]), 18));
-//                        Log.e("OnMapReady", "Drone Position is "+response.body().position[0]+" "+response.body().position[1]);
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Call<DronePosition> call, Throwable t) {
-//                        Log.e("OnMapReady","Drone not created");
-//                    }
-//                });
-//                handler.postDelayed(this, 20000);
-//            }
-//        }, 2000);
-
-
         //#####################  DRONE  MENU ###############################################################
         m_menu_Actiondrone_stop.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -637,9 +606,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 //changerMenu(ListeMenu.aucun);
-                clickedSegment = false;
+
+                suppLast=false;
                 drone.segment.setBoucleFermee(false);
-                drone.segment.getPoints().clear();
+                if(drone.segment.getPoints() != null)
+                    drone.segment.getPoints().clear();
+                pointsSegment.clear();
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -651,13 +623,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("Drone not updated", "");
                     }
                 });
+
+                markers.clear();
+                p.clear();
+
                 SynchroniserIntervention();
+                ll=new LatLng(droneposition.position[0],droneposition.position[1]);
             }
         });
 
         m_menu_Actiondrone_segment_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                suppLast=false;
 
                 drone.etat = EtatDrone.SEGMENT;
                 drone.segment.setPoints(pointsSegment);
@@ -666,6 +644,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         Log.e("Drone updated", String.valueOf(response.body()));
+                        Toast.makeText(getActivity().getApplicationContext(), "Segment ajouté avec succès", Toast.LENGTH_SHORT);
                     }
 
                     @Override
@@ -673,6 +652,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("Drone not updated", "");
                     }
                 });
+
+                clickedSegment=false;
+                changerMenu(ListeMenu.aucun);
 
             }
         });
@@ -701,7 +683,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
 
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(markers.get(markers.size() - 1).getPosition(), new LatLng(droneposition.position[0], droneposition.position[1])).width(6).color(Color.RED)
+                        .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
                         .visible(true));
                 drone.segment.setBoucleFermee(true);
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
@@ -715,6 +697,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         Log.e("Drone not updated", "");
                     }
                 });
+
+                suppLast=false;
 
             }
         });
@@ -967,72 +951,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private void popUpFiltreCarte() {
 
         AlertDialog.Builder helpBuilder = new AlertDialog.Builder(this.getActivity());
-        helpBuilder.setTitle("paramètres des objets sur la carte");
-
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        final View popupLayout = inflater.inflate(R.layout.codis_add_moyen_popup, null);
-
-
-        final EditText nom_vehicule = (EditText) popupLayout.findViewById(R.id.nom_moyen);
-        final Spinner popupSpinner = (Spinner) popupLayout.findViewById(R.id.spinnerCategorie);
-        Categorie[] categories = Categorie.values();
-        ArrayAdapter<Categorie> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, categories);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        popupSpinner.setAdapter(adapter);
-
-
-        final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_radio);
-
-
+        final View popupLayout = inflater.inflate(R.layout.user_filtre_objets_popup, null);
         helpBuilder.setView(popupLayout);
+        //Switch mySwitch=(Switch)findViewById(R.id.mySwitch1);
 
 
-        helpBuilder.setPositiveButton("Ajouter",
-                new DialogInterface.OnClickListener() {
 
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        //add to list vehicule
-                        vehicule = new Vehicule();
-                        vehicule.nom = nom_vehicule.getText().toString();
-
-                        int selectedId = radiogroup.getCheckedRadioButtonId();
-                        switch (selectedId) {
-                            case R.id.type_radio_fpt:
-                                vehicule.type = TypeVehicule.FPT;
-                                break;
-                            case R.id.type_radio_vlcg:
-                                vehicule.type = TypeVehicule.VLCG;
-                                break;
-                            case R.id.type_radio_vsav:
-                                vehicule.type = TypeVehicule.VSAV;
-                                break;
-                        }
-
-                        vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
-
-                        vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                        vehicule.position = new Double[2];
-                        vehicule.position[0] = markerChanged.getPosition().latitude;
-                        vehicule.position[1] = markerChanged.getPosition().longitude;
-//                        vehicules.add(vehicule);
-                        intervention.vehicules.add(vehicule);
-
-                        InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                SynchroniserIntervention();
-                                changerMenu(ListeMenu.aucun);
-                            }
-
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                            }
-
-                        });
-                    }
-                });
         helpBuilder.create().show();
 
 
@@ -1160,6 +1085,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     }
                 } else if (clickedSegment || clickedZoneExclusion) {
                     if (suppLast) {
+                        //Yousra
                         Log.e("====>", "suupLast True");
                         MarkerOptions markerOptions = new MarkerOptions();
 
@@ -1188,7 +1114,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                             pointsSegment.add(tab);
                             // drone.getSegment().getPoints().add(tab);
                         }
-                    } else {
+                    }
+
+
+                    else {
                         MarkerOptions markerOptions = new MarkerOptions();
 
                         // Setting latitude and longitude of the marker position
@@ -1215,9 +1144,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         tab[1] = marker.getPosition().longitude;
                         pointsSegment.add(tab);
 
-                    }
 
-                } else {
+                    }
+                }else {
                     //on click sur la carte dans le vide
                     changerMenu(ListeMenu.m_menu_choix);
                     if (markerChanged != null) {
@@ -1344,11 +1273,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         tab[1] = point.longitude;
                         pointsSegment.add(tab);
                         // drone.getSegment().getPoints().add(tab);
-                    } else {
+                    }
+
+
+
+                    else {
                         System.out.println("dessiner une ligne");
-                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                .add(ll, point).width(6).color(Color.RED)
-                                .visible(true));
+
+                            Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                    .add(ll, point).width(6).color(Color.RED)
+                                    .visible(true));
+
+
+
+
+
                         MarkerOptions markerOptions = new MarkerOptions();
 
                         // Setting latitude and longitude of the marker position
@@ -1362,8 +1301,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         // Adding the marker to the map
                         Marker marker = mGoogleMap.addMarker(markerOptions);
                         ll = point;
-                        p.add(poly);
+
                         markers.add(marker);
+                        p.add(poly);
 
                         Double[] tab = new Double[2];
                         tab[0] = point.latitude;
