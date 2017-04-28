@@ -639,7 +639,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //changerMenu(ListeMenu.aucun);
                 clickedSegment = false;
                 drone.segment.setBoucleFermee(false);
-                drone.segment.getPoints().clear();
+                if(drone.segment.getPoints() != null)
+                    drone.segment.getPoints().clear();
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -1101,21 +1102,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 ll = new LatLng(droneposition.position[0], droneposition.position[1]);
                 Log.e("OnMapReady", "Drone Position is" + String.valueOf(response.body().position));
                 reloadDrone();
-                DroneServiceImpl.getInstance().getDroneByIdIntervention(idIntervention, new Callback<Drone>() {
-                    @Override
-                    public void onResponse(Call<Drone> call, Response<Drone> response) {
-                        drone = response.body();
-
-                        Log.e("Drone retreived", String.valueOf(response.body()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<Drone> call, Throwable t) {
-                        Log.e("Drone not created", "");
-                    }
-                });
-
-
             }
 
             @Override
@@ -1124,6 +1110,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+        DroneServiceImpl.getInstance().getDroneByIdIntervention(idIntervention, new Callback<Drone>() {
+            @Override
+            public void onResponse(Call<Drone> call, Response<Drone> response) {
+                drone = response.body();
+
+                Log.e("Drone retreived", String.valueOf(response.body()));
+            }
+
+            @Override
+            public void onFailure(Call<Drone> call, Throwable t) {
+                Log.e("Drone not created", "");
+            }
+        });
 
         //#########################    QUAND ON CLICK SUR UN MARQUEUR SUR LA CARTE GOOGLE MAP
         mGoogleMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
@@ -1557,6 +1556,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             reloadingIntervention = true;
 
             chargerIntervention();
+            reloadDrone();
         }
     }
 
@@ -1700,8 +1700,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     .snippet("SuperDrone le sauveur des Petits chats")
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
             );
-            droneMarker.setVisible(true);
-            droneMarker.showInfoWindow();
+//            droneMarker.setVisible(true);
+//            droneMarker.showInfoWindow();
             //mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(droneposition.position[0],droneposition.position[1]), 18));
         } else {
             Log.e("MapActivity", "Pas de dronePosition");
