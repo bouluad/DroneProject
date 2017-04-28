@@ -569,6 +569,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 System.out.println("dessiner segment");
                 clickedSegment = true;
                 drone.segment = segment;
+                drone.segment.setBoucleFermee(true);
+                Log.e("segment","Segment crée");
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
