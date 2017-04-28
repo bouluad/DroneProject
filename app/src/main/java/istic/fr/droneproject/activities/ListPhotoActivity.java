@@ -1,6 +1,7 @@
 package istic.fr.droneproject.activities;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,15 +30,24 @@ public class ListPhotoActivity  extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.album_activity);
 
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        String pos1 ="";
+        String pos2 ="";
+
+        if(bundle != null){
+             pos1 =bundle.getString("Value1");;
+             pos2 =bundle.getString("Value1");;
+
+        }
+
         RecyclerView recyclerViewPhotos = (RecyclerView) findViewById(R.id.album_liste);
 
                        recyclerViewPhotos.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
                 final List<DronePhotos> photos = new ArrayList<>();
                 final AlbumPhotoAdapter adapter = new AlbumPhotoAdapter(photos, R.layout.album_photo_item, this.getApplicationContext());
                 recyclerViewPhotos.setAdapter(adapter);
-
-        String pos1 ="31.791702";
-        String pos2 ="-7.09262";
 
         DronePhotosServiceImpl service = new DronePhotosServiceImpl();
 

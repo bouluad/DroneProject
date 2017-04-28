@@ -38,7 +38,7 @@
         <activity android:name=".activities.UserInterventionsActivity"/>
         <activity android:name=".activities.UserMainActivity" android:configChanges="keyboardHidden|orientation|screenSize" />
         <activity android:name=".activities.CodisMainActivity"/>
-        <activity android:name=".activities.ListPhotoActivity"/>
+        <activity android:name=".activities.ListPhotoActivity" android:theme="@android:style/Theme.Dialog"/>
     </application>
 
 </manifest>
