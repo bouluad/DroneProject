@@ -86,7 +86,7 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
             @Override
             public void clickConfirmer(Vehicule vehicule) {
-                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) || (EtatVehicule.PARKING.equals(vehicule.etat)) ) {
+                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) ) {
                     if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null) {
                         vehicule.etat = EtatVehicule.PARKING;
                     } else {
@@ -96,20 +96,27 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
                     InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Log.e("MoyensActivity","UPDATE INTERVENTION");
+                            Log.e("MoyensActivity", "UPDATE INTERVENTION");
                             chargerIntervention();
                             Toast.makeText(getActivity(),
                                     "Vehicule confirmé", Toast.LENGTH_LONG).show();
                         }
+
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                         }
                     });
-                }else {
+                }else if(vehicule.etat.equals(EtatVehicule.PARKING)){
+                    Toast.makeText(getActivity(),
+                            "Vehicule au parking, impossible de confirmer", Toast.LENGTH_LONG).show();
+                }else if(vehicule.etat.equals(EtatVehicule.ENGAGE)) {
 
                     Toast.makeText(getActivity(),
-                       "Veuillez attendre l'arrivée avant de confirmer", Toast.LENGTH_LONG).show();
-            }
+                            "Veuillez attendre l'arrivée avant de confirmer", Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getActivity(),
+                            "mpossible de confirmer", Toast.LENGTH_LONG).show();
+                }
             }
             @Override
             public void clickLiberer(Vehicule vehicule) {
@@ -130,7 +137,6 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
                         public void onFailure(Call<Void> call, Throwable t) {
                         }
                     });
-
 
             }
         };

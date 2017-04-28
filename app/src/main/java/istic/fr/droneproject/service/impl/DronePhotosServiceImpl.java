@@ -37,4 +37,27 @@ public class DronePhotosServiceImpl implements DronePhotosService{
         call.enqueue(callback);
     }
 
+    @Override
+    public void getDronePhotosbyPositionPTS(String pos1, String pos2, Callback<List<DronePhotos>> callback) {
+
+               /*
+        Création de l'objet Retrofit
+         */
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(DronePhotosRestAPI.ENDPOINT).addConverterFactory(GsonConverterFactory.create(gson)).build();
+
+        final DronePhotosRestAPI dronePhotosRestAPI = retrofit.create(DronePhotosRestAPI.class);
+
+        /*
+        Appel de la méthode pour l'API REST
+         */
+        Call<List<DronePhotos>> call = dronePhotosRestAPI.getDronePhotosbyPositionPTS(pos1,pos2);
+
+        /*
+        On lance l'appel et le callback recevra la réponse
+         */
+        call.enqueue(callback);
+
+    }
+
 }

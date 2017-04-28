@@ -84,7 +84,6 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 holder.heure2.setText(vehicule.heureDemande);
                 holder.heure2.setBackgroundColor(Color.TRANSPARENT);
             }
-
             if (vehicule.heureArrivee == null || vehicule.heureArrivee.isEmpty()) {
                 holder.heure3.setBackgroundColor(Color.GRAY);
                 holder.heure3.setText("----");
@@ -117,6 +116,14 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 holder.btnLiberer.setVisibility(View.INVISIBLE);
                 holder.btnConfirmer.setVisibility(View.INVISIBLE);
             }
+            //bloquer le bouton confirmer si il n'est pas engager avec une position valide
+//            if(EtatVehicule.ENGAGE.equals(vehicule.etat) && vehicule.position != null && vehicule.position[0] != null && vehicule.position[1] != null){
+//                holder.btnConfirmer.setVisibility(View.VISIBLE);
+//            }
+//            else{
+//                holder.btnConfirmer.setVisibility(View.INVISIBLE);
+//            }
+
         } else {
             holder.heure2.setPaintFlags(holder.heure2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             holder.heure2.setText("annulé");
