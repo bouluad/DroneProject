@@ -17,13 +17,10 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.TableauMoyenRecyclerAdapter;
@@ -228,8 +225,8 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
                 }
                 vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
 
-                vehicule.etat = EtatVehicule.DEMANDE;
-                vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                vehicule.demander();
+
                 currentIntervention.vehicules.add(vehicule);
                 InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
                     @Override

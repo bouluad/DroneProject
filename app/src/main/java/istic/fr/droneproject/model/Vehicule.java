@@ -144,6 +144,7 @@ public class Vehicule {
     /**
      * Change l'etat du vehicule a PARKING si c'est autorise
      * Efface la position pour assurer la coherence du modele
+     * Met l'heure d'engagement a l'heure courante si elle n'existe pas encore (cas de validation de demande ou premier moyen)
      *
      * @return true si le changement a ete effectue
      */
@@ -151,6 +152,9 @@ public class Vehicule {
         if (peutEtreParking()) {
             etat = EtatVehicule.PARKING;
             position = null;
+            if (heureEngagement == null) {
+                heureEngagement = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+            }
             return true;
         }
         return false;
@@ -183,6 +187,22 @@ public class Vehicule {
         if (peutEtreLibere()) {
             etat = EtatVehicule.LIBERE;
             heureLiberation = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Change l'etat du vehicule a PARKING si la demande est autorisee
+     * Met l'heure de demande a l'heure courante
+     * Met l'heure d'engagement a l'heure courante
+     *
+     * @return true si le changement a ete effectue
+     */
+    public boolean creerParCodis() {
+        if (peutEtreDemande()) {
+            demander();
+            parking();
             return true;
         }
         return false;

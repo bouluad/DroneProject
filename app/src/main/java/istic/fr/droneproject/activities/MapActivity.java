@@ -40,12 +40,9 @@ import com.google.android.gms.maps.model.PolygonOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.MapPointsRecyclerAdapter;
@@ -934,12 +931,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
 
-                        vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                        vehicule.demander();
+
                         vehicule.position = new Double[2];
                         vehicule.position[0] = markerChanged.getPosition().latitude;
                         vehicule.position[1] = markerChanged.getPosition().longitude;
-//                        vehicules.add(vehicule);
+
                         intervention.vehicules.add(vehicule);
 
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
@@ -1012,8 +1009,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         vehicule.categorie = (Categorie) popupSpinner.getSelectedItem();
 
-                        vehicule.etat = EtatVehicule.DEMANDE;
-                        vehicule.heureDemande = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+                        vehicule.demander();
+
                         vehicule.position = new Double[2];
                         vehicule.position[0] = markerChanged.getPosition().latitude;
                         vehicule.position[1] = markerChanged.getPosition().longitude;

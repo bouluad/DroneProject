@@ -29,14 +29,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import istic.fr.droneproject.fragment.CodisMapFragment;
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.CodisPremierDepartAdapter;
+import istic.fr.droneproject.fragment.CodisMapFragment;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.CodeSinistre;
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.EtatDrone;
-import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
@@ -189,11 +188,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
 
                 vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
 
-                String currentTime = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                vehicule.heureDemande = currentTime;
-                vehicule.heureEngagement = currentTime;
-
-                vehicule.etat = EtatVehicule.PARKING;
+                vehicule.creerParCodis();
 
                 intervention.vehicules.add(vehicule);
                 moyensAdapter.notifyDataSetChanged();

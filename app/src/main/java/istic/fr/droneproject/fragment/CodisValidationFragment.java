@@ -11,11 +11,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.ValidationRecyclerAdapter;
@@ -31,22 +28,20 @@ import retrofit2.Response;
 
 public class CodisValidationFragment extends Fragment {
 
-    List<Validation> validations;
-    ValidationRecyclerAdapter adapter;
-    EtatVehicule tmpEtat;
-    Validation tmpValidation;
+    private List<Validation> validations;
+    private ValidationRecyclerAdapter adapter;
+    private Validation tmpValidation;
 
-    public CodisValidationFragment(){
+    public CodisValidationFragment() {
 
     }
 
-    public static CodisValidationFragment newInstance(){
-        CodisValidationFragment fragment = new CodisValidationFragment();
-        return fragment;
+    public static CodisValidationFragment newInstance() {
+        return new CodisValidationFragment();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedStateInstance){
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, final Bundle savedStateInstance) {
         View validationView = inflater.inflate(R.layout.codis_validation, container, false);
 
         final RecyclerView validationsRecycler = (RecyclerView) validationView.findViewById(R.id.codis_list_validation);
@@ -56,30 +51,28 @@ public class CodisValidationFragment extends Fragment {
         ValidationRecyclerAdapter.ValidClickListener validListener = new ValidationRecyclerAdapter.ValidClickListener() {
             @Override
             public void clickValidation(Validation validation) {
-                if (validation.vehicule.position == null){
-                    tmpEtat = EtatVehicule.PARKING;
-                }else{
-                    tmpEtat = EtatVehicule.ENGAGE;
-                }
                 tmpValidation = validation;
-                confirmerPopUp();
+                if (validation.vehicule.position == null) {
+                    confirmerPopUp(EtatVehicule.PARKING);
+                } else {
+                    confirmerPopUp(EtatVehicule.ENGAGE);
+                }
             }
         };
         ValidationRecyclerAdapter.RefusClickListener refusListener = new ValidationRecyclerAdapter.RefusClickListener() {
             @Override
             public void clickRefus(Validation validation) {
-                tmpEtat = EtatVehicule.ANNULE;
                 tmpValidation = validation;
-                confirmerPopUp();
+                confirmerPopUp(EtatVehicule.ANNULE);
             }
         };
-        adapter = new ValidationRecyclerAdapter(validations,R.layout.codis_validation_item,refusListener,validListener);
+        adapter = new ValidationRecyclerAdapter(validations, R.layout.codis_validation_item, refusListener, validListener);
         validationsRecycler.setAdapter(adapter);
         chargerValidations();
         return validationView;
     }
 
-    public void chargerValidations(){
+    public void chargerValidations() {
         final List<Intervention> interventions = new ArrayList<>();
         InterventionService service = InterventionServiceCentral.getInstance();
         service.getListeInterventions(new Callback<List<Intervention>>() {
@@ -88,8 +81,8 @@ public class CodisValidationFragment extends Fragment {
                 interventions.clear();
                 interventions.addAll(response.body());
                 validations.clear();
-                for (Intervention i:interventions){
-                    if (i.vehicules!= null) {
+                for (Intervention i : interventions) {
+                    if (i.vehicules != null) {
                         for (Vehicule v : i.vehicules) {
                             if (v.etat == EtatVehicule.DEMANDE) {
                                 validations.add(new Validation(v, i));
@@ -97,7 +90,7 @@ public class CodisValidationFragment extends Fragment {
                         }
                     }
                 }
-                Log.e("CodisValidationFragment","Nombre de véhicules à valider : "+validations.size());
+                Log.d("CodisValidationFragment", "Nombre de véhicules à valider : " + validations.size());
                 adapter.notifyDataSetChanged();
             }
 
@@ -109,30 +102,37 @@ public class CodisValidationFragment extends Fragment {
         });
     }
 
-    public void confirmerPopUp() {
+    public void confirmerPopUp(final EtatVehicule nouvelEtat) {
         AlertDialog.Builder confirmBuilder = new AlertDialog.Builder(getContext());
         String text;
-        if (tmpEtat.equals(EtatVehicule.ANNULE)){
+        if (nouvelEtat == EtatVehicule.ANNULE) {
             text = "Confirmer le refus ?";
-        }else{
+        } else {
             text = "Confirmer la validation ?";
         }
         confirmBuilder.setMessage(text).setPositiveButton("Oui", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                tmpValidation.vehicule.etat = tmpEtat;
-                tmpValidation.vehicule.heureEngagement = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                InterventionService service = InterventionServiceCentral.getInstance();
-                service.updateIntervention(tmpValidation.intervention, new Callback<Void>() {
+
+                if (nouvelEtat == EtatVehicule.ANNULE) {
+                    tmpValidation.vehicule.annuler();
+                } else if (nouvelEtat == EtatVehicule.ENGAGE) {
+                    //Le vehicule a deja une position mais est toujours demande
+                    tmpValidation.vehicule.engager(tmpValidation.vehicule.position);
+                } else if (nouvelEtat == EtatVehicule.PARKING) {
+                    tmpValidation.vehicule.parking();
+                }
+
+                InterventionServiceCentral.getInstance().updateIntervention(tmpValidation.intervention, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
                         chargerValidations();
-                        Log.e("TestCodisValidationActi","modification OK");
+                        Log.d("TestCodisValidationActi", "Demande traitée");
                     }
 
                     @Override
                     public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("TestCodisValidationActi","modification KO");
+                        Log.e("TestCodisValidationActi", "modification KO");
                     }
                 });
                 dialog.cancel();
