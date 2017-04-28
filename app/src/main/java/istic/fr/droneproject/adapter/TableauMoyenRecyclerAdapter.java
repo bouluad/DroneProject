@@ -117,12 +117,12 @@ public class TableauMoyenRecyclerAdapter extends RecyclerView.Adapter<TableauMoy
                 holder.btnConfirmer.setVisibility(View.INVISIBLE);
             }
             //bloquer le bouton confirmer si il n'est pas engager avec une position valide
-            if(EtatVehicule.ENGAGE.equals(vehicule.etat) && vehicule.position != null && vehicule.position[0] != null && vehicule.position[1] != null){
-                holder.btnConfirmer.setVisibility(View.VISIBLE);
-            }
-            else{
-                holder.btnConfirmer.setVisibility(View.INVISIBLE);
-            }
+//            if(EtatVehicule.ENGAGE.equals(vehicule.etat) && vehicule.position != null && vehicule.position[0] != null && vehicule.position[1] != null){
+//                holder.btnConfirmer.setVisibility(View.VISIBLE);
+//            }
+//            else{
+//                holder.btnConfirmer.setVisibility(View.INVISIBLE);
+//            }
 
         } else {
             holder.heure2.setPaintFlags(holder.heure2.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);

@@ -455,7 +455,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         if(intervention.vehicules.get(i).verifierParking()){
                             System.out.println("parking true");
-
+                            if(intervention.vehicules.get(i).etat != EtatVehicule.DEMANDE)
+                                intervention.vehicules.get(i).setEtat(EtatVehicule.PARKING);
                             intervention.vehicules.get(i).setPosition(null);
                             System.out.println("position :"+ intervention.vehicules.get(i).getPosition());
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
