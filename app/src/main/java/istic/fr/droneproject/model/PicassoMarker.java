@@ -1,4 +1,4 @@
-package istic.fr.droneproject.activities;
+package istic.fr.droneproject.model;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -16,7 +16,7 @@ import com.squareup.picasso.Target;
 public class PicassoMarker implements Target {
     Marker mMarker;
 
-    PicassoMarker(Marker marker) {
+    public PicassoMarker(Marker marker) {
         mMarker = marker;
     }
 
