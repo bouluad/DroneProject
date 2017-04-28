@@ -68,7 +68,6 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null) {
             idIntervention = getArguments().getString(ARG_ID);
-
         }
         bindPictures();
 
@@ -141,7 +140,7 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
 
                     dronePhotos = response.body();
 
-                    map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                    map.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                     map.setMyLocationEnabled(true);
 
                     UiSettings settings = map.getUiSettings();
