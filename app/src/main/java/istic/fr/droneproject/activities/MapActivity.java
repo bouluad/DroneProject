@@ -55,6 +55,7 @@ import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.DronePosition;
+import istic.fr.droneproject.model.EtatDrone;
 import istic.fr.droneproject.model.EtatVehicule;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.PointInteret;
@@ -454,7 +455,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         if(intervention.vehicules.get(i).verifierParking()){
                             System.out.println("parking true");
-
+                            if(intervention.vehicules.get(i).etat != EtatVehicule.DEMANDE)
+                                intervention.vehicules.get(i).setEtat(EtatVehicule.PARKING);
                             intervention.vehicules.get(i).setPosition(null);
                             System.out.println("position :"+ intervention.vehicules.get(i).getPosition());
                         InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
@@ -559,7 +561,19 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
-                //TODO: action stop sur le drone (changer drone.tat vers STOP)
+                drone.etat= EtatDrone.STOP;
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
+
             }
         });
 
@@ -616,7 +630,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.aucun);
-                //TODO: déclancher le changement d'etat du drone au parking // RTB
+                drone.etat= EtatDrone.PARKING;
+                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                    @Override
+                    public void onResponse(Call<Void> call, Response<Void> response) {
+                        Log.e("Drone updated", String.valueOf(response.body()));
+                    }
+
+                    @Override
+                    public void onFailure(Call<Void> call, Throwable t) {
+                        Log.e("Drone not updated", "");
+                    }
+                });
             }
         });
 
@@ -647,11 +672,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_segment_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changerMenu(ListeMenu.aucun);
-            //  for(int i=0;i<pointsSegment.size();i++){
-                  //drone.segment.getPoints().add(pointsSegment.get(i));
+
+                drone.etat= EtatDrone.SEGMENT;
                   drone.segment.setPoints(pointsSegment);
-            //  }
+
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
                     public void onResponse(Call<Void> call, Response<Void> response) {
@@ -743,6 +767,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
+
         m_menu_Actiondrone_zone_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -833,9 +858,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_map_filtre.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO: fare la tache taiga #141, cf description
+                //TODO: faire la tache taiga #141, cf description
                 Toast.makeText(getActivity().getApplicationContext(), "ici prochainement, un menu de filtre", Toast.LENGTH_SHORT);
-
+                
             }
         });
 
@@ -959,6 +984,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
     }
+
+
 
 
     @Override
