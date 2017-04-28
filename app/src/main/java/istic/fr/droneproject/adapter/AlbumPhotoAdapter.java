@@ -40,6 +40,7 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
         );
         Picasso.with(context).load(photo.path).placeholder(R.drawable.loading).error(R.drawable.image_not_found).into(holder.image);
         holder.nom.setText(photo.nom);
+        holder.date.setText(photo.date_heure);
     }
 
     @Override
@@ -51,12 +52,14 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
 
         ImageView image;
         TextView nom;
+        TextView date;
 
         PhotoViewHolder(View itemView) {
             super(itemView);
 
             this.image = (ImageView) itemView.findViewById(R.id.album_photo_imageview);
             this.nom = (TextView) itemView.findViewById(R.id.album_photo_nomphoto);
+            this.date = (TextView) itemView.findViewById(R.id.album_photo_datephoto);
         }
     }
 }

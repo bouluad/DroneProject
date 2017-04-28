@@ -20,7 +20,7 @@ public interface InterventionService {
      * @param intervention Nouvelle intervention
      * @param callback Callback pour récupérer la réponse
      */
-    void addNouvelleIntervention(Intervention intervention, Callback<Void> callback);
+    void addNouvelleIntervention(Intervention intervention, Callback<String> callback);
 
     /**
      * Récupérer une intervention by id

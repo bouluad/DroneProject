@@ -17,5 +17,5 @@ public interface DronePhotosService {
 
     void getDronePhotosbyIdIntervention(String id, Callback<List<DronePhotos>> callback);
 
-
+    void getDronePhotosbyPositionPTS(String pos1,String pos2 ,Callback<List<DronePhotos>> callback);
 }

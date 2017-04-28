@@ -10,6 +10,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -28,15 +29,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import istic.fr.droneproject.fragment.CodisMapFragment;
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.adapter.CodisPremierDepartAdapter;
+import istic.fr.droneproject.fragment.CodisMapFragment;
 import istic.fr.droneproject.model.Categorie;
 import istic.fr.droneproject.model.CodeSinistre;
-import istic.fr.droneproject.model.EtatVehicule;
+import istic.fr.droneproject.model.Drone;
+import istic.fr.droneproject.model.EtatDrone;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.impl.DroneServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -96,18 +99,33 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
                     intervention.code = CodeSinistre.SAP;
                 }
 
-                InterventionServiceCentral.getInstance().addNouvelleIntervention(intervention, new Callback<Void>() {
+                InterventionServiceCentral.getInstance().addNouvelleIntervention(intervention, new Callback<String>() {
                     @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Toast.makeText(getApplicationContext(), "Intervention ajoutée : "+intervention.libelle, Toast.LENGTH_SHORT).show();
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        String idIntervention = response.body();
+                        Log.e("CERANEWDRONE"," idInterDrone: "+idIntervention);
+                        Drone newDrone = new Drone(idIntervention, EtatDrone.STOP);
+                        DroneServiceImpl.getInstance().setDrone(newDrone, new Callback<Void>() {
+                                    @Override
+                                    public void onResponse(Call<Void> call, Response<Void> response) {
+                                        Log.e("CERANEWDRONE"," sucess Creating drone");
+                                    }
+
+                                    @Override
+                                    public void onFailure(Call<Void> call, Throwable t) {
+
+                                    }
+                                });
+                                Toast.makeText(getApplicationContext(), "Intervention ajoutée : " + intervention.libelle, Toast.LENGTH_SHORT).show();
                         finish();
                     }
 
                     @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
+                    public void onFailure(Call<String> call, Throwable t) {
 
                     }
                 });
+
             }
         });
 
@@ -170,11 +188,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
 
                 vehicule.categorie = (Categorie) categorieSpinner.getSelectedItem();
 
-                String currentTime = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                vehicule.heureDemande = currentTime;
-                vehicule.heureEngagement = currentTime;
-
-                vehicule.etat = EtatVehicule.PARKING;
+                vehicule.creerParCodis();
 
                 intervention.vehicules.add(vehicule);
                 moyensAdapter.notifyDataSetChanged();
