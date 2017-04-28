@@ -88,60 +88,54 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
             @Override
             public void clickConfirmer(Vehicule vehicule) {
-                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) ) {
-                    if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null) {
-                        vehicule.etat = EtatVehicule.PARKING;
-                    } else {
-                        vehicule.etat = EtatVehicule.ARRIVE;
-                    }
-                    vehicule.heureArrivee = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+
+                boolean modifEffectuee = vehicule.arriver();
+
+                if(modifEffectuee){
                     InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Log.e("MoyensActivity", "UPDATE INTERVENTION");
+                            Log.d("MoyensActivity", "Véhicule confirmé");
                             chargerIntervention();
                             Toast.makeText(getActivity(),
-                                    "Vehicule confirmé", Toast.LENGTH_LONG).show();
+                                    "Vehicule confirmé", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                         }
                     });
-                }else if(vehicule.etat.equals(EtatVehicule.PARKING)){
-                    Toast.makeText(getActivity(),
-                            "Vehicule au parking, impossible de confirmer", Toast.LENGTH_LONG).show();
-                }else if(vehicule.etat.equals(EtatVehicule.ENGAGE)) {
-
-                    Toast.makeText(getActivity(),
-                            "Veuillez attendre l'arrivée avant de confirmer", Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getActivity(),
-                            "mpossible de confirmer", Toast.LENGTH_LONG).show();
+                            "Impossible de confirmer la position du véhicule", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
             public void clickLiberer(Vehicule vehicule) {
 
-                    vehicule.etat = EtatVehicule.LIBERE;
-                    vehicule.heureLiberation = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
-                    InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
+                boolean modifEffectuee = vehicule.liberer();
 
+                if(modifEffectuee){
+                    InterventionServiceCentral.getInstance().updateIntervention(currentIntervention, new Callback<Void>() {
                         @Override
                         public void onResponse(Call<Void> call, Response<Void> response) {
-                            Log.e("MoyensActivity", "UPDATE INTERVENTION");
+                            Log.d("MoyensActivity", "Véhicule libéré");
                             chargerIntervention();
                             Toast.makeText(getActivity(),
-                                    "Vehicule liberé", Toast.LENGTH_LONG).show();
+                                    "Vehicule liberé", Toast.LENGTH_SHORT).show();
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                         }
                     });
-
+                }else{
+                    Toast.makeText(getActivity(),
+                            "Impossible de libérer le véhicule", Toast.LENGTH_SHORT).show();
+                }
             }
         };
+
         vehiculeArrayAdapter = new TableauMoyenRecyclerAdapter(vehicules, R.layout.utm_vehicule_item, eventsVehiculeClickListener);
         vehiculesRecycler.setAdapter(vehiculeArrayAdapter);
         btnAdd.setOnClickListener(new View.OnClickListener() {
