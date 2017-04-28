@@ -95,14 +95,14 @@ public class TestServiceDroneActivity extends AppCompatActivity {
 
         public void ajouterIntervention() {
 
-            InterventionServiceCentral.getInstance().addNouvelleIntervention(new Intervention(), new Callback<Void>() {
+            InterventionServiceCentral.getInstance().addNouvelleIntervention(new Intervention(), new Callback<String>() {
                 @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
+                public void onResponse(Call<String> call, Response<String> response) {
                     Log.e("La position est ==", String.valueOf(response.body()));
                 }
 
                 @Override
-                public void onFailure(Call<Void> call, Throwable t) {
+                public void onFailure(Call<String> call, Throwable t) {
                     Log.e("Position Not retreived", "");
                 }
             });
