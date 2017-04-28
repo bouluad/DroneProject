@@ -77,6 +77,7 @@ import retrofit2.Response;
 public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
 
+    Button m_menu_Actiondrone_zone_b;
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     Marker myMarker;    //marker de position de l'intervention
@@ -110,6 +111,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Marker markerStart; // marker start zone
     List<Polyline> polylinesZone;  //liste de segments pr une zone
     List<Double[]> contours;
+    Boolean polygone; // pour savoir si la zone est sur la carte ou pas
 
 
   /*  PointInteret pointSelected;*/
@@ -224,7 +226,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         //bouton drone
         Button m_menu_Actiondrone_segment_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_b);
-        Button m_menu_Actiondrone_zone_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_b);
+         m_menu_Actiondrone_zone_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_b);
+
         Button m_menu_Actiondrone_stop= (Button) view.findViewById(R.id.m_menu_Actiondrone_stop);
         final Button m_menu_Actiondrone_exclusion = (Button) view.findViewById(R.id.m_menu_Actiondrone_exclusion);
         Button m_menu_Actiondrone_parking = (Button) view.findViewById(R.id.m_menu_Actiondrone_parking);
@@ -800,14 +803,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 System.out.println("update drone");
+                List<Double[]> contours = new ArrayList<Double[]>() ;
+
 
                 for (LatLng point: markerPoints) {
                     Double [] tab = new Double[2];
                     tab[0]=point.latitude;
                     tab[1]=point.longitude;
-                    drone.zone.getContours().add(tab);
-                }
+                    contours.add(tab);
 
+                }
+                drone.zone.setContours(contours);
+                for(int i=0 ; i<drone.zone.getContours().size();i++) {
+                    System.out.println("zone ==> base " + drone.zone.getContours().get(i)[0]);
+                    System.out.println("zone ==> base " + drone.zone.getContours().get(i)[1]);
+                }
 
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
@@ -995,6 +1005,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         markersMoyens=new ArrayList<>();
         pointsSegment =new ArrayList<>();
         segment=new Segment();
+        polygone = false ;
 
         recupererBaseSP();
         this.mGoogleMap = googleMap;
@@ -1052,8 +1063,30 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     @Override
                     public void onResponse(Call<Drone> call, Response<Drone> response) {
                         drone=response.body();
-
                         Log.e("Drone retreived", String.valueOf(response.body()));
+
+                        if(!polygone) {
+                            if (drone.zone.getContours().size() > 0) {
+                                System.out.println("===> zone "+ drone.zone.getContours());
+
+
+                                ArrayList<LatLng> contourZone = new ArrayList<>();
+
+
+                                for (Double[] tab : drone.zone.getContours()) {
+                                    LatLng latLng = new LatLng(tab[0], tab[1]);
+
+                                    contourZone.add(latLng);
+
+
+                                }
+
+
+                                dessinerPolygon(contourZone);
+                            }
+                        }
+
+
                     }
 
                     @Override
@@ -1540,10 +1573,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     public void SynchroniserIntervention() {
         //TODO avec idIntervention
 
-        if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention){
+        if(!synchronisationBloquer && mGoogleMap != null && !reloadingIntervention) {
             reloadingIntervention = true;
 
             chargerIntervention();
+
+
         }
     }
 
@@ -1623,8 +1658,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             case m_menu_Actionpoint:
                 m_menu_Actionpoint.setVisibility(View.VISIBLE);
                 break;
-            case m_menu_Actiondrone:
+            case m_menu_Actiondrone: {
                 m_menu_Actiondrone.setVisibility(View.VISIBLE);
+                if(drone.zone.getContours().size() > 0){
+                    m_menu_Actiondrone_zone_b.setEnabled(false);
+
+                }
+            }
+
                 break;
             case m_menu_Actiondrone_segment:
                 m_menu_Actiondrone_segment.setVisibility(View.VISIBLE);
@@ -1672,6 +1713,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //TODO: get la nouvelle position dans @dronePosition
 //        if(droneMarker == null){
 
+
+        System.out.println("reloade drone");
             if(droneposition != null && droneposition.position != null && droneposition.position[0] != null && droneposition.position[1] != null){
                 Log.e("MapActivity","création du drone"+droneposition);
                 if(droneMarker != null)
@@ -1701,6 +1744,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 //            Log.e("MapActivity","move drone to position "+droneposition.position[0]+"  "+droneposition.position[1]);
 //            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
 //        }
+    }
+
+    private void dessinerPolygon(ArrayList<LatLng> points){
+
+        System.out.println("dessiner polygon");
+        PolygonOptions zoneOptions = new PolygonOptions();
+        for (int i=0; i<points.size();i++) {
+            zoneOptions.add(points.get(i));
+        }
+        zoneOptions.add(points.get(0));
+        zoneOptions. strokeColor(Color.BLUE);
+
+
+        zoneOptions.fillColor(R.color.TransparentBlue);
+
+// Get back the mutable Polygon
+        Polygon polygon = mGoogleMap.addPolygon(zoneOptions);
+        polygone = true;
+
     }
 
 }
