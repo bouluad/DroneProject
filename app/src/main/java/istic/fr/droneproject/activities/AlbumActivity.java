@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -42,7 +44,7 @@ import retrofit2.Response;
 /**
  * Created by bouluad on 22/03/17.
  */
-public class AlbumActivity extends Fragment
+public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickListener
 {
 
     private static final String ARG_ID = "idIntervention";
@@ -61,6 +63,7 @@ public class AlbumActivity extends Fragment
         mRootView = inflater.inflate(R.layout.album_fragment, container, false);
         initMap();
         mMapView = (MapView) mRootView.findViewById(R.id.photo_map);
+
         mMapView.onCreate(savedInstanceState);
         return mRootView;
     }
@@ -133,22 +136,16 @@ public class AlbumActivity extends Fragment
     private void bindPictures(){
 
         map = ((MapView) mRootView.findViewById(R.id.photo_map)).getMap();
+        map.setOnMarkerClickListener(this);
 
         // content
         if(map != null)
         {
 
-
-
             final Callback<List<DronePhotos>> callback = new Callback<List<DronePhotos>>() {
                 @Override
                 public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
 
-//                    try {
-//                        Thread.sleep(800);
-//                    } catch (InterruptedException e) {
-//                        e.printStackTrace();
-//                    }
                     dronePhotos = response.body();
 
                     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -171,16 +168,15 @@ public class AlbumActivity extends Fragment
 
                     for (DronePhotos p : dronePhotos) {
 
-                        Log.d("Picasso ",p.path);
-
                         markerOne = new MarkerOptions()
                                 .position(new LatLng(p.positionPTS[0], p.positionPTS[1]))
-                                .title(p.nom);
+                                .title(p.positionPTS[0]+";"+p.positionPTS[1]);
+
                         PicassoMarker  target = new PicassoMarker(map.addMarker(markerOne));
                         picassoMarkers.add(target);
                         Picasso.with(getContext())
                                 .load(p.path)
-                                .resize(200,200)
+                                .resize(100,100)
                                 .into(target);
                     }
 
@@ -234,5 +230,12 @@ public class AlbumActivity extends Fragment
         args.putString(ARG_ID, idIntervention);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+
+        Toast.makeText(getContext(),marker.getTitle(), Toast.LENGTH_LONG).show();
+        return false;
     }
 }
