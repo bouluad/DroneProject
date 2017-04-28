@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioGroup;
@@ -77,6 +78,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Button m_menu_Actiondrone_zone_b;
     SupportMapFragment map;
     GoogleMap mGoogleMap;
+    boolean filtreMoyens=false;
+    boolean  filtrePoints=false;
+    boolean filtrePointsSP=false;
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng; //la position de l'intervention ?
@@ -963,9 +967,108 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.user_filtre_objets_popup, null);
         helpBuilder.setView(popupLayout);
-        //Switch mySwitch=(Switch)findViewById(R.id.mySwitch1);
+        Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
+        Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
+        Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
+        Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
+        Switch mySwitchcarte=(Switch)popupLayout.findViewById(R.id.mySwitch5);
 
+        //set the switch1 to ON
+        mySwitchMoyens.setChecked(true);
 
+        //set the switch2 to ON
+        mySwitchPoints.setChecked(true);
+
+        //set the switch3 to ON
+        mySwitchSegment.setChecked(true);
+
+        //set the switch4 to ON
+        mySwitchZone.setChecked(true);
+
+        //set the switch5 to ON
+        mySwitchcarte.setChecked(true);
+
+        //attach a listener to check for changes in state
+        mySwitchMoyens.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if(isChecked){
+
+                   filtreMoyens=false;
+                    SynchroniserIntervention();
+                }else{
+                   filtreMoyens=true;
+                    SynchroniserIntervention();
+                }
+
+            }
+        });
+
+        mySwitchPoints.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if(isChecked){
+                    filtrePoints=false;
+                    filtrePointsSP=false;
+                    SynchroniserIntervention();
+                }else{
+                   filtrePoints=true;
+                    filtrePointsSP=true;
+                    SynchroniserIntervention();
+                }
+
+            }
+        });
+
+        mySwitchSegment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if(isChecked){
+
+                }else{
+
+                }
+
+            }
+        });
+        mySwitchZone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if(isChecked){
+
+                }else{
+
+                }
+
+            }
+        });
+
+        mySwitchcarte.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                                         boolean isChecked) {
+
+                if(isChecked){
+                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                }else{
+                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                }
+
+            }
+        });
 
         helpBuilder.create().show();
 
@@ -1566,32 +1669,36 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     .title("Intervention")
                     .snippet(intervention.libelle));
             //ajouts des vehicules
-            for (int i = 0; i < vehiculesCarte.size(); i++) {
-                Vehicule vehiculeCourant = vehiculesCarte.get(i);
-                if (
-                        (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
-                                && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
-                    ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+            if (filtreMoyens == false) {
+                for (int i = 0; i < vehiculesCarte.size(); i++) {
+                    Vehicule vehiculeCourant = vehiculesCarte.get(i);
+                    if (
+                            (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE || vehiculeCourant.etat == EtatVehicule.ARRIVE)
+                                    && (vehiculeCourant.position != null && vehiculeCourant.position[0] != null && vehiculeCourant.position[1] != null)) {
+                        ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+                    }
                 }
             }
-
-            //ajouts des points
-            if (pointsCarte != null) {
-                for (int i = 0; i < pointsCarte.size(); i++) {
-                    PointInteret pointCourant = pointsCarte.get(i);
-                    ajoutImageFromPoint(pointCourant, 1000 + i);
+            if (filtrePoints == false) {
+                //ajouts des points
+                if (pointsCarte != null) {
+                    for (int i = 0; i < pointsCarte.size(); i++) {
+                        PointInteret pointCourant = pointsCarte.get(i);
+                        ajoutImageFromPoint(pointCourant, 1000 + i);
+                    }
                 }
             }
+            if (filtrePointsSP == false) {
+                //ajouts des points SP
+                if (pointsSPCarte != null) {
+                    for (int i = 0; i < pointsSPCarte.size(); i++) {
+                        PointInteret pointCourant = pointsSPCarte.get(i);
+                        ajoutImageFromPoint(pointCourant, 3000 + i);
 
-            //ajouts des points SP
-            if (pointsSPCarte != null) {
-                for (int i = 0; i < pointsSPCarte.size(); i++) {
-                    PointInteret pointCourant = pointsSPCarte.get(i);
-                    ajoutImageFromPoint(pointCourant, 3000 + i);
-
+                    }
                 }
             }
-        } catch (Exception e) {
+        }catch (Exception e) {
 
         }
     }
