@@ -86,7 +86,7 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
         TableauMoyenRecyclerAdapter.EventsVehiculeClickListener eventsVehiculeClickListener = new TableauMoyenRecyclerAdapter.EventsVehiculeClickListener(){
             @Override
             public void clickConfirmer(Vehicule vehicule) {
-                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) || (EtatVehicule.PARKING.equals(vehicule.etat)) ) {
+                if ((EtatVehicule.ENGAGE.equals(vehicule.etat) && (vehicule.heureEngagement != null) ) || !(EtatVehicule.PARKING.equals(vehicule.etat)) ) {
                     if (vehicule.position == null || vehicule.position[0] == null || vehicule.position[1] == null) {
                         vehicule.etat = EtatVehicule.PARKING;
                     } else {
@@ -130,7 +130,6 @@ public class MoyensActivity extends android.support.v4.app.Fragment {
                         public void onFailure(Call<Void> call, Throwable t) {
                         }
                     });
-
 
             }
         };
