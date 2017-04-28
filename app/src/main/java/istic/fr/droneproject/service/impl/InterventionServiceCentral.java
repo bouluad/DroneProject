@@ -87,7 +87,7 @@ public class InterventionServiceCentral implements InterventionService {
     }
 
     @Override
-    public void addNouvelleIntervention(Intervention intervention, Callback<Void> callback) {
+    public void addNouvelleIntervention(Intervention intervention, Callback<String> callback) {
         this.callback = null;
         this.interventionId = null;
 
@@ -95,7 +95,7 @@ public class InterventionServiceCentral implements InterventionService {
         Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
         final InterventionRestAPI interventionRestAPI = retrofit.create(InterventionRestAPI.class);
 
-        Call<Void> call = interventionRestAPI.addNouvelleIntervention(intervention);
+        Call<String> call = interventionRestAPI.addNouvelleIntervention(intervention);
         call.enqueue(callback);
     }
 

@@ -1,17 +1,12 @@
 package istic.fr.droneproject.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
+import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -19,14 +14,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.BitmapDescriptor;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +26,7 @@ import java.util.List;
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.DronePhotos;
 import istic.fr.droneproject.model.Intervention;
+import istic.fr.droneproject.model.PicassoMarker;
 import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -235,7 +228,14 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
     @Override
     public boolean onMarkerClick(Marker marker) {
 
-        Toast.makeText(getContext(),marker.getTitle(), Toast.LENGTH_LONG).show();
+        String[] parts = marker.getTitle().split(";");
+        String part1 = parts[0]; 
+        String part2 = parts[1];
+
+        Intent i = new Intent(this.getContext(), ListPhotoActivity.class);
+        i.putExtra("Value1", part1);
+        i.putExtra("Value2", part2);
+        startActivity(i);
         return false;
     }
 }
