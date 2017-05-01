@@ -85,8 +85,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng; //la position de l'intervention ?
     Marker markerd;
-    LatLng ll;
-    Boolean suppLast = false;
+    LatLng LastLatLng;
     RecyclerView recyclerViewVehicules;
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
@@ -118,6 +117,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     int pointSelected;
     private List<Vehicule> vehicules;
     List<Double[]> pointsSegment;
+    private boolean boucleSegment = false; //indique si le drone boucle
+    private Polyline boucleSegmentPoly = null; //le polyline de boucle
 
     //liste de points et vehicules synchroniser a afficher sur la carte
     private List<Vehicule> vehiculesCarte;
@@ -145,7 +146,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     View m_menu_Actiondrone;
     View m_menu_Actiondrone_segment;
     View m_menu_Actiondrone_zone;
-    List<Polyline> p;
+    List<Polyline> polylineList;
     List<Marker> markers;
 
     public enum ListeMenu {
@@ -613,55 +614,42 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 //changerMenu(ListeMenu.aucun);
 
-                suppLast=false;
-                drone.segment.setBoucleFermee(false);
-                if(drone.segment.getPoints() != null)
-                    drone.segment.getPoints().clear();
-                pointsSegment.clear();
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });
-
-                markers.clear();
-                p.clear();
-
+                if(pointsSegment != null)
+                    pointsSegment.clear();
+                if(markers != null)
+                    markers.clear();
+                if(polylineList != null)
+                    polylineList.clear();
+                boucleSegment = false;
+                changerMenu(ListeMenu.m_menu_Actiondrone);
                 SynchroniserIntervention();
-                ll=new LatLng(droneposition.position[0],droneposition.position[1]);
             }
         });
 
         m_menu_Actiondrone_segment_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                suppLast=false;
+                if(pointsSegment != null && !pointsSegment.isEmpty() ) {
+                    drone.etat = EtatDrone.SEGMENT;
+                    drone.segment.setPoints(pointsSegment);
+                    drone.segment.setBoucleFermee(boucleSegment);
 
-                drone.etat = EtatDrone.SEGMENT;
-                drone.segment.setPoints(pointsSegment);
+                    DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
+                        @Override
+                        public void onResponse(Call<Void> call, Response<Void> response) {
+                            Log.e("Drone updated", String.valueOf(response.body()));
+                            Toast.makeText(getActivity().getApplicationContext(), "Segment ajouté avec succès", Toast.LENGTH_SHORT);
+                        }
 
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                        Toast.makeText(getActivity().getApplicationContext(), "Segment ajouté avec succès", Toast.LENGTH_SHORT);
-                    }
+                        @Override
+                        public void onFailure(Call<Void> call, Throwable t) {
+                            Log.e("Drone not updated", "");
+                        }
+                    });
 
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });
-
-                clickedSegment=false;
-                changerMenu(ListeMenu.aucun);
-
+                    clickedSegment = false;
+                    changerMenu(ListeMenu.aucun);
+                }
             }
         });
 
@@ -669,17 +657,24 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 System.out.println("supprimer derniere ligne");
-                if (!p.isEmpty()) {
-                    p.get(p.size() - 1).remove();
-                    p.remove(p.size() - 1);
+                if (!polylineList.isEmpty()) {
+                    polylineList.get(polylineList.size() - 1).remove(); //remove de la carte
+                    polylineList.remove(polylineList.size() - 1); // remove de la liste
                 }
 
                 if (!markers.isEmpty()) {
                     markers.get(markers.size() - 1).remove();
                     markers.remove(markers.size() - 1);
                 }
-                suppLast = true;
 
+                if(boucleSegment) {
+                    if (boucleSegmentPoly != null)
+                        boucleSegmentPoly.remove();
+                    if (markers.size() > 0)
+                        boucleSegmentPoly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
+                                .visible(true));
+                }
 
             }
         });
@@ -688,23 +683,18 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
-                        .visible(true));
-                drone.segment.setBoucleFermee(true);
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });
-
-                suppLast=false;
+                //Yousra
+                boucleSegment = !boucleSegment;
+                if(boucleSegment) {
+                    if (markers.size() > 0)
+                        boucleSegmentPoly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
+                                .visible(true));
+                }
+                else {
+                    if (boucleSegmentPoly != null)
+                        boucleSegmentPoly.remove();
+                }
 
             }
         });
@@ -723,8 +713,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 }
 
                 polylinesZone.clear();
-
-
                 markerPoints.clear();
                 markerStart.remove();
 
@@ -1081,7 +1069,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
-        p=new ArrayList<>();
+        polylineList =new ArrayList<>();
          contours = new ArrayList<Double[]>();
         markers=new ArrayList<>();
         markersMoyens=new ArrayList<>();
@@ -1138,7 +1126,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneposition = response.body();
-                ll = new LatLng(droneposition.position[0], droneposition.position[1]);
+                //Yousra
                 Log.e("OnMapReady", "Drone Position is" + String.valueOf(response.body().position));
                 reloadDrone();
 
@@ -1238,68 +1226,47 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                     }
                 } else if (clickedSegment || clickedZoneExclusion) {
-                    if (suppLast) {
-                        //Yousra
-                        Log.e("====>", "suupLast True");
-                        MarkerOptions markerOptions = new MarkerOptions();
+                    //Yousra
 
-                        // Setting latitude and longitude of the marker position
-                        markerOptions.position(marker.getPosition());
+                    MarkerOptions markerOptions = new MarkerOptions();
 
-                        // Setting titile of the infowindow of the marker
-                        markerOptions.title("Position");
+                    // Setting latitude and longitude of the marker position
+                    markerOptions.position(marker.getPosition());
 
-                        // Setting the content of the infowindow of the marker
-                        markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
-                        // Adding the marker to the map
-                        Marker markerS = mGoogleMap.addMarker(markerOptions);
-                        if (!markers.isEmpty()) {
-                            Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                    .add(markers.get(markers.size() - 1).getPosition(), marker.getPosition()).width(6).color(Color.RED)
-                                    .visible(true));
-                            p.add(poly);
-                            markers.add(markerS);
-                            ll = marker.getPosition();
-                            suppLast = false;
-                            Double[] tab = new Double[2];
-                            tab[0] = marker.getPosition().latitude;
-                            tab[1] = marker.getPosition().longitude;
+                    // Setting titile of the infowindow of the marker
+                    markerOptions.title("Position");
 
-                            pointsSegment.add(tab);
-                            // drone.getSegment().getPoints().add(tab);
-                        }
+                    // Setting the content of the infowindow of the marker
+                    markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
+                    // Adding the marker to the map
+                    Marker markerS = mGoogleMap.addMarker(markerOptions);
+
+                    if(markers.isEmpty())// si c'est le premeir point on trace une ligne depuis le drone
+                        LastLatLng = new LatLng(droneposition.position[0], droneposition.position[1]);
+                    else
+                        LastLatLng = markers.get(markers.size()-1).getPosition();
+
+                    Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
+                            .add(LastLatLng, marker.getPosition()).width(6).color(Color.RED)
+                            .visible(true));
+                    polylineList.add(poly);
+
+                    markers.add(markerS);
+
+                    Double[] tab = new Double[2];
+                    tab[0] = marker.getPosition().latitude;
+                    tab[1] = marker.getPosition().longitude;
+                    pointsSegment.add(tab);
+
+                    if(boucleSegment){//si on demande a boucler
+                        if(boucleSegmentPoly != null)
+                            boucleSegmentPoly.remove();
+                        boucleSegmentPoly = mGoogleMap.addPolyline((new PolylineOptions())
+                        .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
+                        .visible(true));
                     }
 
 
-                    else {
-                        MarkerOptions markerOptions = new MarkerOptions();
-
-                        // Setting latitude and longitude of the marker position
-                        markerOptions.position(marker.getPosition());
-
-                        // Setting titile of the infowindow of the marker
-                        markerOptions.title("Position");
-
-                        // Setting the content of the infowindow of the marker
-                        markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
-                        // Adding the marker to the map
-                        Marker markerS = mGoogleMap.addMarker(markerOptions);
-
-                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                .add(ll, marker.getPosition()).width(6).color(Color.RED)
-                                .visible(true));
-                        p.add(poly);
-
-                        markers.add(markerS);
-
-                        ll = marker.getPosition();
-                        Double[] tab = new Double[2];
-                        tab[0] = marker.getPosition().latitude;
-                        tab[1] = marker.getPosition().longitude;
-                        pointsSegment.add(tab);
-
-
-                    }
                 }else {
                     //on click sur la carte dans le vide
                     changerMenu(ListeMenu.m_menu_choix);
@@ -1399,73 +1366,47 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 }
             /*if(clickedSegment || clickedZone || clickedZoneExclusion){*/
                 else if (clickedSegment || clickedZoneExclusion) {
-                    if (suppLast) {
-                        Log.e("====>", "suupLast True");
-                        MarkerOptions markerOptions = new MarkerOptions();
+                    //Yousra
 
-                        // Setting latitude and longitude of the marker position
-                        markerOptions.position(point);
+                    System.out.println("dessiner une ligne");
+                    if(markers.isEmpty())// si c'est le premeir point on trace une ligne depuis le drone
+                        LastLatLng = new LatLng(droneposition.position[0], droneposition.position[1]);
+                    else
+                        LastLatLng = markers.get(markers.size()-1).getPosition();
 
-                        // Setting titile of the infowindow of the marker
-                        markerOptions.title("Position");
+                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(LastLatLng, point).width(6).color(Color.RED)
+                                .visible(true));
 
-                        // Setting the content of the infowindow of the marker
-                        markerOptions.snippet("Latitude:" + point.latitude + "," + "Longitude:" + point.longitude);
-                        // Adding the marker to the map
-                        Marker marker = mGoogleMap.addMarker(markerOptions);
-                        if (!markers.isEmpty()) {
-                            Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                    .add(markers.get(markers.size() - 1).getPosition(), marker.getPosition()).width(6).color(Color.RED)
-                                    .visible(true));
-                            p.add(poly);
-                            markers.add(marker);
-                            ll = marker.getPosition();
-                            suppLast = false;
-                        }
-                        Double[] tab = new Double[2];
-                        tab[0] = point.latitude;
-                        tab[1] = point.longitude;
-                        pointsSegment.add(tab);
-                        // drone.getSegment().getPoints().add(tab);
+                    MarkerOptions markerOptions = new MarkerOptions();
+
+                    // Setting latitude and longitude of the marker position
+                    markerOptions.position(point);
+
+                    // Setting titile of the infowindow of the marker
+                    markerOptions.title("Position");
+
+                    // Setting the content of the infowindow of the marker
+                    markerOptions.snippet("Latitude:" + point.latitude + "," + "Longitude:" + point.longitude);
+                    // Adding the marker to the map
+                    Marker marker = mGoogleMap.addMarker(markerOptions);
+
+                    markers.add(marker);
+                    polylineList.add(poly);
+
+                    Double[] tab = new Double[2];
+                    tab[0] = point.latitude;
+                    tab[1] = point.longitude;
+                    pointsSegment.add(tab);
+                    // drone.getSegment().getPoints().add(tab);
+
+                    if(boucleSegment){//si on demande a boucler
+                        if(boucleSegmentPoly != null)
+                            boucleSegmentPoly.remove();
+                        boucleSegmentPoly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(markers.get(markers.size() - 1).getPosition(), markers.get(0).getPosition()).width(6).color(Color.RED)
+                                .visible(true));
                     }
-
-
-
-                    else {
-                        System.out.println("dessiner une ligne");
-
-                            Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                                    .add(ll, point).width(6).color(Color.RED)
-                                    .visible(true));
-
-
-
-
-
-                        MarkerOptions markerOptions = new MarkerOptions();
-
-                        // Setting latitude and longitude of the marker position
-                        markerOptions.position(point);
-
-                        // Setting titile of the infowindow of the marker
-                        markerOptions.title("Position");
-
-                        // Setting the content of the infowindow of the marker
-                        markerOptions.snippet("Latitude:" + point.latitude + "," + "Longitude:" + point.longitude);
-                        // Adding the marker to the map
-                        Marker marker = mGoogleMap.addMarker(markerOptions);
-                        ll = point;
-
-                        markers.add(marker);
-                        p.add(poly);
-
-                        Double[] tab = new Double[2];
-                        tab[0] = point.latitude;
-                        tab[1] = point.longitude;
-                        pointsSegment.add(tab);
-                        // drone.getSegment().getPoints().add(tab);
-                    }
-
 
                 } else {
                     pointVehicule = point;
