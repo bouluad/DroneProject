@@ -76,11 +76,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     private static final String ARG_ID = "idIntervention";
 
     Button m_menu_Actiondrone_zone_b;
+    Button m_menu_Actiondrone_segment_b;
+
     SupportMapFragment map;
     GoogleMap mGoogleMap;
     boolean filtreMoyens=false;
     boolean  filtrePoints=false;
     boolean filtrePointsSP=false;
+    boolean filtreSegment=false;
+    boolean filtreZone=false;
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng; //la position de l'intervention ?
@@ -228,8 +232,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
         //bouton drone
 
-        Button m_menu_Actiondrone_segment_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_b);
+         m_menu_Actiondrone_segment_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_segment_b);
          m_menu_Actiondrone_zone_b= (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_b);
+
 
         Button m_menu_Actiondrone_stop= (Button) view.findViewById(R.id.m_menu_Actiondrone_stop);
 
@@ -971,8 +976,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
         Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
         Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
-        Switch mySwitchcarte=(Switch)popupLayout.findViewById(R.id.mySwitch5);
-
+        RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
         //set the switch1 to ON
         mySwitchMoyens.setChecked(true);
 
@@ -986,7 +990,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         mySwitchZone.setChecked(true);
 
         //set the switch5 to ON
-        mySwitchcarte.setChecked(true);
+      //  mySwitchcarte.setChecked(true);
 
         //attach a listener to check for changes in state
         mySwitchMoyens.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -1033,8 +1037,12 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                          boolean isChecked) {
 
                 if(isChecked){
+                    filtreSegment=false;
+                    SynchroniserIntervention();
 
                 }else{
+                    filtreSegment=true;
+                    SynchroniserIntervention();
 
                 }
 
@@ -1047,28 +1055,38 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                                          boolean isChecked) {
 
                 if(isChecked){
+                    filtreZone=false;
+                    SynchroniserIntervention();
 
                 }else{
+                    filtreZone=true;
+                    SynchroniserIntervention();
 
                 }
 
             }
         });
 
-        mySwitchcarte.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
+        radiogroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener()
+        {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                // checkedId is the RadioButton selected
+        switch (checkedId) {
 
-                if(isChecked){
-                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-                }else{
-                    mGoogleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                }
+            case R.id.type_carte_satel:
+                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
-            }
+                break;
+            case R.id.type_carte_terrain:
+                mGoogleMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+
+                break;
+        }
+
+        }
         });
+
 
         helpBuilder.create().show();
 
@@ -1148,7 +1166,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         drone=response.body();
                         Log.e("Drone retreived", String.valueOf(response.body()));
 
-                        if(!polygone) {
+                       /* if(!polygone) {
                             if (drone.zone.getContours().size() > 0) {
                                 System.out.println("===> zone "+ drone.zone.getContours());
 
@@ -1167,7 +1185,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                                 dessinerPolygon(contourZone);
                             }
-                        }
+                        }*/
+
 
 
                     }
@@ -1698,6 +1717,40 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     }
                 }
             }
+            if (filtreSegment == false) {
+                if (drone.segment.getPoints().size() > 0) {
+                    for (Double[] point : drone.segment.getPoints()) {
+                        Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(ll, new LatLng(point[0], point[1])).width(6).color(Color.RED)
+                                .visible(true));
+                        ll = new LatLng(point[0], point[1]);
+
+                    }
+
+                }
+            }
+            if (filtreZone == false) {
+
+                if (drone.zone.getContours().size() > 0) {
+                    System.out.println("===> zone " + drone.zone.getContours());
+
+
+                    ArrayList<LatLng> contourZone = new ArrayList<>();
+
+
+                    for (Double[] tab : drone.zone.getContours()) {
+                        LatLng latLng = new LatLng(tab[0], tab[1]);
+
+                        contourZone.add(latLng);
+
+
+                    }
+
+
+                    dessinerPolygon(contourZone);
+
+            }
+        }
         }catch (Exception e) {
 
         }
@@ -1739,6 +1792,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if(drone.zone.getContours().size() > 0){
                     m_menu_Actiondrone_zone_b.setEnabled(false);
 
+                }
+                if(drone.segment.getPoints().size()>0){
+                    m_menu_Actiondrone_segment_b.setEnabled(false);
                 }
             }
 
