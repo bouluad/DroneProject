@@ -11,7 +11,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/textView2"
-        android:gravity="center" />
+        android:gravity="center"
+        android:textSize="18sp"
+        android:textStyle="normal|bold" />
     <Switch
         android:id="@+id/mySwitch1"
         android:layout_width="wrap_content"
@@ -19,7 +21,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
-        android:text="Moyens" />
+        android:text="  Moyens  " />
 
     <Switch
         android:id="@+id/mySwitch2"
@@ -28,7 +30,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
-        android:text="Points" />
+        android:text="  Points     " />
 
 
     <Switch
@@ -38,7 +40,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
-        android:text="Segment" />
+        android:text="  Segment " />
 
     <Switch
         android:id="@+id/mySwitch4"
@@ -47,14 +49,44 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
-        android:text="Zone" />
+        android:text="  Zone        " />
 
-    <Switch
-        android:id="@+id/mySwitch5"
+    <RadioGroup
+        android:id="@+id/type_carte"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        android:text="Type Carte" />
+        android:checkedButton="@+id/type_radio_fpt"
+        android:orientation="horizontal" >
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="  Type Carte"
+        android:textColor="@color/black" />
+
+
+        <RadioButton
+            android:id="@+id/type_carte_satel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Satel" />
+
+        <RadioButton
+            android:id="@+id/type_carte_terrain"
+            android:layout_width="127dp"
+            android:layout_height="wrap_content"
+            android:text="@string/Terrain" />
+
+    </RadioGroup>
+
+
+
+    <!-- <Switch
+         android:id="@+id/mySwitch5"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:layout_alignParentLeft="true"
+         android:layout_alignParentTop="true"
+         android:layout_marginTop="20dp"
+         android:text="Type Carte" /> -->
 </LinearLayout>

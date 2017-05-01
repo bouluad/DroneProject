@@ -22,6 +22,11 @@
     <string name="type_vsav">VSAV</string>
     <string name="type_vlcg">VLCG</string>
 
+    <!-- Strings related to Filter parameters in popup -->
+    <string name="Satel">SATELLITE</string>
+    <string name="Terrain">TERRAIN</string>
+
+
     <!-- Strings related to spinner categorie moyens in popup -->
     <string-array name="categories_array">
         <item>SAUVETAGE</item>
