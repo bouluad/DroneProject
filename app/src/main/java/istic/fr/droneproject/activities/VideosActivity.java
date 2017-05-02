@@ -60,7 +60,6 @@ public class VideosActivity extends android.support.v4.app.Fragment {
         super.onActivityCreated(savedInstanceState);
         if (getArguments() != null) {
             idIntervention = getArguments().getString(ARG_ID);
-            System.out.println("TEST1 : "+idIntervention);
 
         }
 
@@ -70,6 +69,7 @@ public class VideosActivity extends android.support.v4.app.Fragment {
                 Picasso.with(getContext())
                         .load("http://148.60.11.238/projet/"+idIntervention+"/VideoDrone.jpeg")
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .error(R.drawable.image_not_found)
                         .into(video);
                 handler.postDelayed(task, 2000);
             }
