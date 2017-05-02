@@ -10,6 +10,7 @@ import java.util.List;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.service.TransformImageToStringEtVs;
 
 public class VehiculeRecyclerAdapter extends RecyclerView.Adapter<VehiculeRecyclerAdapter.VehiculeViewHolder> {
 
@@ -38,6 +39,9 @@ public class VehiculeRecyclerAdapter extends RecyclerView.Adapter<VehiculeRecycl
         if(vehicule.type != null) {
             holder.type.setText(vehicule.type.toString());
         }
+        if(vehicule.categorie != null) {
+            holder.type.setTextColor(TransformImageToStringEtVs.FindColorByVehicule(vehicule.categorie));
+        }
     }
 
     @Override
@@ -48,7 +52,7 @@ public class VehiculeRecyclerAdapter extends RecyclerView.Adapter<VehiculeRecycl
     public class VehiculeViewHolder extends RecyclerView.ViewHolder {
         TextView nom;
         TextView type;
-//
+
         public VehiculeViewHolder(View itemView) {
             super(itemView);
             nom = (TextView) itemView.findViewById(R.id.ui_vehicule_item_nom);
