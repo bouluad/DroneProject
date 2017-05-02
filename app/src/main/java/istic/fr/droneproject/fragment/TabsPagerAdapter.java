@@ -66,7 +66,7 @@ public class TabsPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 return "Points d'intérêt";
             case 3:
-                return "Vidéos";
+                return "Vidéo";
         }
         return null;
     }
