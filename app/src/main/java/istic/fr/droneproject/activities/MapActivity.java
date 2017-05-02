@@ -728,7 +728,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 polylinesZone.clear();
                 markerPoints.clear();
-                markerStart.remove();
+                if(markerStart != null) {
+                    markerStart.remove();
+                }
 
                 clickedZone = false;
 
