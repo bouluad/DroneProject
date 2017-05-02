@@ -41,8 +41,6 @@ public class VideosActivity extends android.support.v4.app.Fragment {
 
     private Boolean aStart = true;
     private String idIntervention;
-    private static final ScheduledExecutorService worker =
-            Executors.newSingleThreadScheduledExecutor();
     private Runnable task;
 
     @Override
@@ -66,26 +64,6 @@ public class VideosActivity extends android.support.v4.app.Fragment {
 
         }
 
-        if (aStart == true){
-            start.setClickable(false);
-            pause.setClickable(true);
-        }else{
-
-            pause.setClickable(false);
-            start.setClickable(true);
-        }
-
-
-
-        pause.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                aStart = false;
-
-            }
-        });
-
 
         task = new Runnable() {
             public void run() {
@@ -93,10 +71,10 @@ public class VideosActivity extends android.support.v4.app.Fragment {
                         .load("http://148.60.11.238/projet/"+idIntervention+"/VideoDrone.jpeg")
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                         .into(video);
-                handler.postDelayed(task, 1000);
-                System.out.println("TEST : "+idIntervention);
+                handler.postDelayed(task, 2000);
             }
         };
+
 
         start.setOnClickListener(new View.OnClickListener() {
             @Override

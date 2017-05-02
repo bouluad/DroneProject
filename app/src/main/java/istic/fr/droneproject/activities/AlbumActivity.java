@@ -234,6 +234,7 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
         Intent i = new Intent(this.getContext(), ListPhotoActivity.class);
         i.putExtra("Value1", part1);
         i.putExtra("Value2", part2);
+        i.putExtra("Value3", idIntervention);
         startActivity(i);
         return false;
     }

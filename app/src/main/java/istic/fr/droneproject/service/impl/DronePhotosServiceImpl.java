@@ -38,7 +38,7 @@ public class DronePhotosServiceImpl implements DronePhotosService{
     }
 
     @Override
-    public void getDronePhotosbyPositionPTS(String pos1, String pos2, Callback<List<DronePhotos>> callback) {
+    public void getDronePhotosbyPositionPTS(String pos1, String pos2, String idInter,Callback<List<DronePhotos>> callback) {
 
                /*
         Création de l'objet Retrofit
@@ -51,7 +51,7 @@ public class DronePhotosServiceImpl implements DronePhotosService{
         /*
         Appel de la méthode pour l'API REST
          */
-        Call<List<DronePhotos>> call = dronePhotosRestAPI.getDronePhotosbyPositionPTS(pos1,pos2);
+        Call<List<DronePhotos>> call = dronePhotosRestAPI.getDronePhotosbyPositionPTS(pos1,pos2,idInter);
 
         /*
         On lance l'appel et le callback recevra la réponse
