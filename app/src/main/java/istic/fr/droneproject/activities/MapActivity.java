@@ -78,6 +78,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment map;
     GoogleMap mGoogleMap;
+    boolean notcheckedMoyens=false;
+    boolean notcheckedPoints=false;
+    boolean notcheckedSegment=false;
+    boolean notcheckedZone=false;
     boolean filtreMoyens=false;
     boolean  filtrePoints=false;
     boolean filtrePointsSP=false;
@@ -969,20 +973,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.user_filtre_objets_popup, null);
         helpBuilder.setView(popupLayout);
-        Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
-        Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
-        Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
-        Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
-        RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
+        final Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
+        final Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
+        final Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
+        final Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
+        final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
+
+      if(!notcheckedMoyens)
         //set the switch1 to ON
         mySwitchMoyens.setChecked(true);
 
+    if(!notcheckedPoints)
         //set the switch2 to ON
         mySwitchPoints.setChecked(true);
 
+        if(!notcheckedSegment)
         //set the switch3 to ON
         mySwitchSegment.setChecked(true);
 
+        if(!notcheckedZone)
         //set the switch4 to ON
         mySwitchZone.setChecked(true);
 
@@ -999,10 +1008,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if (isChecked) {
 
                     filtreMoyens = false;
+                    notcheckedMoyens=false;
                     SynchroniserIntervention();
                 } else {
                     filtreMoyens = true;
+                    notcheckedMoyens=true;
                     SynchroniserIntervention();
+
                 }
 
             }
@@ -1017,11 +1029,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if (isChecked) {
                     filtrePoints = false;
                     filtrePointsSP = false;
+                    notcheckedPoints=false;
+
                     SynchroniserIntervention();
                 } else {
                     filtrePoints = true;
                     filtrePointsSP = true;
+                    notcheckedPoints=true;
                     SynchroniserIntervention();
+
                 }
 
             }
@@ -1035,11 +1051,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 if(isChecked){
                     filtreSegment=false;
+                    notcheckedSegment=false;
                     SynchroniserIntervention();
 
                 }else{
                     filtreSegment=true;
+                    notcheckedSegment=true;
                     SynchroniserIntervention();
+
 
                 }
 
@@ -1053,11 +1072,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 if(isChecked){
                     filtreZone=false;
+                    notcheckedZone=false;
                     SynchroniserIntervention();
 
                 }else{
                     filtreZone=true;
+                    notcheckedZone=true;
                     SynchroniserIntervention();
+
 
                 }
 
@@ -1702,13 +1724,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 break;
             case m_menu_Actiondrone: {
                 m_menu_Actiondrone.setVisibility(View.VISIBLE);
-                /*if(drone.zone.getContours().size() > 0){
-                    m_menu_Actiondrone_zone_b.setEnabled(false);
 
-                }
-                if(drone.segment.getPoints().size()>0){
-                    m_menu_Actiondrone_segment_b.setEnabled(false);
-                }*/
             }
 
             break;
