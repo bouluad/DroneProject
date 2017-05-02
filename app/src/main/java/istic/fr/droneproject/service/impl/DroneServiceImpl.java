@@ -40,6 +40,7 @@ public class DroneServiceImpl implements DroneService {
     public void getDroneByIdIntervention(String id,Callback<Drone> callback) {
         this.callback = callback;
         this.interventionId = id;
+
         /*
         Création de l'objet Retrofit
          */
@@ -76,7 +77,7 @@ public class DroneServiceImpl implements DroneService {
                 if (args.length > 0) {
                     Log.e("dronenupdate", args[0].toString());
                     String idIntervention = (String) args[0];
-                    if (idIntervention.equals(interventionId) && callback != null) {
+                    if (idIntervention != null && idIntervention.equals(interventionId) && callback != null) {
                         //Recuperer que cette intervention
                         getDroneByIdIntervention(idIntervention, callback);
                     }
@@ -105,5 +106,10 @@ public class DroneServiceImpl implements DroneService {
 
         Call<Void> call = droneRestAPI.updateDrone(drone);
         call.enqueue(callback);
+    }
+
+    public void deleteCallbacks(){
+        this.callback = null;
+        this.interventionId = null;
     }
 }

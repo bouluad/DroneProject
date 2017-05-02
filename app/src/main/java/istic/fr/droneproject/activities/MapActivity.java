@@ -189,6 +189,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onPause() {
         Log.e("MAPCycledevie", "onPause");
+        DroneServiceImpl.getInstance().deleteCallbacks();
+        DronePositionServiceImpl.getInstance().deleteCallbacks();
         Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.m_map));
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.remove(fragment);
