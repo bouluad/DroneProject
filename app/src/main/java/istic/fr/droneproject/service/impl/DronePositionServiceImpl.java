@@ -63,7 +63,7 @@ public class DronePositionServiceImpl implements DronePositionService{
         try {
             socket = IO.socket("http://148.60.11.238:8080");
         } catch (URISyntaxException e) {
-            Log.e("InterventionServiceCent", e.toString());
+            Log.e("positionupdate", e.toString());
         }
         socket.connect();
         Log.e("positionupdate", "Socket connectee");
