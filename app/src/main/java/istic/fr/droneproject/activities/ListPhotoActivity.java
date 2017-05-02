@@ -23,7 +23,6 @@ import retrofit2.Response;
  */
 
 public class ListPhotoActivity  extends Activity {
-    ListView listView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

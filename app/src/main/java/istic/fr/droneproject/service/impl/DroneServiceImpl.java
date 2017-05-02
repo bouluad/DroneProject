@@ -1,8 +1,15 @@
 package istic.fr.droneproject.service.impl;
 
+import android.util.Log;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.net.URISyntaxException;
+
+import io.socket.client.IO;
+import io.socket.client.Socket;
+import io.socket.emitter.Emitter;
 import istic.fr.droneproject.model.Drone;
 import istic.fr.droneproject.service.DroneService;
 import istic.fr.droneproject.service.retrofit.DroneRestAPI;
@@ -18,6 +25,10 @@ import static istic.fr.droneproject.service.retrofit.InterventionRestAPI.BASE_UR
  */
 
 public class DroneServiceImpl implements DroneService {
+
+    private Callback callback;
+    private String interventionId;
+    private Socket socket;
 
     public static DroneServiceImpl droneInstance=new DroneServiceImpl();
 
@@ -45,6 +56,34 @@ public class DroneServiceImpl implements DroneService {
         On lance l'appel et le callback recevra la réponse
          */
         call.enqueue(callback);
+    }
+
+    private DroneServiceImpl() {
+
+        try {
+            socket = IO.socket("http://148.60.11.238:8080");
+        } catch (URISyntaxException e) {
+            Log.e("dronenupdate", e.toString());
+        }
+        socket.connect();
+        Log.e("dronenupdate", "Socket connectee");
+
+        socket.on("dronenupdate", new Emitter.Listener() {
+            @Override
+            public void call(Object... args) {
+                Log.e("dronenupdate", "Listener called");
+                if (args.length > 0) {
+                    Log.e("dronenupdate", args[0].toString());
+                    String idIntervention = (String) args[0];
+                    if (idIntervention.equals(interventionId) && callback != null) {
+                        //Recuperer que cette intervention
+                        getDroneByIdIntervention(idIntervention, callback);
+                    }
+                    // Sinon l'intervention modifiee ne nous interesse pas
+                }
+            }
+        });
+
     }
 
     //POST drone position

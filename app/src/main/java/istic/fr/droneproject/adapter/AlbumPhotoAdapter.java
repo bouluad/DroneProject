@@ -36,8 +36,6 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
         DronePhotos photo = photos.get(position);
-        Picasso.with(context).setIndicatorsEnabled(true
-        );
         Picasso.with(context).load(photo.path).placeholder(R.drawable.loading).error(R.drawable.image_not_found).into(holder.image);
         holder.nom.setText(photo.nom);
         holder.date.setText(photo.date_heure);
