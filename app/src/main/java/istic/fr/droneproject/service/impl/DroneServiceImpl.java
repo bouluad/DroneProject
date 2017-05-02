@@ -38,7 +38,8 @@ public class DroneServiceImpl implements DroneService {
 
     //GET drone
     public void getDroneByIdIntervention(String id,Callback<Drone> callback) {
-
+        this.callback = callback;
+        this.interventionId = id;
         /*
         Création de l'objet Retrofit
          */
