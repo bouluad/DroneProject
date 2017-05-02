@@ -34,7 +34,7 @@ public class InterventionRecyclerAdapter extends RecyclerView.Adapter<Interventi
     public void onBindViewHolder(InterventionViewHolder holder, int position) {
         final Intervention intervention = interventions.get(position);
 
-        holder.libelle.setOnClickListener(new View.OnClickListener() {
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.clickIntervention(intervention);
@@ -57,10 +57,12 @@ public class InterventionRecyclerAdapter extends RecyclerView.Adapter<Interventi
 
     public class InterventionViewHolder extends RecyclerView.ViewHolder {
 
+        View view;
         TextView libelle;
 
         public InterventionViewHolder(View itemView) {
             super(itemView);
+            view = itemView.findViewById(R.id.ui_intervention_item);
             libelle = (TextView) itemView.findViewById(R.id.ui_intervention_item_libelle);
         }
     }
