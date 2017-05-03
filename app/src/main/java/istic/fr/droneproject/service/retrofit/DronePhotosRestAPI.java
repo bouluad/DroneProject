@@ -25,7 +25,8 @@ public interface DronePhotosRestAPI {
 
 
     @Headers({ "Accept: application/json" })
-    @GET("/photosdrone/{pos1}/{pos2}/photos")
-    Call<List<DronePhotos>> getDronePhotosbyPositionPTS(@Path("pos1") String pos1, @Path("pos2") String pos2);
+    @GET("/photosdrone/{pos1}/{pos2}/{idInter}/photos")
+    Call<List<DronePhotos>> getDronePhotosbyPositionPTS(@Path("pos1") String pos1,
+                                                        @Path("pos2") String pos2, @Path("idInter") String idInter);
 
 }

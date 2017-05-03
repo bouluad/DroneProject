@@ -91,8 +91,21 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
                 Collections.reverse(response.body());
 
+                List<Intervention> triee = new ArrayList<>();
+                List<Intervention> cloturees = new ArrayList<>();
+
+                for (Intervention intervention : response.body()) {
+                    if(intervention.cloturer){
+                        cloturees.add(intervention);
+                    }else{
+                        triee.add(intervention);
+                    }
+                }
+
+                triee.addAll(cloturees);
+
                 interventions.clear();
-                interventions.addAll(response.body());
+                interventions.addAll(triee);
                 interventionArrayAdapter.notifyDataSetChanged();
             }
 
@@ -105,43 +118,42 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
     }
 
     private void showSimplePopUp(final Intervention intervention) {
+        if(!intervention.cloturer) {
+            AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getActivity());
+            helpBuilder.setTitle("Cloturer");
+            helpBuilder.setMessage("Voulez-vous clôturer cette intervention ?\n Date: " + intervention.date + "\n Adresse: " + intervention.adresse);
+
+            helpBuilder.setPositiveButton("Ok",
+                    new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            InterventionServiceCentral.getInstance().cloturerIntervention(intervention._id, new Callback<Void>() {
+                                @Override
+                                public void onResponse(Call<Void> call, Response<Void> response) {
+                                    Toast.makeText(getContext(), "Intervention clôturée", Toast.LENGTH_SHORT).show();
+                                }
+
+                                @Override
+                                public void onFailure(Call<Void> call, Throwable t) {
+                                    Toast.makeText(getContext(), "Erreur", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                    });
+            helpBuilder.setNegativeButton("Annuler",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
 
 
-        AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getActivity());
-        helpBuilder.setTitle("Cloturer");
-        helpBuilder.setMessage("Voulez vous cloturer cette intervention ?\n Date: "+intervention.date+"\n Adresse: "+intervention.adresse);
+                        }
+                    });
 
-
-
-        helpBuilder.setPositiveButton("Ok",
-                new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        InterventionServiceCentral.getInstance().cloturerIntervention(intervention._id, new Callback<Void>() {
-                            @Override
-                            public void onResponse(Call<Void> call, Response<Void> response) {
-                                Toast.makeText(getContext(), "Intervention cloturée", Toast.LENGTH_SHORT).show();
-                            }
-                            @Override
-                            public void onFailure(Call<Void> call, Throwable t) {
-                                Toast.makeText(getContext(), "Erreur", Toast.LENGTH_SHORT).show();
-                            }
-                        });
-
-                    }
-                });
-        helpBuilder.setNegativeButton("Annuler",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-
-
-                    }
-                });
-
-        // Remember, create doesn't show the dialog
-        AlertDialog helpDialog = helpBuilder.create();
-        helpDialog.show();
-
-
+            // Remember, create doesn't show the dialog
+            AlertDialog helpDialog = helpBuilder.create();
+            helpDialog.show();
+        }else{
+            Toast.makeText(getContext(),"L'intervention est déjà clôturée.",Toast.LENGTH_SHORT).show();
+        }
     }
 }

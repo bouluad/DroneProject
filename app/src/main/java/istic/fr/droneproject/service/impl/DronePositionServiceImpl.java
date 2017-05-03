@@ -75,7 +75,7 @@ public class DronePositionServiceImpl implements DronePositionService{
                 if (args.length > 0) {
                     Log.e("positionupdate", args[0].toString());
                     String idIntervention = (String) args[0];
-                    if (idIntervention.equals(interventionId) && callback != null) {
+                    if (interventionId != null && idIntervention.equals(interventionId) && callback != null) {
                         //Recuperer que cette intervention
                         getDronePositionByIdIntervention(idIntervention, callback);
                     }
@@ -84,6 +84,13 @@ public class DronePositionServiceImpl implements DronePositionService{
             }
         });
 
+    }
+
+
+
+    public void deleteCallbacks(){
+        this.callback = null;
+        this.interventionId = null;
     }
 
 }

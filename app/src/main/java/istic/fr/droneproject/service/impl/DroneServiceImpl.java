@@ -40,6 +40,7 @@ public class DroneServiceImpl implements DroneService {
     public void getDroneByIdIntervention(String id,Callback<Drone> callback) {
         this.callback = callback;
         this.interventionId = id;
+
         /*
         Création de l'objet Retrofit
          */
@@ -64,19 +65,19 @@ public class DroneServiceImpl implements DroneService {
         try {
             socket = IO.socket("http://148.60.11.238:8080");
         } catch (URISyntaxException e) {
-            Log.e("dronenupdate", e.toString());
+            Log.e("droneupdate", e.toString());
         }
         socket.connect();
-        Log.e("dronenupdate", "Socket connectee");
+        Log.e("droneupdate", "Socket connectee");
 
-        socket.on("dronenupdate", new Emitter.Listener() {
+        socket.on("droneUpdate", new Emitter.Listener() {
             @Override
             public void call(Object... args) {
-                Log.e("dronenupdate", "Listener called");
+                Log.e("droneupdate", "Listener called");
                 if (args.length > 0) {
-                    Log.e("dronenupdate", args[0].toString());
+                    Log.e("droneupdate", args[0].toString());
                     String idIntervention = (String) args[0];
-                    if (idIntervention.equals(interventionId) && callback != null) {
+                    if (idIntervention != null && idIntervention.equals(interventionId) && callback != null) {
                         //Recuperer que cette intervention
                         getDroneByIdIntervention(idIntervention, callback);
                     }
@@ -105,5 +106,10 @@ public class DroneServiceImpl implements DroneService {
 
         Call<Void> call = droneRestAPI.updateDrone(drone);
         call.enqueue(callback);
+    }
+
+    public void deleteCallbacks(){
+        this.callback = null;
+        this.interventionId = null;
     }
 }

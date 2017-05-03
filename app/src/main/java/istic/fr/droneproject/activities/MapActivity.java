@@ -79,6 +79,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     SupportMapFragment map;
     GoogleMap mGoogleMap;
+    boolean notcheckedMoyens=false;
+    boolean notcheckedPoints=false;
+    boolean notcheckedSegment=false;
+    boolean notcheckedZone=false;
     boolean filtreMoyens=false;
     boolean  filtrePoints=false;
     boolean filtrePointsSP=false;
@@ -193,6 +197,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     @Override
     public void onPause() {
         Log.e("MAPCycledevie", "onPause");
+        DroneServiceImpl.getInstance().deleteCallbacks();
+        DronePositionServiceImpl.getInstance().deleteCallbacks();
         Fragment fragment = (getChildFragmentManager().findFragmentById(R.id.m_map));
         FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
         ft.remove(fragment);
@@ -560,22 +566,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 changerMenu(ListeMenu.m_menu_Actiondrone_segment);
                 System.out.println("dessiner segment");
                 clickedSegment = true;
-                drone.segment = segment;
-                drone.segment.setBoucleFermee(true);
                 Log.e("segment", "Segment crée");
-                DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
-                    @Override
-                    public void onResponse(Call<Void> call, Response<Void> response) {
-                        Log.e("Drone updated", String.valueOf(response.body()));
-                    }
-
-                    @Override
-                    public void onFailure(Call<Void> call, Throwable t) {
-                        Log.e("Drone not updated", "");
-                    }
-                });
-
-
             }
         });
 
@@ -637,12 +628,16 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 if (pointsSegment != null)
                     pointsSegment.clear();
+                else pointsSegment = new ArrayList<Double[]>();
                 if (markers != null)
                     markers.clear();
+                else markers = new ArrayList<Marker>();
                 if (polylineList != null)
                     polylineList.clear();
+                else polylineList = new ArrayList<Polyline>();
                 boucleSegment = false;
                 changerMenu(ListeMenu.m_menu_Actiondrone);
+                clickedSegment = false;
                 SynchroniserIntervention();
             }
         });
@@ -652,6 +647,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 if (pointsSegment != null && !pointsSegment.isEmpty()) {
                     drone.etat = EtatDrone.SEGMENT;
+                    if(drone.segment == null)
+                        drone.segment = new Segment();
                     drone.segment.setPoints(pointsSegment);
                     drone.segment.setBoucleFermee(boucleSegment);
 
@@ -660,17 +657,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         public void onResponse(Call<Void> call, Response<Void> response) {
                             Log.e("Drone updated", String.valueOf(response.body()));
                             Toast.makeText(getActivity().getApplicationContext(), "Segment ajouté avec succès", Toast.LENGTH_SHORT);
+                            if (pointsSegment != null)
+                                pointsSegment.clear();
+                            if (markers != null)
+                                markers.clear();
+                            if (polylineList != null)
+                                polylineList.clear();
+                            boucleSegment = false;
+
+                            clickedSegment = false;
+                            changerMenu(ListeMenu.aucun);
+                            reloadDroneEtat();
                         }
 
                         @Override
                         public void onFailure(Call<Void> call, Throwable t) {
                             Log.e("Drone not updated", "");
+                            Toast.makeText(getActivity().getApplicationContext(), "Echec, Segment non ajouté", Toast.LENGTH_SHORT);
                         }
                     });
 
-                    clickedSegment = false;
-                    changerMenu(ListeMenu.aucun);
-                    reloadDroneEtat();
+
                 }
             }
         });
@@ -736,7 +743,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 polylinesZone.clear();
                 markerPoints.clear();
-                markerStart.remove();
+                if(markerStart != null) {
+                    markerStart.remove();
+                }
 
                 clickedZone = false;
 
@@ -925,8 +934,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 for (int i = 0; i < response.body().vehicules.size(); i++) {
                     Vehicule vehiculeCourant = response.body().vehicules.get(i);
                     if (
-                            (vehiculeCourant.etat == EtatVehicule.PARKING) || (vehiculeCourant.etat == EtatVehicule.DEMANDE || vehiculeCourant.etat == EtatVehicule.ENGAGE) && ((vehiculeCourant.position == null) || (vehiculeCourant.position != null && vehiculeCourant.position[0] == null && vehiculeCourant.position[1] == null))) {
-                        ajoutImageFromVehicule(vehiculesCarte.get(i), i);
+                            vehiculeCourant.etat == EtatVehicule.PARKING ||
+                                    (vehiculeCourant.etat == EtatVehicule.DEMANDE && !Vehicule.positionValide(vehiculeCourant.position))) {
                         vehicules.add(response.body().vehicules.get(i));
                     }
                 }
@@ -1034,20 +1043,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         LayoutInflater inflater = getActivity().getLayoutInflater();
         final View popupLayout = inflater.inflate(R.layout.user_filtre_objets_popup, null);
         helpBuilder.setView(popupLayout);
-        Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
-        Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
-        Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
-        Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
-        RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
+        final Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
+        final Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
+        final Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
+        final Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
+        final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
+
+      if(!notcheckedMoyens)
         //set the switch1 to ON
         mySwitchMoyens.setChecked(true);
 
+    if(!notcheckedPoints)
         //set the switch2 to ON
         mySwitchPoints.setChecked(true);
 
+        if(!notcheckedSegment)
         //set the switch3 to ON
         mySwitchSegment.setChecked(true);
 
+        if(!notcheckedZone)
         //set the switch4 to ON
         mySwitchZone.setChecked(true);
 
@@ -1064,10 +1078,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if (isChecked) {
 
                     filtreMoyens = false;
+                    notcheckedMoyens=false;
                     SynchroniserIntervention();
                 } else {
                     filtreMoyens = true;
+                    notcheckedMoyens=true;
                     SynchroniserIntervention();
+
                 }
 
             }
@@ -1082,11 +1099,15 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 if (isChecked) {
                     filtrePoints = false;
                     filtrePointsSP = false;
+                    notcheckedPoints=false;
+
                     SynchroniserIntervention();
                 } else {
                     filtrePoints = true;
                     filtrePointsSP = true;
+                    notcheckedPoints=true;
                     SynchroniserIntervention();
+
                 }
 
             }
@@ -1100,11 +1121,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 if(isChecked){
                     filtreSegment=false;
+                    notcheckedSegment=false;
                     SynchroniserIntervention();
 
                 }else{
                     filtreSegment=true;
+                    notcheckedSegment=true;
                     SynchroniserIntervention();
+
 
                 }
 
@@ -1118,11 +1142,14 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 if(isChecked){
                     filtreZone=false;
+                    notcheckedZone=false;
                     SynchroniserIntervention();
 
                 }else{
                     filtreZone=true;
+                    notcheckedZone=true;
                     SynchroniserIntervention();
+
 
                 }
 
@@ -1164,7 +1191,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         markers = new ArrayList<>();
         markersMoyens = new ArrayList<>();
         pointsSegment = new ArrayList<>();
-        segment = new Segment();
 
 
         recupererBaseSP();
@@ -1287,15 +1313,21 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     markerOptions.snippet("Latitude:" + marker.getPosition().latitude + "," + "Longitude:" + marker.getPosition().longitude);
                     // Adding the marker to the map
                     Marker markerS = mGoogleMap.addMarker(markerOptions);
-
-                    if (markers.isEmpty())// si c'est le premeir point on trace une ligne depuis le drone
+                    Polyline poly;
+                    if (markers.isEmpty()) {// si c'est le premeir point on trace une ligne depuis le drone
                         LastLatLng = new LatLng(droneposition.position[0], droneposition.position[1]);
-                    else
+                        poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(LastLatLng, LastLatLng).width(6).color(Color.RED)
+                                .visible(true));
+                    }
+                    else {
                         LastLatLng = markers.get(markers.size() - 1).getPosition();
+                        poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(LastLatLng, marker.getPosition()).width(6).color(Color.RED)
+                                .visible(true));
+                    }
 
-                    Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                            .add(LastLatLng, marker.getPosition()).width(6).color(Color.RED)
-                            .visible(true));
+
                     polylineList.add(poly);
 
                     markers.add(markerS);
@@ -1429,9 +1461,19 @@ if (clickedZone || clickedZoneExclusion)
                     else
                         LastLatLng = markers.get(markers.size() - 1).getPosition();
 
-                    Polyline poly = mGoogleMap.addPolyline((new PolylineOptions())
-                            .add(LastLatLng, point).width(6).color(Color.RED)
-                            .visible(true));
+                    Polyline poly;
+                    if (markers.isEmpty()) {// si c'est le premeir point on trace une ligne depuis le drone
+                        LastLatLng = new LatLng(droneposition.position[0], droneposition.position[1]);
+                        poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(LastLatLng, LastLatLng).width(6).color(Color.RED)
+                                .visible(true));
+                    }
+                    else {
+                        LastLatLng = markers.get(markers.size() - 1).getPosition();
+                        poly = mGoogleMap.addPolyline((new PolylineOptions())
+                                .add(LastLatLng, point).width(6).color(Color.RED)
+                                .visible(true));
+                    }
 
                     MarkerOptions markerOptions = new MarkerOptions();
 
@@ -1785,13 +1827,7 @@ if (clickedZone || clickedZoneExclusion)
                 break;
             case m_menu_Actiondrone: {
                 m_menu_Actiondrone.setVisibility(View.VISIBLE);
-                /*if(drone.zone.getContours().size() > 0){
-                    m_menu_Actiondrone_zone_b.setEnabled(false);
 
-                }
-                if(drone.segment.getPoints().size()>0){
-                    m_menu_Actiondrone_segment_b.setEnabled(false);
-                }*/
             }
 
             break;
@@ -1854,7 +1890,7 @@ if (clickedZone || clickedZoneExclusion)
             mGoogleMap.stopAnimation();
             droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(droneposition.position[0], droneposition.position[1]))
-
+                    .anchor(0.5f,0.5f)
                     .title("" + 2000)
                     .snippet("SuperDrone le sauveur des Petits chats")
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))

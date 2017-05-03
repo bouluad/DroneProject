@@ -15,7 +15,6 @@ import java.util.Collections;
 import java.util.List;
 
 import istic.fr.droneproject.R;
-import istic.fr.droneproject.activities.UserMainActivity;
 import istic.fr.droneproject.adapter.InterventionRecyclerAdapter;
 import istic.fr.droneproject.adapter.VehiculeRecyclerAdapter;
 import istic.fr.droneproject.model.Intervention;
@@ -93,8 +92,21 @@ public class UserInterventionsActivity extends AppCompatActivity {
             public void onResponse(Call<List<Intervention>> call, Response<List<Intervention>> response) {
                 Collections.reverse(response.body());
 
+                List<Intervention> triee = new ArrayList<>();
+                List<Intervention> cloturees = new ArrayList<>();
+
+                for (Intervention intervention : response.body()) {
+                    if(intervention.cloturer){
+                        cloturees.add(intervention);
+                    }else{
+                        triee.add(intervention);
+                    }
+                }
+
+                triee.addAll(cloturees);
+
                 interventions.clear();
-                interventions.addAll(response.body());
+                interventions.addAll(triee);
                 interventionArrayAdapter.notifyDataSetChanged();
             }
 

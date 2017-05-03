@@ -211,7 +211,7 @@ public class Vehicule {
     /**
      * @return si la position du vehicule est inconnue ou invalide
      */
-    private boolean positionValide(Double[] position) {
+    public static boolean positionValide(Double[] position) {
         return position != null && position.length == 2;
     }
 

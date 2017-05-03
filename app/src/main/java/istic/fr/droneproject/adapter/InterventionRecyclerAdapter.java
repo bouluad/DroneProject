@@ -1,12 +1,12 @@
 package istic.fr.droneproject.adapter;
 
+import android.graphics.Paint;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import java.text.ParseException;
 import java.util.List;
 
 import istic.fr.droneproject.R;
@@ -34,14 +34,20 @@ public class InterventionRecyclerAdapter extends RecyclerView.Adapter<Interventi
     public void onBindViewHolder(InterventionViewHolder holder, int position) {
         final Intervention intervention = interventions.get(position);
 
-        holder.libelle.setText(intervention.libelle);
-
-        holder.libelle.setOnClickListener(new View.OnClickListener() {
+        holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 listener.clickIntervention(intervention);
             }
         });
+
+        if(intervention.cloturer){
+            holder.libelle.setPaintFlags(holder.libelle.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            holder.libelle.setText(intervention.libelle+" (clôturée)");
+        }else{
+            holder.libelle.setPaintFlags(Paint.ANTI_ALIAS_FLAG);
+            holder.libelle.setText(intervention.libelle);
+        }
     }
 
     @Override
@@ -51,10 +57,12 @@ public class InterventionRecyclerAdapter extends RecyclerView.Adapter<Interventi
 
     public class InterventionViewHolder extends RecyclerView.ViewHolder {
 
+        View view;
         TextView libelle;
 
         public InterventionViewHolder(View itemView) {
             super(itemView);
+            view = itemView.findViewById(R.id.ui_intervention_item);
             libelle = (TextView) itemView.findViewById(R.id.ui_intervention_item_libelle);
         }
     }

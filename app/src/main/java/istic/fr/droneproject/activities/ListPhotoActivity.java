@@ -3,6 +3,7 @@ package istic.fr.droneproject.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ListView;
@@ -34,10 +35,13 @@ public class ListPhotoActivity  extends Activity {
 
         String pos1 ="";
         String pos2 ="";
+        String idInter ="";
 
         if(bundle != null){
-             pos1 =bundle.getString("Value1");;
-             pos2 =bundle.getString("Value1");;
+             pos1 =bundle.getString("Value1");
+             pos2 =bundle.getString("Value2");
+             idInter =bundle.getString("Value3");
+            System.out.println(idInter);
 
         }
 
@@ -50,11 +54,14 @@ public class ListPhotoActivity  extends Activity {
 
         DronePhotosServiceImpl service = new DronePhotosServiceImpl();
 
-        service.getDronePhotosbyPositionPTS(pos1,pos2, new Callback<List<DronePhotos>>() {
+        service.getDronePhotosbyPositionPTS(pos1,pos2, idInter,new Callback<List<DronePhotos>>() {
             @Override
             public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
                 photos.clear();
-                photos.addAll(response.body());
+                if (response.body()!=null) {
+                    System.out.println(response.body());
+                    photos.addAll(response.body());
+                }
                 adapter.notifyDataSetChanged();
             }
 
