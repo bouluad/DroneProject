@@ -1807,7 +1807,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             mGoogleMap.stopAnimation();
             droneMarker = mGoogleMap.addMarker(new MarkerOptions()
                     .position(new LatLng(droneposition.position[0], droneposition.position[1]))
-
+                    .anchor(0.5f,0.5f)
                     .title("" + 2000)
                     .snippet("SuperDrone le sauveur des Petits chats")
                     .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))

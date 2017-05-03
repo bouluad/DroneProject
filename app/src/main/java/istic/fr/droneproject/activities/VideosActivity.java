@@ -58,7 +58,7 @@ public class VideosActivity extends android.support.v4.app.Fragment {
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                         .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
                         .noPlaceholder()
-                        .error(R.drawable.image_not_found)
+//                        .error(R.drawable.image_not_found)
                         .into(video);
                 handler.postDelayed(task, 1000);
             }
