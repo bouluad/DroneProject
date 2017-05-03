@@ -2,6 +2,7 @@ package istic.fr.droneproject.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -157,7 +158,6 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
                     map.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
 
                     MarkerOptions markerOne;
-
                     for (DronePhotos p : dronePhotos) {
 
                         markerOne = new MarkerOptions()
