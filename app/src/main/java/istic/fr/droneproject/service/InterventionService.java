@@ -3,8 +3,6 @@ package istic.fr.droneproject.service;
 import java.util.List;
 
 import istic.fr.droneproject.model.Intervention;
-import retrofit2.Call;
-import istic.fr.droneproject.model.Vehicule;
 import retrofit2.Callback;
 
 public interface InterventionService {
@@ -35,12 +33,5 @@ public interface InterventionService {
      * @param callback
      */
     void updateIntervention(Intervention intervention, Callback<Void> callback);
-
-    /**
-     * Cloturer une intervention by id
-     * @param callback Callback pour récupérer la réponse
-     */
-
-    void cloturerIntervention(String idIntervention, Callback<Void> callback);
 
 }

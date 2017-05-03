@@ -12,7 +12,6 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import istic.fr.droneproject.model.Intervention;
-import istic.fr.droneproject.model.Vehicule;
 import istic.fr.droneproject.service.InterventionService;
 import istic.fr.droneproject.service.retrofit.InterventionRestAPI;
 import retrofit2.Call;
@@ -125,18 +124,5 @@ public class InterventionServiceCentral implements InterventionService {
         Call<Void> call =  apiService.updateIntervention(intervention);
         call.enqueue(callback);
     }
-
-    @Override
-    public void cloturerIntervention(String idIntervention, Callback<Void> callback) {
-        this.interventionId = null;
-        Gson gson = new GsonBuilder().setLenient().create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(InterventionRestAPI.BASE_URL).addConverterFactory(GsonConverterFactory.create(gson)).build();
-
-        InterventionRestAPI apiService = retrofit.create(InterventionRestAPI.class);
-
-        Call<Void> call =  apiService.cloturerIntervention(idIntervention);
-        call.enqueue(callback);
-    }
-
 
 }
