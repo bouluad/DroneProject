@@ -918,6 +918,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         InterventionServiceCentral.getInstance().getInterventionById(idIntervention, new Callback<Intervention>() {
             @Override
             public void onResponse(Call<Intervention> call, Response<Intervention> response) {
+                mGoogleMap.clear();//clean carte
+                reloadDrone(); // remettre drone
                 intervention = response.body();
                 //rechargement des 2 listes de vehicules & points
                 if (vehiculesCarte != null)
@@ -1732,10 +1734,9 @@ if (clickedZone || clickedZoneExclusion)
         if (mGoogleMap != null && !reloadingIntervention) {
             reloadingIntervention = true;
 
-            mGoogleMap.clear();
 
             chargerIntervention();
-            reloadDrone();
+
         }
     }
 
