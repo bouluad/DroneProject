@@ -1242,7 +1242,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 droneposition = response.body();
                 //Yousra
-                Log.e("OnMapReady", "Drone Position is" + String.valueOf(response.body().position));
+                Log.e("OnMapReady", "Drone Position is" + String.valueOf(response.body().position[0])+" "+String.valueOf(response.body().position[0]));
                 reloadDrone();
 
             }
@@ -1474,7 +1474,6 @@ if (clickedZone || clickedZoneExclusion)
                                 .add(LastLatLng, point).width(6).color(Color.RED)
                                 .visible(true));
                     }
-
                     MarkerOptions markerOptions = new MarkerOptions();
 
                     // Setting latitude and longitude of the marker position
