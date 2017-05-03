@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -110,6 +111,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     List<Double[]> contours;
     ArrayList<LatLng> markerPoints; //liste de points pour une zone
     Polygon polygonZone = null; //zone sur la carte
+
+    // pr les zones d'exclusion
+    /*List<Polyline> polylinesZoneExclusion;  //liste de segments pr une zone
+
+    ArrayList<LatLng> markerPointsExclusion;
+*/
+
 
     /*  PointInteret pointSelected;*/
     int pointSelected;
@@ -589,8 +597,13 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 // pareil que zone mais crée une zone d'exclusion
+                System.out.println("dessiner zone exclusion");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
-                clickedZone = true;
+               /* dessinerZone();
+*/
+                markerPoints = new ArrayList<>();
+                polylinesZone = new ArrayList<Polyline>();
+                /*clickedZone = true;*/
                 clickedZoneExclusion = true;
                 //TODO: déclancher le placement de point pour une zone d'exclusion
             }
@@ -712,6 +725,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_annule.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
                 System.out.println("annuler zone");
                 //changerMenu(ListeMenu.aucun);
                 /*polylinesZone.get(polylinesZone.size()-1).remove();
@@ -725,6 +739,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 markerStart.remove();
 
                 clickedZone = false;
+
+
 
                 SynchroniserIntervention();
                 //reset la sélection du drone
@@ -740,8 +756,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public void onClick(View v) {
                 System.out.println("fermer zone");
                 changerMenu(ListeMenu.aucun);
+                int color1; //couleur segment
+                int color2; //couleur surface
+                if(clickedZoneExclusion){
+                   color1 =Color.RED;
+                    color2= R.color.TransparentRed;
+
+                }
+                else{
+                    color1 =Color.BLUE;
+                    color2= R.color.TransparentBlue;
+
+                }
+
+
+                /****************fermer le polygone, redessiner tt le polygone*********************/
                 mGoogleMap.addPolyline((new PolylineOptions())
-                        .add(markerPoints.get(markerPoints.size() - 1), markerPoints.get(0)).width(6).color(Color.BLUE)
+                        .add(markerPoints.get(markerPoints.size() - 1), markerPoints.get(0)).width(6).color(color1)
                         .visible(true));
 
                 System.out.println("dessiner polygon");
@@ -750,38 +781,72 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     zoneOptions.add(markerPoints.get(i));
                 }
                 zoneOptions.add(markerPoints.get(0));
-                zoneOptions.strokeColor(R.color.TransparentBlue);
+                zoneOptions.strokeColor(color2);
 
 
-                zoneOptions.fillColor(R.color.TransparentBlue);
+                zoneOptions.fillColor(color2);
 
 // Get back the mutable Polygon
                 Polygon polygon = mGoogleMap.addPolygon(zoneOptions);
                 markerStart.remove();
+                /**********************************************************************************/
 
-
-                clickedZone = false;
+               /* clickedZoneExclusion=false;
+                clickedZone = false;*/
                 //valider la zone et l'envoyer au service REST
 
-
+                /*************************** update data drone **************************************/
                 System.out.println("update drone");
-                List<Double[]> contours = new ArrayList<Double[]>();
+                if(clickedZoneExclusion){
+                    List<Double[]> contours = new ArrayList<Double[]>();
+                    List<List<Double[]>> exclusion = new ArrayList<List<Double[]>>();
 
 
-                for (LatLng point : markerPoints) {
-                    Double[] tab = new Double[2];
-                    tab[0] = point.latitude;
-                    tab[1] = point.longitude;
-                    contours.add(tab);
+                    for (LatLng point : markerPoints) {
+                        Double[] tab = new Double[2];
+                        tab[0] = point.latitude;
+                        tab[1] = point.longitude;
+                        contours.add(tab);
+                    }
+                    exclusion.add(contours);
+
+                    if(drone.zone == null)
+                        drone.zone = new Zone();
+                    if(drone.zone.getExclusion() ==null){
+                    drone.zone.setExclusion(exclusion);}
+                    else{
+                        drone.zone.getExclusion().add(contours);
+                    }
+                    drone.etat = EtatDrone.ZONE;
+
+
                 }
-                if(drone.zone == null)
-                    drone.zone = new Zone();
-                drone.zone.setContours(contours);
-                drone.etat = EtatDrone.ZONE;
-                for (int i = 0; i < drone.zone.getContours().size(); i++) {
-                    System.out.println("zone ==> base " + drone.zone.getContours().get(i)[0]);
-                    System.out.println("zone ==> base " + drone.zone.getContours().get(i)[1]);
+
+                else { //zone normale
+
+                    List<Double[]> contours = new ArrayList<Double[]>();
+
+
+                    for (LatLng point : markerPoints) {
+                        Double[] tab = new Double[2];
+                        tab[0] = point.latitude;
+                        tab[1] = point.longitude;
+                        contours.add(tab);
+                    }
+                    if (drone.zone == null)
+                        drone.zone = new Zone();
+                    drone.zone.setContours(contours);
+                    drone.etat = EtatDrone.ZONE;
+                    for (int i = 0; i < drone.zone.getContours().size(); i++) {
+                        System.out.println("zone ==> base " + drone.zone.getContours().get(i)[0]);
+                        System.out.println("zone ==> base " + drone.zone.getContours().get(i)[1]);
+                    }
                 }
+
+                /***********************************************************************************/
+
+                clickedZoneExclusion=false;
+                clickedZone = false;
 
                 DroneServiceImpl.getInstance().updateDrone(drone, new Callback<Void>() {
                     @Override
@@ -1171,7 +1236,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             public boolean onMarkerClick(Marker marker) {
 
 
-                if (clickedZone) {
+               if (clickedZone || clickedZoneExclusion) {
                     System.out.println("dessiner une zone2");
 
                     markerPoints.add(marker.getPosition());
@@ -1189,16 +1254,25 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                         int i = markerPoints.size() - 2;
 
+                        if(clickedZoneExclusion) {
+                            Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
+                                    .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.RED)
+                                    .visible(true));
 
-                        Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
-                                .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.BLUE)
-                                .visible(true));
+                            polylinesZone.add(polyline);
 
-                        polylinesZone.add(polyline);
+                        }
+                        else  {
+                            Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
+                                    .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.BLUE)                                    .visible(true));
+
+                            polylinesZone.add(polyline);
+
+                        }
 
 
                     }
-                } else if (clickedSegment || clickedZoneExclusion) {
+                } else if (clickedSegment ) {
                     //Yousra
 
                     MarkerOptions markerOptions = new MarkerOptions();
@@ -1309,10 +1383,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 Log.e("Map", "Map clicked");
 
-
-                if (clickedZone) {
-
-
+if (clickedZone || clickedZoneExclusion)
+{
                     markerPoints.add(point);
 
                     if (markerPoints.size() == 1) {
@@ -1328,17 +1400,27 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         int i = markerPoints.size() - 2;
 
 
-                        Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
-                                .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.BLUE)
-                                .visible(true));
+                        if(clickedZoneExclusion) {
+                            Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
+                                    .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.RED)
+                                    .visible(true));
 
-                        polylinesZone.add(polyline);
+                            polylinesZone.add(polyline);
+
+                        }
+                        else  {
+                            Polyline polyline = mGoogleMap.addPolyline((new PolylineOptions())
+                                    .add(markerPoints.get(i), markerPoints.get(i + 1)).width(6).color(Color.BLUE)                                    .visible(true));
+
+                            polylinesZone.add(polyline);
+
+                        }
 
 
                     }
                 }
             /*if(clickedSegment || clickedZone || clickedZoneExclusion){*/
-                else if (clickedSegment || clickedZoneExclusion) {
+                else if (clickedSegment ) {
                     //Yousra
 
                     System.out.println("dessiner une ligne");
@@ -1496,6 +1578,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         m_menu_Actiondrone_segment_b.setEnabled(true);
                         m_menu_Actiondrone_zone_b.setEnabled(true);
                         m_menu_Actiondrone_parking.setEnabled(true);
+                        m_menu_Actiondrone_exclusion.setEnabled(true);
                         break;
                     case SEGMENT:
                         m_menu_Actiondrone_stop.setEnabled(true);
@@ -1792,6 +1875,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     private void dessinerZone() {
         if (drone != null && drone.zone != null) {
+
             if (drone.zone.getContours().size() > 0) {
                 System.out.println("===> zone " + drone.zone.getContours());
 
@@ -1824,6 +1908,42 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 polygonZone = mGoogleMap.addPolygon(zoneOptions);
 
             }
+
+         if(drone.zone.getExclusion() !=null) {
+             if (drone.zone.getExclusion().size() > 0) {
+
+
+
+
+                 for (List<Double[]> list : drone.zone.getExclusion()) {
+                     ArrayList<LatLng> contourZoneExculsion = new ArrayList<>();
+                     for (Double[] tab : list) {
+
+                         LatLng latLng = new LatLng(tab[0], tab[1]);
+
+                         contourZoneExculsion.add(latLng);
+                     }
+
+                         System.out.println("dessiner polygon");
+                         PolygonOptions zoneOptions = new PolygonOptions();
+                         for (int i = 0; i < contourZoneExculsion.size(); i++) {
+                             zoneOptions.add(contourZoneExculsion.get(i));
+                         }
+                         zoneOptions.add(contourZoneExculsion.get(0));
+                         zoneOptions.strokeColor(Color.RED);
+
+
+                         zoneOptions.fillColor(R.color.TransparentRed);
+
+// Get back the mutable Polygon
+                         polygonZone = mGoogleMap.addPolygon(zoneOptions);
+
+
+                 }
+             }
+         }
+
+
         }
     }
 
