@@ -36,8 +36,9 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
         DronePhotos photo = photos.get(position);
-        Picasso.with(context).load(photo.path).placeholder(R.drawable.loading).error(R.drawable.image_not_found).into(holder.image);
-        holder.nom.setText(photo.nom);
+        Picasso.with(context)
+                .load(photo.path)
+                .into(holder.image);
         holder.date.setText(photo.date_heure);
     }
 
@@ -49,14 +50,12 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
     class PhotoViewHolder extends RecyclerView.ViewHolder {
 
         ImageView image;
-        TextView nom;
         TextView date;
 
         PhotoViewHolder(View itemView) {
             super(itemView);
 
             this.image = (ImageView) itemView.findViewById(R.id.album_photo_imageview);
-            this.nom = (TextView) itemView.findViewById(R.id.album_photo_nomphoto);
             this.date = (TextView) itemView.findViewById(R.id.album_photo_datephoto);
         }
     }
