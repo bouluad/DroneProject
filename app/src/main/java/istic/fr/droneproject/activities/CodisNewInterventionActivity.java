@@ -29,6 +29,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import istic.fr.droneproject.R;
@@ -41,6 +42,7 @@ import istic.fr.droneproject.model.EtatDrone;
 import istic.fr.droneproject.model.Intervention;
 import istic.fr.droneproject.model.TypeVehicule;
 import istic.fr.droneproject.model.Vehicule;
+import istic.fr.droneproject.model.Zone;
 import istic.fr.droneproject.service.impl.DroneServiceImpl;
 import istic.fr.droneproject.service.impl.InterventionServiceCentral;
 import retrofit2.Call;
@@ -126,6 +128,9 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
                         String idIntervention = response.body();
                         Log.e("CERANEWDRONE"," idInterDrone: "+idIntervention);
                         Drone newDrone = new Drone(idIntervention, EtatDrone.STOP);
+                        newDrone.zone = new Zone();
+                        newDrone.zone.setContours(new ArrayList<Double[]>() );
+                        newDrone.zone.setExclusion(new ArrayList<List<Double[]>>());
                         DroneServiceImpl.getInstance().setDrone(newDrone, new Callback<Void>() {
                                     @Override
                                     public void onResponse(Call<Void> call, Response<Void> response) {

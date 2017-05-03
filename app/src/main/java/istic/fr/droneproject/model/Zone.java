@@ -11,6 +11,14 @@ public class Zone {
 
     List<List<Double[]>> exclusion;
 
+    public List<List<Double[]>> getExclusion() {
+        return exclusion;
+    }
+
+    public void setExclusion(List<List<Double[]>> exclusion) {
+        this.exclusion = exclusion;
+    }
+
     public List<Double[]> getContours() {
         return contours;
     }
