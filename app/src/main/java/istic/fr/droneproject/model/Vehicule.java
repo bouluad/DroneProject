@@ -226,7 +226,7 @@ public class Vehicule {
     public boolean creerParCodis() {
         if (peutEtreDemande()) {
             demander();
-            parking();
+            validerParCodis();
             return true;
         }
         return false;

@@ -113,6 +113,7 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
             public void onFailure(Call<List<Intervention>> call, Throwable t) {
                 //DO NOTHING
                 Log.e("UserInterventionsActivi", t.toString());
+                Toast.makeText(getContext(), "Erreur de récupération des interventions", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -120,22 +121,24 @@ public class CodisInterventionsFragment extends android.support.v4.app.Fragment{
     private void showSimplePopUp(final Intervention intervention) {
         if(!intervention.cloturer) {
             AlertDialog.Builder helpBuilder = new AlertDialog.Builder(getActivity());
-            helpBuilder.setTitle("Cloturer");
+            helpBuilder.setTitle("Clôturer");
             helpBuilder.setMessage("Voulez-vous clôturer cette intervention ?\n Date: " + intervention.date + "\n Adresse: " + intervention.adresse);
 
             helpBuilder.setPositiveButton("Ok",
                     new DialogInterface.OnClickListener() {
 
                         public void onClick(DialogInterface dialog, int which) {
-                            InterventionServiceCentral.getInstance().cloturerIntervention(intervention._id, new Callback<Void>() {
+                            intervention.cloturer = true;
+                            InterventionServiceCentral.getInstance().updateIntervention(intervention, new Callback<Void>() {
                                 @Override
                                 public void onResponse(Call<Void> call, Response<Void> response) {
                                     Toast.makeText(getContext(), "Intervention clôturée", Toast.LENGTH_SHORT).show();
+                                    recupererListeInterventions();
                                 }
 
                                 @Override
                                 public void onFailure(Call<Void> call, Throwable t) {
-                                    Toast.makeText(getContext(), "Erreur", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(getContext(), "Erreur d'envoi de la clôture", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
