@@ -10,6 +10,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -56,6 +58,9 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
     CodisPremierDepartAdapter moyensAdapter;
     FrameLayout frameFragment;
 
+    Button btn_valider;
+    EditText libelle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +78,23 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
         frameFragment = (FrameLayout) findViewById(R.id.codis_new_frame_fragment);
         frameFragment.setVisibility(View.GONE);
 
-        final EditText libelle = (EditText) findViewById(R.id.libelle);
+        libelle = (EditText) findViewById(R.id.libelle);
+        libelle.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                activerBtnValider();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         final RadioButton radioBtnINC = (RadioButton) findViewById(R.id.code_radio_inc);
 
@@ -85,7 +106,7 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
             }
         });
 
-        final Button btn_valider = (Button) findViewById(R.id.ButtonSendForm);
+        btn_valider = (Button) findViewById(R.id.ButtonSendForm);
         btn_valider.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -136,6 +157,14 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
                 showGoogleMap();
             }
         });
+
+        activerBtnValider();
+    }
+
+    private void activerBtnValider() {
+        boolean enabled = libelle != null && libelle.getText() != null && !libelle.getText().toString().isEmpty()
+                && intervention != null && intervention.adresse != null && !intervention.adresse.isEmpty();
+        btn_valider.setEnabled(enabled);
     }
 
     private void showGoogleMap() {
@@ -209,5 +238,6 @@ public class CodisNewInterventionActivity extends AppCompatActivity implements C
         intervention.adresse = adresse;
 
         frameFragment.setVisibility(View.GONE);
+        activerBtnValider();
     }
 }
