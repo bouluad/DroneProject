@@ -41,7 +41,6 @@ public class ListPhotoActivity  extends Activity {
              pos1 =bundle.getString("Value1");
              pos2 =bundle.getString("Value2");
              idInter =bundle.getString("Value3");
-            System.out.println(idInter);
 
         }
 
@@ -58,8 +57,8 @@ public class ListPhotoActivity  extends Activity {
             @Override
             public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
                 photos.clear();
+                System.out.println(response.body());
                 if (response.body()!=null) {
-                    System.out.println(response.body());
                     photos.addAll(response.body());
                 }
                 adapter.notifyDataSetChanged();

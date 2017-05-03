@@ -564,7 +564,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 changerMenu(ListeMenu.m_menu_Actiondrone_segment);
-                System.out.println("dessiner segment");
                 clickedSegment = true;
                 Log.e("segment", "Segment crée");
             }
@@ -573,7 +572,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_b.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("afficher zone");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
                 markerPoints = new ArrayList<>();
                 polylinesZone = new ArrayList<Polyline>();
@@ -588,7 +586,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
                 // pareil que zone mais crée une zone d'exclusion
-                System.out.println("dessiner zone exclusion");
                 changerMenu(ListeMenu.m_menu_Actiondrone_zone);
                /* dessinerZone();
 */
@@ -685,7 +682,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_segment_supplast.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("supprimer derniere ligne");
                 if (!polylineList.isEmpty()) {
                     polylineList.get(polylineList.size() - 1).remove(); //remove de la carte
                     polylineList.remove(polylineList.size() - 1); // remove de la liste
@@ -733,7 +729,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onClick(View v) {
 
-                System.out.println("annuler zone");
                 //changerMenu(ListeMenu.aucun);
                 /*polylinesZone.get(polylinesZone.size()-1).remove();
                 markerPoints.remove(markerPoints.size()-1);*/
@@ -749,8 +744,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 clickedZone = false;
 
-
-
                 SynchroniserIntervention();
                 //reset la sélection du drone
                 //TODO: annuler l'ajout de point au segment, leurs suppression de la carte
@@ -763,7 +756,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         m_menu_Actiondrone_zone_fin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("fermer zone");
                 changerMenu(ListeMenu.aucun);
                 int color1; //couleur segment
                 int color2; //couleur surface
@@ -778,13 +770,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 }
 
-
                 /****************fermer le polygone, redessiner tt le polygone*********************/
                 mGoogleMap.addPolyline((new PolylineOptions())
                         .add(markerPoints.get(markerPoints.size() - 1), markerPoints.get(0)).width(6).color(color1)
                         .visible(true));
 
-                System.out.println("dessiner polygon");
                 PolygonOptions zoneOptions = new PolygonOptions();
                 for (int i = 0; i < markerPoints.size(); i++) {
                     zoneOptions.add(markerPoints.get(i));
@@ -795,7 +785,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
                 zoneOptions.fillColor(color2);
 
-// Get back the mutable Polygon
+                // Get back the mutable Polygon
                 Polygon polygon = mGoogleMap.addPolygon(zoneOptions);
                 markerStart.remove();
                 /**********************************************************************************/
@@ -805,7 +795,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 //valider la zone et l'envoyer au service REST
 
                 /*************************** update data drone **************************************/
-                System.out.println("update drone");
                 if(clickedZoneExclusion){
                     List<Double[]> contours = new ArrayList<Double[]>();
                     List<List<Double[]>> exclusion = new ArrayList<List<Double[]>>();
@@ -846,10 +835,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         drone.zone = new Zone();
                     drone.zone.setContours(contours);
                     drone.etat = EtatDrone.ZONE;
-                    for (int i = 0; i < drone.zone.getContours().size(); i++) {
-                        System.out.println("zone ==> base " + drone.zone.getContours().get(i)[0]);
-                        System.out.println("zone ==> base " + drone.zone.getContours().get(i)[1]);
-                    }
+
                 }
 
                 /***********************************************************************************/
@@ -927,7 +913,6 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                 vehiculesCarte = intervention.vehicules;
                 if (pointsCarte != null)
                     pointsCarte.clear();
-                System.out.println("je suis laaaa");
               /*  recupererBaseSP();*/
                 pointsCarte = intervention.points;
                 //remplissage du tableau des vehicules placeable sur la carte
