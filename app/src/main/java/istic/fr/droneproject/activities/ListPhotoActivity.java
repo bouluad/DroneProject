@@ -3,12 +3,11 @@ package istic.fr.droneproject.activities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.ListView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import istic.fr.droneproject.R;
@@ -51,14 +50,14 @@ public class ListPhotoActivity  extends Activity {
                 final AlbumPhotoAdapter adapter = new AlbumPhotoAdapter(photos, R.layout.album_photo_item, this.getApplicationContext());
                 recyclerViewPhotos.setAdapter(adapter);
 
-        DronePhotosServiceImpl service = new DronePhotosServiceImpl();
 
-        service.getDronePhotosbyPositionPTS(pos1,pos2, idInter,new Callback<List<DronePhotos>>() {
+
+        DronePhotosServiceImpl.getInstance().getDronePhotosbyPositionPTS(pos1,pos2, idInter,new Callback<List<DronePhotos>>() {
             @Override
             public void onResponse(Call<List<DronePhotos>> call, Response<List<DronePhotos>> response) {
                 photos.clear();
-                System.out.println(response.body());
                 if (response.body()!=null) {
+                    Collections.reverse(response.body());
                     photos.addAll(response.body());
                 }
                 adapter.notifyDataSetChanged();
