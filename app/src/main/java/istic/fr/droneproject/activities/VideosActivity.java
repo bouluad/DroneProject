@@ -1,28 +1,16 @@
 package istic.fr.droneproject.activities;
 
-import android.app.Fragment;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.provider.Settings;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 
-import com.google.android.gms.maps.MapView;
 import com.squareup.picasso.MemoryPolicy;
+import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import istic.fr.droneproject.R;
 
@@ -63,15 +51,16 @@ public class VideosActivity extends android.support.v4.app.Fragment {
 
         }
 
-
         task = new Runnable() {
             public void run() {
                 Picasso.with(getContext())
                         .load("http://148.60.11.238/projet/"+idIntervention+"/VideoDrone.jpeg")
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
+                        .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
+                        .noPlaceholder()
                         .error(R.drawable.image_not_found)
                         .into(video);
-                handler.postDelayed(task, 2000);
+                handler.postDelayed(task, 1000);
             }
         };
 
