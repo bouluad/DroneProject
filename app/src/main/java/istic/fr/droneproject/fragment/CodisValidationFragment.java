@@ -116,11 +116,8 @@ public class CodisValidationFragment extends Fragment {
 
                 if (nouvelEtat == EtatVehicule.ANNULE) {
                     tmpValidation.vehicule.annuler();
-                } else if (nouvelEtat == EtatVehicule.ENGAGE) {
-                    //Le vehicule a deja une position mais est toujours demande
-                    tmpValidation.vehicule.engager(tmpValidation.vehicule.position);
-                } else if (nouvelEtat == EtatVehicule.PARKING) {
-                    tmpValidation.vehicule.parking();
+                } else {
+                    tmpValidation.vehicule.validerParCodis();
                 }
 
                 InterventionServiceCentral.getInstance().updateIntervention(tmpValidation.intervention, new Callback<Void>() {

@@ -131,8 +131,28 @@ public class Vehicule {
      */
     public boolean engager(Double[] nouvellePosition) {
         if (peutEtreEngage() && positionValide(nouvellePosition)) {
-            etat = EtatVehicule.ENGAGE;
             position = nouvellePosition;
+            if (etat != EtatVehicule.DEMANDE) {
+                etat = EtatVehicule.ENGAGE;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Change l'etat du vehicule a ENGAGE ou PARKING si c'est autorise
+     * Met l'heure d'engagement a l'heure courante si c'est le premier engagement du vehicule
+     *
+     * @return true si le changement a ete effectue
+     */
+    public boolean validerParCodis() {
+        if (peutEtreValideParCodis()) {
+            if (positionValide(position)) {
+                etat = EtatVehicule.ENGAGE;
+            } else {
+                etat = EtatVehicule.PARKING;
+            }
             if (heureEngagement == null) {
                 heureEngagement = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
             }
@@ -140,6 +160,11 @@ public class Vehicule {
         }
         return false;
     }
+
+    private boolean peutEtreValideParCodis() {
+        return etat == EtatVehicule.DEMANDE;
+    }
+
 
     /**
      * Change l'etat du vehicule a PARKING si c'est autorise
@@ -150,10 +175,9 @@ public class Vehicule {
      */
     public boolean parking() {
         if (peutEtreParking()) {
-            etat = EtatVehicule.PARKING;
             position = null;
-            if (heureEngagement == null) {
-                heureEngagement = new SimpleDateFormat("HH:mm", Locale.FRANCE).format(new Date());
+            if (etat != EtatVehicule.DEMANDE) {
+                etat = EtatVehicule.PARKING;
             }
             return true;
         }
