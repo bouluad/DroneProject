@@ -21,7 +21,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import istic.fr.droneproject.R;
@@ -93,6 +92,7 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
     @Override
     public void onDestroy() {
         super.onDestroy();
+        DronePhotosServiceImpl.getInstance().deleteCallbacks();
 
         // map
         if (mMapView != null) mMapView.onDestroy();
@@ -141,12 +141,7 @@ public class AlbumActivity extends Fragment implements GoogleMap.OnMarkerClickLi
 
                     dronePhotos = response.body();
 
-                    Collections.sort(dronePhotos, new Comparator<DronePhotos>() {
-                        @Override
-                        public int compare(DronePhotos o1, DronePhotos o2) {
-                            return o1.date_heure.compareTo(o2.date_heure);
-                        }
-                    });
+                    Collections.reverse(dronePhotos);
 
                     List<String> positions = new ArrayList<>();
 
