@@ -2,6 +2,7 @@ package istic.fr.droneproject.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,7 +11,11 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import istic.fr.droneproject.R;
 import istic.fr.droneproject.model.DronePhotos;
@@ -39,7 +44,26 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
         Picasso.with(context)
                 .load(photo.path)
                 .into(holder.image);
-        holder.date.setText(photo.date_heure);
+
+        final String OLD_FORMAT = "YYYYMMddHHmmss";
+        final String NEW_FORMAT = "dd MMMM YYYY - HH:mm:ss";
+
+        String oldDateString = photo.date_heure;
+        String newDateString;
+
+        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.FRANCE);
+
+        try {
+            Date d = sdf.parse(oldDateString);
+            sdf.applyPattern(NEW_FORMAT);
+            newDateString = sdf.format(d);
+            holder.date.setText(newDateString);
+
+        }catch (ParseException e) {
+            Log.e("AlbumPhotoAdapter", e.toString());
+
+            holder.date.setText(oldDateString);
+        }
     }
 
     @Override
