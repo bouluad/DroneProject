@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -1494,6 +1493,7 @@ if (clickedZone || clickedZoneExclusion)
                 } else {
                     pointVehicule = point;
                     if (clickedPoint) {
+                        clickedPoint = false;
                         Double nPos[] = new Double[2];
                         nPos[0] = point.latitude;
                         nPos[1] = point.longitude;
