@@ -45,21 +45,21 @@ public class AlbumPhotoAdapter extends RecyclerView.Adapter<AlbumPhotoAdapter.Ph
                 .load(photo.path)
                 .into(holder.image);
 
-        final String OLD_FORMAT = "YYYYMMddHHmmss";
-        final String NEW_FORMAT = "dd MMMM YYYY - HH:mm:ss";
+        final String OLD_FORMAT = "yyyyMMddHHmmss";
+        final String NEW_FORMAT = "dd MMMM yyyy - HH:mm:ss";
 
         String oldDateString = photo.date_heure;
         String newDateString;
 
-        SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.FRANCE);
-
         try {
+            SimpleDateFormat sdf = new SimpleDateFormat(OLD_FORMAT, Locale.FRANCE);
+
             Date d = sdf.parse(oldDateString);
             sdf.applyPattern(NEW_FORMAT);
             newDateString = sdf.format(d);
             holder.date.setText(newDateString);
 
-        }catch (ParseException e) {
+        }catch (ParseException | IllegalArgumentException e) {
             Log.e("AlbumPhotoAdapter", e.toString());
 
             holder.date.setText(oldDateString);
