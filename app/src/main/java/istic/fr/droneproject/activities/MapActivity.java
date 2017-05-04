@@ -693,7 +693,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                     markers.get(markers.size() - 1).remove();
                     markers.remove(markers.size() - 1);
                 }
-
+                if(!pointsSegment.isEmpty()){
+                    pointsSegment.remove(pointsSegment.size()-1);
+                }
                 if (boucleSegment) {
                     if (boucleSegmentPoly != null)
                         boucleSegmentPoly.remove();
