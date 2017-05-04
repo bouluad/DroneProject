@@ -40,7 +40,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
         android:layout_marginTop="20dp"
-        android:text="  Segment " />
+        android:text="  Drone " />
 
     <RadioGroup
         android:id="@+id/type_carte"
