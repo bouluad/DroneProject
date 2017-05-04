@@ -2,6 +2,7 @@ package istic.fr.droneproject.activities;
 
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.Picasso;
 
 import istic.fr.droneproject.R;
+import istic.fr.droneproject.service.impl.DronePhotosServiceImpl;
 
 /**
  * Created by bouluad on 22/03/17.
@@ -27,7 +29,6 @@ public class VideosActivity extends android.support.v4.app.Fragment {
     Handler handler = new Handler();
 
 
-    private Boolean aStart = true;
     private String idIntervention;
     private Runnable task;
 
@@ -58,8 +59,8 @@ public class VideosActivity extends android.support.v4.app.Fragment {
                         .memoryPolicy(MemoryPolicy.NO_CACHE, MemoryPolicy.NO_STORE)
                         .networkPolicy(NetworkPolicy.NO_CACHE, NetworkPolicy.NO_STORE)
                         .noPlaceholder()
-//                        .error(R.drawable.image_not_found)
                         .into(video);
+                System.out.println("IMGAE LOADED");
                 handler.postDelayed(task, 1000);
             }
         };
@@ -84,6 +85,39 @@ public class VideosActivity extends android.support.v4.app.Fragment {
         });
 
 
+    }
+
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // handler
+        if (handler != null) {
+            handler.removeCallbacks(task);
+        }
+    }
+
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // handler
+        if (handler != null) {handler.removeCallbacks(task);
+
+        }
+    }
+
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+
+        // handler
+        if (handler != null) {handler.removeCallbacks(task);
+
+        }
     }
 
     public static VideosActivity newInstance(String idIntervention) {
