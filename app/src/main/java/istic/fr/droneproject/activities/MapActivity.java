@@ -167,6 +167,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     Button m_menu_Actiondrone_parking;
     Button m_menu_Actiondrone_exclusion;
 
+    //désactiver quand le vehicule est deja arrivé
+    Button confirmer;
+
     public enum ListeMenu {
         m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, m_menu_Actiondrone, m_menu_Actiondrone_segment, m_menu_Actiondrone_zone, aucun
     }
@@ -239,7 +242,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button points = (Button) view.findViewById(R.id.m_menu_choix_points);
         Button vehicule = (Button) view.findViewById(R.id.m_menu_choix_vehicules);
         Button deplacer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_deplacer);
-        Button confirmer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
+        confirmer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_confirmer);
         Button liberer = (Button) view.findViewById(R.id.m_menu_Actionvehicule_liberer);
         Button parking = (Button) view.findViewById(R.id.m_menu_Actionvehicule_parking);
 
@@ -1350,6 +1353,10 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
                         changerMenu(ListeMenu.m_menu_Actionvehicule);
                         System.out.println("veh" + marker.getTitle());
                         vehiculeselected = vehiculesCarte.get(Integer.parseInt(marker.getTitle()));
+                        if(vehiculeselected.etat == EtatVehicule.ARRIVE)
+                            confirmer.setEnabled(false);
+                        else
+                            confirmer.setEnabled(true);
                         //TODO on clique sur une icone d'un vehicule
                         Log.e("MapMarkerClick", "marker: " + marker);
                         Log.e("MapMarkerClick", "title: " + marker.getTitle());
