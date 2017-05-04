@@ -42,15 +42,6 @@
         android:layout_marginTop="20dp"
         android:text="  Segment " />
 
-    <Switch
-        android:id="@+id/mySwitch4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="20dp"
-        android:text="  Zone        " />
-
     <RadioGroup
         android:id="@+id/type_carte"
         android:layout_width="wrap_content"
