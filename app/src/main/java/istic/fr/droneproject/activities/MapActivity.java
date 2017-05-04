@@ -80,13 +80,11 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     GoogleMap mGoogleMap;
     boolean notcheckedMoyens=false;
     boolean notcheckedPoints=false;
-    boolean notcheckedSegment=false;
-    boolean notcheckedZone=false;
+    boolean notcheckedDrone=false;
     boolean filtreMoyens=false;
-    boolean  filtrePoints=false;
+    boolean filtrePoints=false;
     boolean filtrePointsSP=false;
-    boolean filtreSegment=false;
-    boolean filtreZone=false;
+    boolean filtreDrone=false;
     Marker myMarker;    //marker de position de l'intervention
     Marker markerChanged; //marker bleu avec la nouvelle position
     LatLng lng; //la position de l'intervention ?
@@ -95,7 +93,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
     MapVehiculesRecyclerAdapter vehiculesAdapter;
     Intervention intervention;
     Vehicule vehicule;
-    DronePosition droneposition;
+    DronePosition droneposition = null;
     DronePhotos dronephotos;
     Drone drone;
     Boolean clicked = false; //pour les moyens
@@ -169,6 +167,8 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
     //désactiver quand le vehicule est deja arrivé
     Button confirmer;
+    Switch mySwitchDrone;
+    FloatingActionButton m_map_reloaddrone;
 
     public enum ListeMenu {
         m_menu_vehicules, m_menu_points, m_menu_choix, m_menu_Actionvehicule, m_menu_Actionpoint, m_menu_Actiondrone, m_menu_Actiondrone_segment, m_menu_Actiondrone_zone, aucun
@@ -270,7 +270,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         Button m_menu_Actiondrone_zone_supplast = (Button) view.findViewById(R.id.m_menu_Actiondrone_zone_supplast);
 
         //bouton de la carte
-        FloatingActionButton m_map_reloaddrone = (FloatingActionButton) view.findViewById(R.id.m_map_reloaddrone);
+        m_map_reloaddrone = (FloatingActionButton) view.findViewById(R.id.m_map_reloaddrone);
         FloatingActionButton m_map_filtre = (FloatingActionButton) view.findViewById(R.id.m_map_filtre);
 
         vehicules = new ArrayList<>();
@@ -1034,8 +1034,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         helpBuilder.setView(popupLayout);
         final Switch mySwitchMoyens=(Switch)popupLayout.findViewById(R.id.mySwitch1);
         final Switch mySwitchPoints=(Switch)popupLayout.findViewById(R.id.mySwitch2);
-        final Switch mySwitchSegment=(Switch)popupLayout.findViewById(R.id.mySwitch3);
-        final Switch mySwitchZone=(Switch)popupLayout.findViewById(R.id.mySwitch4);
+        mySwitchDrone=(Switch)popupLayout.findViewById(R.id.mySwitch3);
         final RadioGroup radiogroup = (RadioGroup) popupLayout.findViewById(R.id.type_carte);
 
       if(!notcheckedMoyens)
@@ -1046,13 +1045,9 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
         //set the switch2 to ON
         mySwitchPoints.setChecked(true);
 
-        if(!notcheckedSegment)
+        if(!notcheckedDrone)
         //set the switch3 to ON
-        mySwitchSegment.setChecked(true);
-
-        if(!notcheckedZone)
-        //set the switch4 to ON
-        mySwitchZone.setChecked(true);
+            mySwitchDrone.setChecked(true);
 
         //set the switch5 to ON
       //  mySwitchcarte.setChecked(true);
@@ -1102,41 +1097,23 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             }
         });
 
-        mySwitchSegment.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        mySwitchDrone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView,
                                          boolean isChecked) {
 
                 if(isChecked){
-                    filtreSegment=false;
-                    notcheckedSegment=false;
+                    filtreDrone=false;
+                    notcheckedDrone=false;
+                    if(droneposition != null)
+                        m_map_reloaddrone.setVisibility(View.VISIBLE);
                     SynchroniserIntervention();
 
                 }else{
-                    filtreSegment=true;
-                    notcheckedSegment=true;
-                    SynchroniserIntervention();
-
-
-                }
-
-            }
-        });
-        mySwitchZone.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                                         boolean isChecked) {
-
-                if(isChecked){
-                    filtreZone=false;
-                    notcheckedZone=false;
-                    SynchroniserIntervention();
-
-                }else{
-                    filtreZone=true;
-                    notcheckedZone=true;
+                    filtreDrone=true;
+                    notcheckedDrone=true;
+                    m_map_reloaddrone.setVisibility(View.INVISIBLE);
                     SynchroniserIntervention();
 
 
@@ -1230,6 +1207,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
 
 
                 droneposition = response.body();
+                m_map_reloaddrone.setVisibility(View.VISIBLE);
                 //Yousra
                 Log.e("OnMapReady", "Drone Position is" + String.valueOf(response.body().position[0])+" "+String.valueOf(response.body().position[0]));
                 reloadDrone();
@@ -1239,6 +1217,7 @@ public class MapActivity extends Fragment implements OnMapReadyCallback {
             @Override
             public void onFailure(Call<DronePosition> call, Throwable t) {
                 Log.e("OnMapReady", "Drone not created");
+                m_map_reloaddrone.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -1773,14 +1752,13 @@ if (clickedZone || clickedZoneExclusion)
                     }
                 }
             }
-            if (filtreSegment == false) {
+            if (filtreDrone == false) {
                 if(drone != null && drone.etat == EtatDrone.SEGMENT)
                         dessinerSegment();
-            }
-            if (filtreZone == false) {
                 if(drone != null &&drone.etat == EtatDrone.ZONE)
                     dessinerZone();
-        }
+            }
+
         }catch (Exception e) {
 
         }
@@ -1867,7 +1845,7 @@ if (clickedZone || clickedZoneExclusion)
 
     private void reloadDrone() {
         //TODO: get la nouvelle position dans @dronePosition
-//        if(droneMarker == null){
+        if(filtreDrone == false){
 
 
         if (droneposition != null && droneposition.position != null && droneposition.position[0] != null && droneposition.position[1] != null) {
@@ -1894,7 +1872,7 @@ if (clickedZone || clickedZoneExclusion)
             Log.e("MapActivity", "Pas de dronePosition");
         }
 
-//        }
+        }
 //        else{
 //            Log.e("MapActivity","move drone to position "+droneposition.position[0]+"  "+droneposition.position[1]);
 //            droneMarker.setPosition(new LatLng(droneposition.position[0],droneposition.position[1]));
@@ -1915,7 +1893,6 @@ if (clickedZone || clickedZoneExclusion)
                     LatLng latLng = new LatLng(tab[0], tab[1]);
 
                     contourZone.add(latLng);
-
 
                 }
 
